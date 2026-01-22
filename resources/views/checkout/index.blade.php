@@ -654,6 +654,11 @@
                         </aside>
                     </div>
 
+                    <input type="hidden" name="shipping_fee" data-shipping-fee-input value="0.00">
+                    <input type="hidden" name="order_total" data-order-total-input
+                        value="{{ number_format($subtotal, 2, '.', '') }}">
+
+
                 </section>
             </form>
         </div>
@@ -861,7 +866,9 @@
             const shippingText = document.querySelector('[data-shipping-text]');
             const totalText = document.querySelector('[data-total-text]');
 
-            const transferAmountEl = document.querySelector('[data-transfer-amount]');
+            // ✅ 修正：跟你 HTML 一样用 data-pay-amount
+            const payAmountEl = document.querySelector('[data-pay-amount]');
+
             const shippingFeeInput = document.querySelector('[data-shipping-fee-input]');
             const orderTotalInput = document.querySelector('[data-order-total-input]');
 
@@ -873,11 +880,11 @@
 
             // 全部 digital
             if (!hasPhysical) {
-                shippingText.textContent = 'Digital Product (Free)';
+                shippingText.innerHTML = '<span class="text-green-600">Free</span>';
                 totalText.textContent = 'RM ' + subtotal.toFixed(2);
 
-                if (transferAmountEl) transferAmountEl.textContent = subtotal.toFixed(2);
-                if (shippingFeeInput) shippingFeeInput.value = 0;
+                if (payAmountEl) payAmountEl.textContent = 'RM ' + subtotal.toFixed(2);
+                if (shippingFeeInput) shippingFeeInput.value = '0.00';
                 if (orderTotalInput) orderTotalInput.value = subtotal.toFixed(2);
                 return;
             }
@@ -886,13 +893,13 @@
                 const selected = stateSelect.selectedOptions[0];
                 const zone = selected ? selected.dataset.zone : null;
 
-                // 还没选
+                // 还没选州：先显示 subtotal
                 if (!zone) {
-                    shippingText.textContent = 'To be confirmed';
+                    shippingText.innerHTML = '<span class="text-gray-400 font-normal">TBC</span>';
                     totalText.textContent = 'RM ' + subtotal.toFixed(2);
 
-                    if (transferAmountEl) transferAmountEl.textContent = subtotal.toFixed(2);
-                    if (shippingFeeInput) shippingFeeInput.value = 0;
+                    if (payAmountEl) payAmountEl.textContent = 'RM ' + subtotal.toFixed(2);
+                    if (shippingFeeInput) shippingFeeInput.value = '0.00';
                     if (orderTotalInput) orderTotalInput.value = subtotal.toFixed(2);
                     return;
                 }
@@ -900,17 +907,13 @@
                 const fee = Number(shippingRates[zone] ?? 0);
                 const total = subtotal + fee;
 
-                if (fee === 0) {
-                    shippingText.textContent = 'Free';
-                } else {
-                    shippingText.textContent = 'RM ' + fee.toFixed(2);
-                }
+                shippingText.textContent = fee === 0 ? 'Free' : 'RM ' + fee.toFixed(2);
                 totalText.textContent = 'RM ' + total.toFixed(2);
 
                 // ✅ 同步 Online Transfer 的 Exact Amount
-                if (transferAmountEl) transferAmountEl.textContent = total.toFixed(2);
+                if (payAmountEl) payAmountEl.textContent = 'RM ' + total.toFixed(2);
 
-                // ✅ 写入 hidden input 给后端
+                // ✅ hidden input 给后端（如果你有放）
                 if (shippingFeeInput) shippingFeeInput.value = fee.toFixed(2);
                 if (orderTotalInput) orderTotalInput.value = total.toFixed(2);
             }
@@ -919,6 +922,7 @@
             updateShipping();
         });
     </script>
+
 
 
 

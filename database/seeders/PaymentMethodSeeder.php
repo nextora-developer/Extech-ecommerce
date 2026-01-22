@@ -21,8 +21,8 @@ class PaymentMethodSeeder extends Seeder
                 'is_default'          => true,
 
                 'bank_name'           => 'Maybank',
-                'bank_account_name'   => 'Ecommerce',
-                'bank_account_number' => '1234567789',
+                'bank_account_name'   => 'Extech Studio',
+                'bank_account_number' => '501217901304',
 
                 'duitnow_qr_path'     => null,
                 'instructions'        => 'Please transfer the total amount and upload your payment receipt.',

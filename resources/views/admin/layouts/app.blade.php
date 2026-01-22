@@ -4,7 +4,8 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Admin Panel | CompanyName</title>
+    <title>Admin Panel | Extech Studio</title>
+    <link rel="icon" type="image/png" href="{{ asset('favicon.png') }}">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -69,16 +70,14 @@
             {{-- Brand Section --}}
             <div class="h-20 flex items-center px-6 border-b border-gray-50">
                 <div class="flex items-center gap-3 overflow-hidden">
-                    <div
-                        class="h-9 w-9 bg-[#D4AF37] rounded-lg flex shrink-0 items-center justify-center text-white shadow-lg shadow-[#D4AF37]/20">
-                        <span class="font-bold text-xl">C</span>
-                    </div>
                     <div x-show="!collapsed" x-transition.opacity class="whitespace-nowrap">
-                        <span class="font-bold text-gray-800 tracking-tight">Company<span
-                                class="text-[#D4AF37]">Name</span></span>
+                        <span class="font-extrabold text-xl text-gray-800 tracking-tight">
+                            Extech<span class="text-[#D4AF37]"> Studio</span>
+                        </span>
                     </div>
                 </div>
             </div>
+
 
             {{-- Nav --}}
             <nav class="flex-1 overflow-y-auto py-3 px-4 space-y-1">
@@ -273,7 +272,7 @@
 
             {{-- Footer --}}
             <footer class="mt-auto p-8 text-center text-gray-400 text-xs">
-                &copy; {{ date('Y') }} CompanyName Admin Portal. All rights reserved.
+                &copy; {{ date('Y') }} Extech Studio Admin Portal. All rights reserved.
             </footer>
         </main>
     </div>

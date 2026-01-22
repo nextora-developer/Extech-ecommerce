@@ -6,17 +6,12 @@
             {{-- Left side: Logo + Desktop Links --}}
             <div class="flex items-center">
                 <div class="shrink-0 flex items-center">
-                    <a href="{{ route('home') }}" class="group flex items-center gap-3">
-                        <div
-                            class="h-10 w-10 rounded-2xl bg-gradient-to-br from-[#D4AF37] to-[#8f6a10] flex items-center justify-center text-xs font-bold text-white shadow-lg shadow-[#D4AF37]/20 group-hover:scale-105 transition-transform">
-                            EX
-                        </div>
-                        <span
-                            class="text-xl font-bold tracking-tight text-gray-900 group-hover:text-[#8f6a10] transition-colors">
-                            Shop
-                        </span>
+                    <a href="{{ route('home') }}" class="flex items-center gap-3">
+                        <img src="{{ asset('images/logo/extechstudio-logo.png') }}" alt="ExtechStudio"
+                            class="h-10 w-auto object-contain transition-transform duration-200 hover:scale-105" />
                     </a>
                 </div>
+
 
                 <div class="hidden lg:flex items-center ms-10 space-x-1">
                     @php
@@ -51,13 +46,10 @@
                             x-transition:enter-start="opacity-0 scale-95"
                             class="absolute left-0 mt-2 w-48 rounded-2xl border border-gray-100 bg-white shadow-xl ring-1 ring-black/5 z-50 overflow-hidden">
                             <div class="p-1.5">
-                                <a href="#"
-                                    class="block px-4 py-2.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-[#8f6a10] rounded-xl transition">About
-                                    Us</a>
-                                <a href="#"
+                                <a href="{{ route('how-to-order') }}"
                                     class="block px-4 py-2.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-[#8f6a10] rounded-xl transition">How
                                     to Order</a>
-                                <a href="#"
+                                <a href="{{ route('faq') }}"
                                     class="block px-4 py-2.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-[#8f6a10] rounded-xl transition">FAQ</a>
                             </div>
                         </div>

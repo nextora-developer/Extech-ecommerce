@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ShopController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\PageController;
 use App\Http\Controllers\Admin\AdminCategoryController;
 use App\Http\Controllers\Admin\AdminProductController;
 use App\Http\Controllers\Admin\AdminOrderController;
@@ -68,8 +69,12 @@ if (app()->environment('local')) {
     });
 }
 
-
-
+Route::get('/how-to-order', [PageController::class, 'howToOrder'])->name('how-to-order');
+Route::get('/faq', [PageController::class, 'faq'])->name('faq');
+Route::get('/privacy-policy', [PageController::class, 'privacyPolicy'])->name('privacy-policy');
+Route::get('/terms', [PageController::class, 'terms'])->name('terms');
+Route::get('/shipping', [PageController::class, 'shippingDelivery'])->name('shipping');
+Route::get('/returns', [PageController::class, 'returnsRefunds'])->name('returns');
 /*
 |--------------------------------------------------------------------------
 | Customer (需要登录的功能：Cart + Checkout + Account
@@ -91,6 +96,8 @@ Route::middleware('auth')->group(function () {
         ->name('checkout.index');
     Route::post('/checkout/place-order', [CheckoutController::class, 'store'])
         ->name('checkout.store');
+    Route::get('/checkout/success/{order}', [CheckoutController::class, 'success'])
+        ->name('checkout.success');
 
     // Account 相关
     Route::prefix('account')->name('account.')->group(function () {

@@ -262,7 +262,25 @@ class CheckoutController extends Controller
         /**
          * 9️⃣ 其他付款方式 → 回订单列表
          */
-        return redirect()->route('account.orders.index')
-            ->with('success', 'Order placed successfully.');
+        // return redirect()->route('account.orders.index')
+        //     ->with('success', 'Order placed successfully.');
+        return redirect()->route('checkout.success', $order);
+    }
+
+    public function success(Order $order)
+    {
+        // 安全检查：只能看自己的订单
+        if ($order->user_id && $order->user_id !== auth()->id()) {
+            abort(403);
+        }
+
+        // 可选：只允许已付款 / 处理中订单访问
+        if (! in_array($order->status, ['pending', 'paid'])) {
+            return redirect()
+                ->route('account.orders.index')
+                ->with('error', 'This order is not available.');
+        }
+
+        return view('checkout.success', compact('order'));
     }
 }

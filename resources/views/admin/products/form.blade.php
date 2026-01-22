@@ -829,6 +829,10 @@
                 card.onpointercancel = end;
             }
 
+            input.addEventListener('click', () => {
+                input.value = '';
+            });
+
             // 选择新文件（总上限 10：旧图 - 已删除 + 新图）
             input.addEventListener('change', (e) => {
                 const files = Array.from(e.target.files || []);
@@ -856,7 +860,7 @@
                 rebuildHiddenInputs();
 
                 // allow re-select same file next time
-                input.value = '';
+                // input.value = '';
             });
 
             // Clear：只清空“新图”（旧图保留）

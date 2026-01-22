@@ -57,20 +57,17 @@
                 {{-- Brand --}}
                 <div class="lg:col-span-4">
                     <div class="flex items-center gap-3 mb-6">
-                        <div
-                            class="h-10 w-10 rounded-2xl bg-gradient-to-br from-[#D4AF37] to-[#8f6a10] flex items-center justify-center text-[10px] font-extrabold text-white shadow-sm">
-                            EX
-                        </div>
-                        <div class="flex flex-col leading-tight">
-                            <span class="text-xl font-bold tracking-tight text-gray-900">Shop</span>
-                            <span class="text-xs text-gray-400 tracking-wide">Premium Essentials</span>
-                        </div>
+                        <img src="{{ asset('images/logo/extechstudio-logo.png') }}"
+                            alt="Extech Studio - Premium Essentials" class="h-12 w-auto object-contain" />
                     </div>
 
+
                     <p class="text-sm text-gray-600 leading-relaxed max-w-sm">
-                        Curating high-quality essentials for the modern Malaysian lifestyle.
-                        Excellence in every detail, delivered with care.
+                        We curate premium-quality essentials designed to elevate the modern Malaysian lifestyle.
+                        Every product is thoughtfully selected with a focus on craftsmanship, functionality, and
+                        timeless design.
                     </p>
+
 
                     {{-- Small brand badge --}}
                     <div class="mt-6">
@@ -89,20 +86,29 @@
                     </h4>
                     <div class="h-px w-10 bg-gray-200 mt-4 mb-6"></div>
 
+                    @php
+                        $links = [
+                            ['label' => 'Shop All', 'route' => 'shop.index'],
+                            ['label' => 'How to order', 'route' => 'how-to-order'],
+                            ['label' => 'FAQ', 'route' => 'faq'],
+                        ];
+                    @endphp
+
                     <ul class="space-y-4">
-                        @foreach (['Shop All', 'New Arrivals', 'Best Sellers', 'Contact Us'] as $link)
+                        @foreach ($links as $item)
                             <li>
-                                <a href="#"
+                                <a href="{{ route($item['route']) }}"
                                     class="text-sm text-gray-500 hover:text-gray-900 transition relative inline-block
-                                      after:content-[''] after:absolute after:left-0 after:-bottom-1
-                                      after:h-px after:w-0 after:bg-[#D4AF37] hover:after:w-full
-                                      after:transition-all after:duration-300">
-                                    {{ $link }}
+                          after:content-[''] after:absolute after:left-0 after:-bottom-1
+                          after:h-px after:w-0 after:bg-[#D4AF37] hover:after:w-full
+                          after:transition-all after:duration-300">
+                                    {{ $item['label'] }}
                                 </a>
                             </li>
                         @endforeach
                     </ul>
                 </div>
+
 
                 {{-- Support --}}
                 <div class="lg:col-span-2">
@@ -112,19 +118,29 @@
                     <div class="h-px w-10 bg-gray-200 mt-4 mb-6"></div>
 
                     <ul class="space-y-4">
-                        @foreach (['Privacy Policy', 'Shipping & Delivery', 'Returns & Refunds', 'Terms of Service'] as $link)
+                        @php
+                            $supportLinks = [
+                                ['label' => 'Privacy Policy', 'route' => 'privacy-policy'],
+                                ['label' => 'Terms & Conditions', 'route' => 'terms'],
+                                ['label' => 'Shipping & Delivery', 'route' => 'shipping'],
+                                ['label' => 'Returns & Refunds', 'route' => 'returns'],
+                            ];
+                        @endphp
+
+                        @foreach ($supportLinks as $item)
                             <li>
-                                <a href="#"
+                                <a href="{{ route($item['route']) }}"
                                     class="text-sm text-gray-500 hover:text-gray-900 transition relative inline-block
-                                      after:content-[''] after:absolute after:left-0 after:-bottom-1
-                                      after:h-px after:w-0 after:bg-[#D4AF37] hover:after:w-full
-                                      after:transition-all after:duration-300">
-                                    {{ $link }}
+                          after:content-[''] after:absolute after:left-0 after:-bottom-1
+                          after:h-px after:w-0 after:bg-[#D4AF37] hover:after:w-full
+                          after:transition-all after:duration-300">
+                                    {{ $item['label'] }}
                                 </a>
                             </li>
                         @endforeach
                     </ul>
                 </div>
+
 
                 {{-- Account --}}
                 <div class="lg:col-span-2">
@@ -140,7 +156,7 @@
                                   after:content-[''] after:absolute after:left-0 after:-bottom-1
                                   after:h-px after:w-0 after:bg-[#D4AF37] hover:after:w-full
                                   after:transition-all after:duration-300">
-                                Profile Details
+                                Dashboard
                             </a>
                         </li>
                         <li>
@@ -149,25 +165,34 @@
                                   after:content-[''] after:absolute after:left-0 after:-bottom-1
                                   after:h-px after:w-0 after:bg-[#D4AF37] hover:after:w-full
                                   after:transition-all after:duration-300">
-                                Order History
+                                My Order
                             </a>
                         </li>
                         <li>
-                            <a href="#"
+                            <a href="{{ route('account.favorites.index') }}"
                                 class="text-sm text-gray-500 hover:text-gray-900 transition relative inline-block
                                   after:content-[''] after:absolute after:left-0 after:-bottom-1
                                   after:h-px after:w-0 after:bg-[#D4AF37] hover:after:w-full
                                   after:transition-all after:duration-300">
-                                Wishlist
+                                My Wishlist
                             </a>
                         </li>
                         <li>
-                            <a href="#"
+                            <a href="{{ route('account.address.index') }}"
                                 class="text-sm text-gray-500 hover:text-gray-900 transition relative inline-block
                                   after:content-[''] after:absolute after:left-0 after:-bottom-1
                                   after:h-px after:w-0 after:bg-[#D4AF37] hover:after:w-full
                                   after:transition-all after:duration-300">
-                                Addresses
+                                Shipping Addresses
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('account.profile.edit') }}"
+                                class="text-sm text-gray-500 hover:text-gray-900 transition relative inline-block
+                                  after:content-[''] after:absolute after:left-0 after:-bottom-1
+                                  after:h-px after:w-0 after:bg-[#D4AF37] hover:after:w-full
+                                  after:transition-all after:duration-300">
+                                Profile Settings
                             </a>
                         </li>
                     </ul>
@@ -200,7 +225,7 @@
                             </a>
                         </li>
                         <li>
-                            <a href="#"
+                            <a href="https://wa.me/601156898898"
                                 class="text-sm text-gray-500 hover:text-gray-900 transition relative inline-block
                                   after:content-[''] after:absolute after:left-0 after:-bottom-1
                                   after:h-px after:w-0 after:bg-[#D4AF37] hover:after:w-full
@@ -210,8 +235,8 @@
                         </li>
 
                         <li class="text-sm text-gray-400">
-                            <a href="mailto:support@yourshop.com" class="hover:text-gray-600 transition">
-                                support@yourshop.com
+                            <a href="mailto:cs.extechstudio@gmail.com" class="hover:text-gray-600 transition">
+                                cs.extechstudio@gmail.com
                             </a>
                         </li>
                     </ul>
@@ -223,7 +248,7 @@
             <div
                 class="mt-14 pt-8 border-t border-gray-200/70 flex flex-col md:flex-row justify-between items-center gap-4">
                 <p class="text-sm text-gray-400 font-medium">
-                    © {{ date('Y') }} Shop. Built with pride in Malaysia.
+                    © {{ date('Y') }} Extech Studio. All rights reserved.
                 </p>
 
                 <div class="flex items-center gap-4">
@@ -233,13 +258,31 @@
 
                     <div class="flex items-center gap-4">
                         <img src="/images/payments/fpx.png" alt="FPX"
-                            class="h-5 opacity-70 grayscale hover:opacity-100 hover:grayscale-0 transition" />
+                            class="h-6 opacity-70 grayscale hover:opacity-100 hover:grayscale-0 transition" />
 
                         <img src="/images/payments/visa.png" alt="Visa"
-                            class="h-5 opacity-70 grayscale hover:opacity-100 hover:grayscale-0 transition" />
+                            class="h-6 opacity-70 grayscale hover:opacity-100 hover:grayscale-0 transition" />
 
                         <img src="/images/payments/mastercard.png" alt="Mastercard"
-                            class="h-5 opacity-70 grayscale hover:opacity-100 hover:grayscale-0 transition" />
+                            class="h-6 opacity-70 grayscale hover:opacity-100 hover:grayscale-0 transition" />
+
+                        <img src="/images/payments/shopeepay.png" alt="ShopeePay"
+                            class="h-6 opacity-70 grayscale hover:opacity-100 hover:grayscale-0 transition" />
+
+                        <img src="/images/payments/spaylater.png" alt="SPayLater"
+                            class="h-6 opacity-70 grayscale hover:opacity-100 hover:grayscale-0 transition" />
+
+                        <img src="/images/payments/grabpay.png" alt="GrabPay"
+                            class="h-6 opacity-70 grayscale hover:opacity-100 hover:grayscale-0 transition" />
+
+                        <img src="/images/payments/grabpaylater.png" alt="GrabPayLater"
+                            class="h-6 opacity-70 grayscale hover:opacity-100 hover:grayscale-0 transition" />
+
+                        <img src="/images/payments/tng.png" alt="TNG"
+                            class="h-6 opacity-70 grayscale hover:opacity-100 hover:grayscale-0 transition" />
+
+                        <img src="/images/payments/alipay.png" alt="Alipay"
+                            class="h-6 opacity-70 grayscale hover:opacity-100 hover:grayscale-0 transition" />
                     </div>
                 </div>
             </div>
@@ -259,8 +302,8 @@
            flex items-center justify-center
            shadow-lg shadow-[#D4AF37]/40
            hover:bg-[#c49a2f] transition-all duration-300">
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"
-            stroke-width="2">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24"
+            stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M5 10l7-7m0 0l7 7m-7-7v18" />
         </svg>
     </button>
