@@ -43,14 +43,7 @@
     {{-- <footer class="relative overflow-hidden bg-black border-t border-white/10"> --}}
         <footer
     class="relative overflow-hidden border-t border-white/10
-           bg-gradient-to-br from-black via-[#0B1F2E] to-[#0E2A3F]">
-        {{-- Soft premium background glow --}}
-        {{-- <div class="absolute inset-0 pointer-events-none">
-            <div class="absolute -top-32 -left-40 w-[520px] h-[520px] rounded-full bg-[#15A5ED]/15 blur-3xl"></div>
-            <div class="absolute -bottom-40 -right-40 w-[620px] h-[620px] rounded-full bg-white/5 blur-3xl"></div>
-            <div class="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent">
-            </div>
-        </div> --}}
+           bg-gradient-to-br from-black via-[#0B1F2E] to-[#0E2A3F] pb-[92px] sm:pb-0">
 
         <div class="relative max-w-7xl5 mx-auto px-6 lg:px-12 py-16 lg:py-20">
 
@@ -296,10 +289,10 @@
     </button>
 
     <a href="https://wa.me/601156898898" target="_blank"
-        class="fixed right-4 bottom-4 z-50
+   class="hidden sm:flex fixed right-4 bottom-4 z-50
           w-12 h-12 rounded-full
           bg-[#25D366] text-white
-          flex items-center justify-center
+          items-center justify-center
           shadow-lg shadow-[#25D366]/40
           hover:bg-[#1DA851] transition-all duration-300 animate-bounce">
 
