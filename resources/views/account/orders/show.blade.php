@@ -31,8 +31,9 @@
                             {{-- 左侧：订单号 + 时间 --}}
                             <div>
                                 <h1 class="text-xl md:text-2xl font-semibold text-[#0A0A0C] flex items-center gap-2">
-                                    Order <span class="text-[#8f6a10]">#{{ $order->order_no }}</span>
+                                    Order <span class="text-[#6DBAE1]">#{{ $order->order_no }}</span>
                                 </h1>
+
 
                                 <p class="text-sm text-gray-500 mt-1">
                                     Placed on {{ $order->created_at->format('d M Y, H:i') }}
@@ -247,7 +248,8 @@
                                         </h2>
 
                                         <p
-                                            class="mt-2 text-sm leading-relaxed break-words whitespace-pre-line {{ $order->remark ? 'text-gray-900' : 'text-gray-400 italic' }}">{{ $order->remark ? trim($order->remark) : 'No remark' }}</p>
+                                            class="mt-2 text-sm leading-relaxed break-words whitespace-pre-line {{ $order->remark ? 'text-gray-900' : 'text-gray-400 italic' }}">
+                                            {{ $order->remark ? trim($order->remark) : 'No remark' }}</p>
                                     </div>
 
 
@@ -257,9 +259,11 @@
 
                             {{-- 🟣 右侧（占 2）：Order Summary --}}
                             <div
-                                class="md:col-span-2 bg-[#FFF9E6] border border-[#D4AF37]/30 rounded-2xl p-5 text-base shadow-sm">
+                                class="md:col-span-2 bg-[#F4F8FD] border border-[#15A5ED]/25 rounded-2xl p-5 text-base shadow-sm">
 
-                                <h2 class="font-semibold text-[#0A0A0C] text-base mb-4">Order Summary</h2>
+                                <h2 class="font-semibold text-[#0A0A0C] text-base mb-4">
+                                    Order Summary
+                                </h2>
 
                                 <div class="space-y-2 text-sm">
                                     <div class="flex justify-between text-gray-600">
@@ -273,7 +277,7 @@
                                     </div>
                                 </div>
 
-                                <div class="h-px bg-[#D4AF37]/20 my-4"></div>
+                                <div class="h-px bg-[#15A5ED]/20 my-4"></div>
 
                                 <div class="flex justify-between items-baseline">
                                     <span class="text-sm font-semibold text-[#0A0A0C]">Total</span>
@@ -283,7 +287,7 @@
                                 </div>
 
                                 {{-- Payment --}}
-                                <div class="mt-5 pt-4 border-t border-[#D4AF37]/20 space-y-2 text-sm">
+                                <div class="mt-5 pt-4 border-t border-[#15A5ED]/20 space-y-2 text-sm">
                                     <div class="flex justify-between">
                                         <span class="text-gray-600">Payment Method</span>
                                         <span class="font-medium text-gray-900">
@@ -294,21 +298,22 @@
                                     @if ($order->payment_receipt_path)
                                         <div class="flex items-center gap-2 pt-1">
                                             <button type="button" onclick="openReceiptModal({{ $order->id }})"
-                                                class="inline-flex items-center px-3 py-1.5 rounded-lg border border-gray-300
-                               bg-white/80 hover:bg-white text-xs font-medium text-gray-800">
+                                                class="inline-flex items-center px-3 py-1.5 rounded-lg
+                           border border-gray-300 bg-white/80 hover:bg-white
+                           text-xs font-medium text-gray-800">
                                                 View Receipt
                                             </button>
 
                                             <a href="{{ asset('storage/' . $order->payment_receipt_path) }}" download
-                                                class="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-medium
-                               bg-[#D4AF37] text-white hover:bg-[#C49A2F]">
+                                                class="inline-flex items-center px-3 py-1.5 rounded-lg
+                           text-xs font-medium
+                           bg-[#15A5ED] text-white hover:bg-[#0F8DD1]">
                                                 Download
                                             </a>
                                         </div>
                                     @endif
                                 </div>
                             </div>
-
                         </div>
 
 

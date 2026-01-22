@@ -44,13 +44,17 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         @forelse ($addresses as $address)
                             <div
-                                class="group relative bg-white rounded-[2rem] border border-gray-100 p-6 hover:border-[#D4AF37]/40 hover:shadow-xl hover:shadow-orange-900/5 transition-all duration-500">
+                                class="group relative bg-white rounded-[2rem] border border-gray-100 p-6
+                   hover:border-[#15A5ED]/40 hover:shadow-xl hover:shadow-blue-900/5
+                   transition-all duration-500">
 
                                 {{-- Default Badge --}}
                                 @if ($address->is_default)
                                     <div class="absolute top-6 right-6">
                                         <span
-                                            class="inline-flex items-center px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-emerald-50 text-emerald-600 border border-emerald-100">
+                                            class="inline-flex items-center px-3 py-1 rounded-full text-[10px]
+                               font-black uppercase tracking-widest
+                               bg-emerald-50 text-emerald-600 border border-emerald-100">
                                             Default
                                         </span>
                                     </div>
@@ -60,7 +64,8 @@
                                 <div class="space-y-4">
                                     <div class="flex items-center gap-3">
                                         <div
-                                            class="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center text-[#8f6a10]">
+                                            class="w-10 h-10 rounded-xl bg-gray-50
+                               flex items-center justify-center text-[#15A5ED]">
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor"
                                                 viewBox="0 0 24 24">
                                                 <path
@@ -68,11 +73,14 @@
                                                     stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
                                             </svg>
                                         </div>
+
                                         <div>
                                             <h3 class="font-bold text-gray-900">
-                                                {{ $address->recipient_name ?? $user->name }}</h3>
+                                                {{ $address->recipient_name ?? $user->name }}
+                                            </h3>
                                             <p class="text-xs text-gray-400 font-medium tracking-wide">
-                                                {{ $address->phone }}</p>
+                                                {{ $address->phone }}
+                                            </p>
                                         </div>
                                     </div>
 
@@ -91,7 +99,8 @@
                                     <div class="pt-5 border-t border-gray-50 flex items-center justify-between">
                                         <div class="flex items-center gap-4">
                                             <a href="{{ route('account.address.edit', $address) }}"
-                                                class="inline-flex mt-1 items-center text-xs font-black uppercase tracking-widest text-gray-400 hover:text-[#8f6a10] transition-colors">
+                                                class="inline-flex mt-1 items-center text-xs font-black uppercase tracking-widest
+                                   text-gray-400 hover:text-[#15A5ED] transition-colors">
                                                 Edit
                                             </a>
 
@@ -99,19 +108,20 @@
                                                 method="POST" onsubmit="return confirm('Delete this address?');">
                                                 @csrf @method('DELETE')
                                                 <button type="submit"
-                                                    class="inline-flex items-center text-xs font-black uppercase tracking-widest text-gray-400 hover:text-red-500 transition-colors">
+                                                    class="inline-flex items-center text-xs font-black uppercase tracking-widest
+                                       text-gray-400 hover:text-red-500 transition-colors">
                                                     Delete
                                                 </button>
                                             </form>
                                         </div>
-
 
                                         @unless ($address->is_default)
                                             <form action="{{ route('account.address.set-default', $address) }}"
                                                 method="POST">
                                                 @csrf @method('PUT')
                                                 <button
-                                                    class="text-[10px] font-black uppercase tracking-widest text-[#8f6a10] hover:text-black transition-colors">
+                                                    class="text-[10px] font-black uppercase tracking-widest
+                                       text-[#15A5ED] hover:text-[#0F8DD1] transition-colors">
                                                     Set as Primary
                                                 </button>
                                             </form>
@@ -121,9 +131,11 @@
                             </div>
                         @empty
                             <div
-                                class="col-span-full bg-white rounded-[2rem] border border-dashed border-gray-200 p-16 text-center">
+                                class="col-span-full bg-white rounded-[2rem]
+                   border border-dashed border-gray-200 p-16 text-center">
                                 <div
-                                    class="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    class="w-16 h-16 bg-gray-50 rounded-full
+                       flex items-center justify-center mx-auto mb-4">
                                     <svg class="w-8 h-8 text-gray-300" fill="none" stroke="currentColor"
                                         viewBox="0 0 24 24">
                                         <path
@@ -132,10 +144,13 @@
                                         <path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" stroke-width="1.5" />
                                     </svg>
                                 </div>
-                                <p class="text-gray-500 font-medium">You haven't saved any addresses yet.</p>
+                                <p class="text-gray-500 font-medium">
+                                    You haven't saved any addresses yet.
+                                </p>
                             </div>
                         @endforelse
                     </div>
+
 
                 </main>
             </div>

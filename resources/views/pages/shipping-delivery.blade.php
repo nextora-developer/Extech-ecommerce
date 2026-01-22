@@ -1,11 +1,11 @@
 <x-app-layout>
     @section('title', $title ?? 'Shipping & Delivery')
 
-    <section class="bg-[#FAF9F6] min-h-screen pb-20">
+    <section class="bg-[#f7f7f9] min-h-screen pb-20">
         {{-- Header --}}
         <div class="bg-white border-b border-gray-100">
             <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center">
-                <h2 class="text-xs font-bold uppercase tracking-[0.3em] text-[#8f6a10] mb-3">Logistics & Logistics</h2>
+                <h2 class="text-xs font-bold uppercase tracking-[0.3em] text-[#15A5ED] mb-3">Logistics & Logistics</h2>
                 <h1 class="text-4xl sm:text-5xl font-bold text-gray-900 tracking-tight mb-4">Shipping & Delivery</h1>
                 <p class="text-base text-gray-500 max-w-2xl mx-auto leading-relaxed">
                     We partner with reliable couriers to ensure your orders arrive safely and on time. Here is
@@ -17,7 +17,7 @@
                     @foreach ([['id' => 'processing', 'label' => 'Processing'], ['id' => 'rates', 'label' => 'Rates & Zones'], ['id' => 'eta', 'label' => 'Delivery Time'], ['id' => 'tracking', 'label' => 'Tracking']] as $j)
                         <a href="#{{ $j['id'] }}"
                             class="inline-flex items-center px-4 py-2 rounded-2xl bg-white border border-gray-100 shadow-sm
-                                  text-xs font-bold text-gray-600 hover:border-[#D4AF37] hover:text-[#8f6a10] transition-all">
+                                  text-xs font-bold text-gray-600 hover:border-[#15A5ED]/60 hover:text-[#15A5ED] transition-all">
                             {{ $j['label'] }}
                         </a>
                     @endforeach
@@ -37,7 +37,7 @@
                         <div class="flex-1 relative">
                             <div class="flex items-center gap-4 md:block">
                                 <div
-                                    class="w-10 h-10 rounded-full bg-[#D4AF37]/10 flex items-center justify-center text-[#8f6a10] font-bold text-sm mb-3">
+                                    class="w-10 h-10 rounded-full bg-[#15A5ED]/10 flex items-center justify-center text-[#15A5ED] font-bold text-sm mb-3">
                                     {{ $index + 1 }}
                                 </div>
                                 <div>
@@ -48,8 +48,6 @@
                         </div>
                     @endforeach
                 </div>
-
-
             </div>
 
             {{-- Section: Rates --}}
@@ -62,8 +60,8 @@
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     @foreach ([['t' => 'West Malaysia', 'p' => 'From RM8.00', 'd' => 'Fastest land delivery.'], ['t' => 'East Malaysia', 'p' => 'From RM15.00', 'd' => 'Air freight via PosLaju/J&T.'], ['t' => 'Digital Product', 'p' => 'Free of Charge', 'd' => 'Available at our HQ (By Appt).']] as $c)
                         <div
-                            class="rounded-3xl bg-[#FAF9F6] border border-gray-100 p-6 hover:border-[#D4AF37]/30 transition-all">
-                            <p class="text-xs font-bold text-[#8f6a10] uppercase tracking-wider">{{ $c['t'] }}</p>
+                            class="rounded-3xl bg-[#f7f7f9] border border-gray-100 p-6 hover:border-[#15A5ED]/30 transition-all">
+                            <p class="text-xs font-bold text-[#15A5ED] uppercase tracking-wider">{{ $c['t'] }}</p>
                             <p class="text-2xl font-black text-gray-900 mt-2">{{ $c['p'] }}</p>
                             <p class="text-xs text-gray-500 mt-3 leading-relaxed">{{ $c['d'] }}</p>
                         </div>
@@ -104,7 +102,7 @@
                         </p>
                     </div>
                     <a href="{{ route('account.orders.index') ?? '#' }}"
-                        class="px-8 py-4 rounded-2xl bg-[#D4AF37] hover:bg-[#8f6a10] text-white font-bold transition-all shadow-lg shadow-[#D4AF37]/20">
+                        class="px-8 py-4 rounded-2xl bg-[#15A5ED] hover:bg-[#0E8CCB] text-white font-bold transition-all shadow-lg shadow-[#15A5ED]/20">
                         Track My Order
                     </a>
                 </div>
@@ -114,8 +112,10 @@
             <div id="issues"
                 class="scroll-mt-24 rounded-[2.5rem] border-2 border-dashed border-gray-200 p-10 text-center">
                 <h3 class="text-xl font-bold text-gray-900">Missing or Damaged Parcel?</h3>
-                <p class="text-sm text-gray-500 mt-2 mb-8 max-w-lg mx-auto">Don't worry. If your order is significantly
-                    delayed or arrives in poor condition, our logistics team will investigate immediately.</p>
+                <p class="text-sm text-gray-500 mt-2 mb-8 max-w-lg mx-auto">
+                    Don't worry. If your order is significantly delayed or arrives in poor condition, our logistics team
+                    will investigate immediately.
+                </p>
                 <a href="https://wa.me/601156898898" target="_blank"
                     class="inline-flex items-center justify-center gap-3 px-8 py-3 rounded-xl bg-white border border-gray-200 text-sm font-bold text-gray-700 hover:bg-gray-50 transition-all">
                     <svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 24 24">

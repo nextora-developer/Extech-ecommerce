@@ -1,5 +1,5 @@
 <x-app-layout>
-    <div class="bg-[#f7f7f9] min-h-screen py-10">
+    <div class="bg-[#F4F8FD] min-h-screen py-10">
         <div class="max-w-7xl5 mx-auto px-4 sm:px-6 lg:px-8">
 
             {{-- Breadcrumb --}}
@@ -57,12 +57,12 @@
                     <section>
                         <div class="flex items-center justify-between mb-5 px-2">
                             <h2 class="text-lg font-bold text-gray-900 flex items-center gap-2">
-                                <span class="w-1.5 h-6 bg-[#D4AF37] rounded-full"></span>
+                                <span class="w-1.5 h-6 bg-[#15A5ED] rounded-full"></span>
                                 Recent Orders
                             </h2>
 
                             <a href="{{ route('account.orders.index') }}"
-                                class="text-sm font-bold text-[#8f6a10] hover:text-[#D4AF37] flex items-center gap-1 group transition-colors">
+                                class="text-sm font-bold text-[#15A5ED] hover:text-[#6DBAE1] flex items-center gap-1 group transition-colors">
                                 View History
                                 <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none"
                                     stroke="currentColor" viewBox="0 0 24 24">
@@ -70,12 +70,13 @@
                                         stroke-linejoin="round" />
                                 </svg>
                             </a>
+
                         </div>
 
                         <div class="space-y-3">
                             @forelse ($latestOrders as $order)
                                 <a href="{{ route('account.orders.show', $order) }}"
-                                    class="group block bg-white rounded-2xl border border-gray-100 p-4 hover:border-[#D4AF37]/40 hover:shadow-md hover:shadow-orange-100/20 transition-all duration-300">
+                                    class="group block bg-white rounded-2xl border border-gray-100 p-4 hover:border-[#15A5ED]/40 hover:shadow-md hover:shadow-[#15A5ED]/10 transition-all duration-300">
 
                                     <div class="flex flex-col sm:flex-row sm:items-center gap-4">
                                         {{-- Order Image --}}

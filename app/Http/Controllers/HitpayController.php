@@ -90,30 +90,42 @@ class HitpayController extends Controller
      */
     public function handleReturn(Request $request)
     {
-        // HitPay 可能会用 reference 或 reference_number（视实际回传而定）
         $reference = $request->query('reference')
             ?? $request->query('reference_number');
 
-        if ($reference) {
-            $order = Order::where('order_no', $reference)->first();
-
-            if ($order) {
-                return redirect()
-                    ->route('account.orders.show', $order)
-                    ->with(
-                        'success',
-                        'We have received your payment result. If the order is still pending, it will be updated automatically once we confirm the payment.'
-                    );
-            }
+        if (! $reference) {
+            return redirect()
+                ->route('account.orders.index')
+                ->with('error', 'Invalid payment return.');
         }
 
+        $order = Order::where('order_no', $reference)->first();
+
+        if (! $order) {
+            return redirect()
+                ->route('account.orders.index')
+                ->with('error', 'Order not found.');
+        }
+
+        // ✅ 已经 paid → 去 checkout.success
+        if ($order->status === 'paid') {
+            return redirect()
+                ->route('checkout.success', $order)
+                ->with('success', 'Payment completed successfully.');
+        }
+
+        // ❌ 如果不是 paid → 直接 failed
+        $order->update([
+            'status'         => 'failed',
+            'payment_status' => 'returned_not_paid',
+            'gateway'        => $order->gateway ?? 'hitpay',
+        ]);
+
         return redirect()
-            ->route('account.orders.index')
-            ->with(
-                'success',
-                'We have received your payment result. Please check your orders. If the status is still pending, it will update shortly after payment confirmation.'
-            );
+            ->route('account.orders.show', $order)
+            ->with('error', 'Payment was not completed. If you have been charged, please contact support.');
     }
+
 
 
     /**

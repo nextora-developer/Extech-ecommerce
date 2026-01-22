@@ -52,119 +52,122 @@
                                         <path
                                             d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
                                             stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                                    </svg>
-                                </div>
+                                    </svg> </div>
                                 <h3 class="font-bold text-gray-900">Your wishlist is empty</h3>
                                 <p class="text-gray-500 text-sm mt-1">Start exploring our collection and save your
-                                    favorite
-                                    pieces.</p>
-                                <a href="{{ route('shop.index') }}"
-                                    class="mt-6 inline-flex items-center px-6 py-2.5
-                                                bg-black text-white text-sm font-bold rounded-xl
-                                                transition-all duration-300 ease-out
-                                                hover:bg-black hover:text-white
-                                                hover:-translate-y-0.5 hover:scale-[1.03]
-                                                hover:shadow-xl hover:shadow-gray/30">
-                                    Start Shopping
-                                </a>
+                                    favorite pieces.</p> <a href="{{ route('shop.index') }}"
+                                    class="mt-6 inline-flex items-center px-6 py-2.5 bg-black text-white text-sm font-bold rounded-xl transition-all duration-300 ease-out hover:bg-black hover:text-white hover:-translate-y-0.5 hover:scale-[1.03] hover:shadow-xl hover:shadow-gray/30">
+                                    Start Shopping </a>
                             </div>
                         </section>
                     @else
-                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
+                        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-5">
                             @foreach ($favorites as $favorite)
                                 @php $product = $favorite->product; @endphp
                                 @if ($product)
                                     <a href="{{ route('shop.show', $product->slug) }}"
-                                        class="group relative bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:border-[#D4AF37]/60 transition overflow-hidden flex flex-col">
+                                        class="group relative bg-white/70 backdrop-blur-md rounded-2xl border border-white
+                           shadow-[0_8px_30px_rgb(0,0,0,0.04)]
+                           hover:shadow-[0_20px_40px_rgba(21,165,237,0.1)]
+                           hover:border-[#15A5ED]/30 transition-all duration-500
+                           flex flex-col overflow-hidden">
 
-                                        {{-- Product image --}}
-                                        <div class="relative aspect-square bg-gray-100 overflow-hidden">
+                                        {{-- Image --}}
+                                        <div
+                                            class="relative aspect-square bg-[#F1F5F9]/50 overflow-hidden m-2 rounded-xl">
                                             @if ($product->image)
                                                 <img src="{{ asset('storage/' . $product->image) }}"
                                                     alt="{{ $product->name }}"
-                                                    class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                                                    class="w-full h-full object-contain p-4 group-hover:scale-110 transition-transform duration-700">
                                             @else
                                                 <div
-                                                    class="w-full h-full flex items-center justify-center text-xs text-gray-400">
-                                                    Image coming soon
+                                                    class="w-full h-full flex items-center justify-center text-[10px] font-mono text-slate-300">
+                                                    IMG_NOT_FOUND
                                                 </div>
                                             @endif
 
-                                            {{-- ❤️ Favorite remove --}}
+                                            {{-- ❤️ Remove Favorite --}}
                                             <form action="{{ route('account.favorites.destroy', $product) }}"
-                                                method="POST" class="absolute top-2 right-2 z-10">
+                                                method="POST" class="absolute top-2 right-2 z-20"
+                                                onclick="event.preventDefault(); event.stopPropagation(); this.submit();">
                                                 @csrf
                                                 @method('DELETE')
 
                                                 <button type="submit"
                                                     class="w-8 h-8 flex items-center justify-center rounded-full bg-white/80 backdrop-blur
-                                   hover:bg-white text-[#8f6a10] shadow-sm transition">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="#D4AF37"
-                                                        viewBox="0 0 24 24" class="h-5 w-5">
+                                       border border-slate-100 text-[#15A5ED]
+                                       hover:bg-[#15A5ED] hover:text-white transition-all">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor"
+                                                        viewBox="0 0 24 24" class="h-4 w-4">
                                                         <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5
-                                2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81
-                                14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0
-                                3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                                        2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09
+                                        C13.09 3.81 14.76 3 16.5 3
+                                        19.58 3 22 5.42 22 8.5
+                                        c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
                                                     </svg>
                                                 </button>
                                             </form>
-
-                                            <div
-                                                class="absolute inset-0 bg-gradient-to-t from-black/30 via-black/0 to-transparent opacity-0 group-hover:opacity-100 transition">
-                                            </div>
                                         </div>
 
                                         {{-- Content --}}
-                                        <div class="flex-1 flex flex-col px-3.5 py-3">
-                                            <p class="text-xs uppercase tracking-[0.18em] text-gray-400 mb-1">
-                                                {{ $product->category->name ?? 'Product' }}
-                                            </p>
+                                        <div class="p-4 pt-2 flex-1 flex flex-col">
+                                            {{-- Status --}}
+                                            <div class="flex items-center gap-2 mb-3">
+                                                <span
+                                                    class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                                                <span
+                                                    class="text-[10px] font-mono text-slate-400 uppercase tracking-tighter">
+                                                    Saved_Item
+                                                </span>
+                                            </div>
 
-                                            <h3 class="text-sm font-semibold text-gray-900 line-clamp-2">
+                                            {{-- Category --}}
+                                            <div class="text-xs font-mono text-slate-400 uppercase tracking-widest">
+                                                {{ $product->category->name ?? 'UNCATEGORIZED' }}
+                                            </div>
+
+                                            {{-- Name --}}
+                                            <h3
+                                                class="mt-1 text-base font-bold text-slate-800 line-clamp-2
+                                   group-hover:text-[#15A5ED] transition-colors">
                                                 {{ $product->name }}
                                             </h3>
 
-                                            <div
-                                                class="mt-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                                                <p class="text-sm font-semibold text-[#8f6a10]">
-                                                    @if ($product->has_variants && $product->variants->count())
-                                                        @php
-                                                            $variantPrices = $product->variants->whereNotNull('price');
-                                                            $min = $variantPrices->min('price');
-                                                            $max = $variantPrices->max('price');
-                                                        @endphp
-
-                                                        @if ($min == $max)
-                                                            RM {{ number_format($min, 2) }}
-                                                        @else
-                                                            <span
-                                                                class="text-xs font-normal text-gray-400 mr-1">From</span>
-                                                            RM {{ number_format($min, 2) }}
-                                                        @endif
+                                            {{-- Price --}}
+                                            <div class="mt-4 text-base font-mono font-bold text-slate-900">
+                                                @if ($product->has_variants && $product->variants->count())
+                                                    @php
+                                                        $prices = $product->variants->pluck('price')->filter();
+                                                        $min = $prices->min();
+                                                        $max = $prices->max();
+                                                    @endphp
+                                                    @if ($min == $max)
+                                                        RM {{ number_format($min, 2) }}
                                                     @else
-                                                        RM {{ number_format($product->price ?? 0, 2) }}
+                                                        <span
+                                                            class="text-[10px] text-slate-400 uppercase mr-1">From</span>
+                                                        RM {{ number_format($min, 2) }}
                                                     @endif
-                                                </p>
-
-                                                <span
-                                                    class="inline-flex items-center justify-center rounded-full border border-gray-200 px-3 py-1.5 text-[11px] font-medium text-gray-700
-                                                w-full sm:w-auto
-                                                group-hover:border-[#D4AF37]/70 group-hover:text-[#8f6a10] transition">
-                                                    View details
-                                                </span>
+                                                @else
+                                                    RM {{ number_format($product->price ?? 0, 2) }}
+                                                @endif
                                             </div>
+                                        </div>
+
+                                        {{-- Hover bottom bar --}}
+                                        <div
+                                            class="h-1 w-0 bg-[#15A5ED] group-hover:w-full transition-all duration-500">
                                         </div>
                                     </a>
                                 @endif
                             @endforeach
                         </div>
 
-
-                        {{-- Pagination --}}
                         <div class="mt-12">
                             {{ $favorites->links() }}
                         </div>
                     @endif
+
 
                 </main>
             </div>

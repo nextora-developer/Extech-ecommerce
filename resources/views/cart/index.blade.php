@@ -4,7 +4,7 @@
 
             {{-- Breadcrumb --}}
             <nav class="flex items-center uppercase space-x-2 text-sm text-gray-500 mb-6">
-                <a href="{{ route('home') }}" class="hover:text-[#8f6a10] transition-colors">Home</a>
+                <a href="{{ route('home') }}" class="hover:text-[#15a5ed] transition-colors">Home</a>
                 <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                 </svg>
@@ -13,11 +13,10 @@
 
             @if ($items->isEmpty())
                 {{-- Empty State --}}
-                <section
-                    class="bg-white rounded-3xl border border-gray-100 shadow-sm p-12 text-center w-full ">
+                <section class="bg-white rounded-3xl border border-gray-100 shadow-sm p-12 text-center w-full ">
                     <div class="flex flex-col items-center">
-                        <div class="w-20 h-20 rounded-full bg-[#D4AF37]/10 flex items-center justify-center mb-6">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-[#8f6a10]" fill="none"
+                        <div class="w-20 h-20 rounded-full bg-[#15a5ed]/10 flex items-center justify-center mb-6">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-[#15a5ed]" fill="none"
                                 viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                                 <path stroke-linecap="round" stroke-linejoin="round"
                                     d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
@@ -29,7 +28,7 @@
                             favorites!
                         </p>
                         <a href="{{ route('shop.index') }}"
-                            class="inline-flex items-center px-8 py-3 rounded-full bg-[#D4AF37] text-white font-bold shadow-lg shadow-[#D4AF37]/30 hover:bg-[#b8962d] transition-all transform hover:-translate-y-0.5">
+                            class="inline-flex items-center px-8 py-3 rounded-full bg-[#15a5ed] text-white font-bold shadow-lg shadow-[#15a5ed]/30 hover:bg-[#6dbae1] transition-all transform hover:-translate-y-0.5">
                             Start Shopping
                         </a>
                     </div>
@@ -39,11 +38,6 @@
 
                     {{-- Left: Item List --}}
                     <div class="lg:col-span-8">
-                        {{-- <div class="flex items-center justify-between mb-6">
-                            <h1 class="text-2xl font-bold text-gray-900">Shopping Cart <span
-                                    class="text-gray-400 font-normal">({{ $items->count() }})</span></h1>
-                        </div> --}}
-
                         <div class="space-y-4">
                             @foreach ($items as $item)
                                 @php $p = $item->product; @endphp
@@ -68,7 +62,7 @@
                                         <div class="flex justify-between items-start gap-2">
                                             <div>
                                                 <p
-                                                    class="text-[10px] uppercase tracking-widest text-[#8f6a10] font-bold mb-1">
+                                                    class="text-[10px] uppercase tracking-widest text-[#15a5ed] font-bold mb-1">
                                                     {{ $p->category->name ?? 'Collection' }}
                                                 </p>
                                                 <h2
@@ -96,14 +90,14 @@
                                                 class="flex items-center bg-gray-50 rounded-lg p-1 border border-gray-200">
                                                 @csrf @method('PATCH')
                                                 <button type="submit" name="action" value="decrease"
-                                                    class="w-8 h-8 flex items-center justify-center text-gray-500 hover:text-[#8f6a10] hover:bg-white rounded-md transition disabled:opacity-30"
+                                                    class="w-8 h-8 flex items-center justify-center text-gray-500 hover:text-[#15a5ed] hover:bg-white rounded-md transition disabled:opacity-30"
                                                     {{ $item->qty <= 1 ? 'disabled' : '' }}>
                                                     <span class="text-xl leading-none">−</span>
                                                 </button>
                                                 <span
                                                     class="w-10 text-center font-bold text-gray-900">{{ $item->qty }}</span>
                                                 <button type="submit" name="action" value="increase"
-                                                    class="w-8 h-8 flex items-center justify-center text-gray-500 hover:text-[#8f6a10] hover:bg-white rounded-md transition">
+                                                    class="w-8 h-8 flex items-center justify-center text-gray-500 hover:text-[#15a5ed] hover:bg-white rounded-md transition">
                                                     <span class="text-xl leading-none">+</span>
                                                 </button>
                                             </form>
@@ -130,7 +124,7 @@
                     {{-- Right: Summary --}}
                     <aside class="mt-10 lg:mt-0 lg:col-span-4 sticky top-28">
                         <div class="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
-                            <div class="p-6 bg-[#F9F4E5]/50 border-b border-[#E5D9B6]/30">
+                            <div class="p-6 bg-[#eaf6fd] border-b border-[#6dbae1]/25">
                                 <h2 class="text-xl font-bold text-gray-900">Order Summary</h2>
                             </div>
 
@@ -148,14 +142,14 @@
                                     <div class="flex justify-between items-end mb-6">
                                         <span class="text-base font-bold text-gray-900">Total</span>
                                         <div class="text-right">
-                                            <span class="text-2xl font-black text-[#8f6a10]">RM
+                                            <span class="text-2xl font-black text-[#15a5ed]">RM
                                                 {{ number_format($subtotal, 2) }}</span>
                                         </div>
                                     </div>
 
                                     <div class="space-y-3">
                                         <a href="{{ route('checkout.index') }}"
-                                            class="w-full flex items-center justify-center px-6 py-4 rounded-full bg-[#D4AF37] text-white text-lg font-bold shadow-lg shadow-[#D4AF37]/20 hover:bg-[#b8962d] transition-all">
+                                            class="w-full flex items-center justify-center px-6 py-4 rounded-full bg-[#15a5ed] text-white text-lg font-bold shadow-lg shadow-[#15a5ed]/20 hover:bg-[#6dbae1] transition-all">
                                             Checkout Now
                                         </a>
                                         <a href="{{ route('shop.index') }}"

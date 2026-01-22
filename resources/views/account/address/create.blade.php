@@ -4,11 +4,11 @@
 
             {{-- Breadcrumb --}}
             <nav class="flex items-center gap-2 text-xs font-medium uppercase tracking-widest text-gray-400 mb-8">
-                <a href="{{ route('home') }}" class="hover:text-[#8f6a10] transition-colors">Home</a>
+                <a href="{{ route('home') }}" class="hover:text-[#15A5ED] transition-colors">Home</a>
                 <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path d="M9 5l7 7-7 7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                 </svg>
-                <a href="{{ route('account.address.index') }}" class="hover:text-[#8f6a10] transition-colors">Shipping Addresses</a>
+                <a href="{{ route('account.address.index') }}" class="hover:text-[#15A5ED] transition-colors">Shipping Addresses</a>
                 <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path d="M9 5l7 7-7 7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                 </svg>
@@ -62,8 +62,8 @@
                                     </label>
                                     <input type="text" name="recipient_name"
                                         value="{{ old('recipient_name', $user->name) }}"
-                                        class="w-full rounded-xl border-gray-200 text-base px-3 py-3
-                                              focus:border-[#D4AF37] focus:ring-[#D4AF37]/30"
+                                        class="w-full text-black rounded-xl border-gray-200 text-base px-3 py-3
+                                              focus:border-[#15A5ED] focus:ring-[#15A5ED]/30"
                                         placeholder="e.g. {{ $user->name }}">
                                 </div>
 
@@ -72,8 +72,8 @@
                                         Phone Number
                                     </label>
                                     <input type="text" name="phone" value="{{ old('phone') }}"
-                                        class="w-full rounded-xl border-gray-200 text-base px-3 py-3
-                                              focus:border-[#D4AF37] focus:ring-[#D4AF37]/30"
+                                        class="w-full text-black rounded-xl border-gray-200 text-base px-3 py-3
+                                              focus:border-[#15A5ED] focus:ring-[#15A5ED]/30"
                                         placeholder="e.g. 012-3456789">
                                 </div>
 
@@ -82,11 +82,10 @@
                                         Email Address
                                     </label>
                                     <input type="email" name="email" value="{{ old('email') }}"
-                                        class="w-full rounded-xl border-gray-200 text-base px-3 py-3
-                                                focus:border-[#D4AF37] focus:ring-[#D4AF37]/30"
+                                        class="w-full text-black rounded-xl border-gray-200 text-base px-3 py-3
+                                                focus:border-[#15A5ED] focus:ring-[#15A5ED]/30"
                                         placeholder="e.g. name@example.com">
                                 </div>
-
                             </div>
 
                             {{-- Row 2: Address lines --}}
@@ -96,8 +95,8 @@
                                         Address Line 1
                                     </label>
                                     <input type="text" name="address_line1" value="{{ old('address_line1') }}"
-                                        class="w-full rounded-xl border-gray-200 text-base px-3 py-3
-                                              focus:border-[#D4AF37] focus:ring-[#D4AF37]/30"
+                                        class="w-full text-black rounded-xl border-gray-200 text-base px-3 py-3
+                                              focus:border-[#15A5ED] focus:ring-[#15A5ED]/30"
                                         placeholder="House / Building, Street">
                                 </div>
 
@@ -106,8 +105,8 @@
                                         Address Line 2 <span class="text-gray-400 text-sm">(optional)</span>
                                     </label>
                                     <input type="text" name="address_line2" value="{{ old('address_line2') }}"
-                                        class="w-full rounded-xl border-gray-200 text-base px-3 py-3
-                                              focus:border-[#D4AF37] focus:ring-[#D4AF37]/30"
+                                        class="w-full text-black rounded-xl border-gray-200 text-base px-3 py-3
+                                              focus:border-[#15A5ED] focus:ring-[#15A5ED]/30"
                                         placeholder="Apartment, unit, floor (if any)">
                                 </div>
                             </div>
@@ -120,8 +119,8 @@
                                         Postcode
                                     </label>
                                     <input type="text" name="postcode" value="{{ old('postcode') }}"
-                                        class="w-full rounded-xl border-gray-200 text-base px-3 py-3
-                                              focus:border-[#D4AF37] focus:ring-[#D4AF37]/30"
+                                        class="w-full text-black rounded-xl border-gray-200 text-base px-3 py-3
+                                              focus:border-[#15A5ED] focus:ring-[#15A5ED]/30"
                                         placeholder="e.g. 47400">
                                 </div>
 
@@ -130,8 +129,8 @@
                                         City
                                     </label>
                                     <input type="text" name="city" value="{{ old('city') }}"
-                                        class="w-full rounded-xl border-gray-200 text-base px-3 py-3
-                                              focus:border-[#D4AF37] focus:ring-[#D4AF37]/30"
+                                        class="w-full text-black rounded-xl border-gray-200 text-base px-3 py-3
+                                              focus:border-[#15A5ED] focus:ring-[#15A5ED]/30"
                                         placeholder="e.g. Petaling Jaya">
                                 </div>
 
@@ -141,11 +140,9 @@
                                     </label>
 
                                     <select name="state"
-                                        class="w-full rounded-xl border-gray-200 text-base px-3 py-3
-                                               focus:border-[#D4AF37] focus:ring-[#D4AF37]/30">
-
+                                        class="w-full text-black rounded-xl border-gray-200 text-base px-3 py-3
+                                               focus:border-[#15A5ED] focus:ring-[#15A5ED]/30">
                                         <option value="">Select State</option>
-
                                         @foreach ($states as $s)
                                             <option value="{{ $s['name'] }}" @selected(old('state', $address->state ?? '') === $s['name'])>
                                                 {{ $s['name'] }}
@@ -154,14 +151,13 @@
                                     </select>
                                 </div>
 
-
                                 <div>
                                     <label class="block text-sm text-gray-500 mb-1">
                                         Country
                                     </label>
                                     <input type="text" name="country" value="{{ old('country', 'Malaysia') }}"
-                                        class="w-full rounded-xl border-gray-200 text-base px-3 py-3
-                                              focus:border-[#D4AF37] focus:ring-[#D4AF37]/30">
+                                        class="w-full text-black rounded-xl border-gray-200 text-base px-3 py-3
+                                              focus:border-[#15A5ED] focus:ring-[#15A5ED]/30">
                                 </div>
                             </div>
 
@@ -169,7 +165,7 @@
                             <div class="flex items-center justify-between pt-4">
                                 <label class="inline-flex items-center gap-2 text-base text-gray-600">
                                     <input type="checkbox" name="is_default" value="1"
-                                        class="rounded border-gray-300 text-[#D4AF37] focus:ring-[#D4AF37]/40"
+                                        class="rounded border-gray-300 text-[#15A5ED] focus:ring-[#15A5ED]/40"
                                         {{ old('is_default', true) ? 'checked' : '' }}>
                                     <span>Set as my default address</span>
                                 </label>
@@ -177,7 +173,7 @@
 
                             <div class="pt-5 flex items-center gap-4">
                                 <button type="submit"
-                                    class="px-7 py-3 rounded-full bg-[#D4AF37] text-white text-base font-semibold shadow hover:brightness-110 transition">
+                                    class="px-7 py-3 rounded-full bg-[#15A5ED] text-white text-base font-semibold shadow hover:bg-[#0F8DD1] transition">
                                     Save Address
                                 </button>
 

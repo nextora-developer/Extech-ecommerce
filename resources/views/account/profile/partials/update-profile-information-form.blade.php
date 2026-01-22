@@ -17,84 +17,65 @@
     @csrf
     @method('patch')
 
-    {{-- Name + Email --}}
+    {{-- Name + IC --}}
     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-        {{-- Name --}}
         <div>
-            <label for="name" class="block text-sm text-gray-500 mb-1">
+            <label class="block text-sm text-gray-500 mb-1">
                 {{ __('Name') }}
             </label>
 
-            <input id="name" name="name" type="text" value="{{ old('name', $user->name) }}" required
-                autocomplete="name" placeholder="Enter your full name"
+            <input name="name" type="text" value="{{ old('name', $user->name) }}" required
                 class="w-full rounded-xl border-gray-200 text-base px-3 py-3
-                   focus:border-[#D4AF37] focus:ring-[#D4AF37]/30" />
-
-            @error('name')
-                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-            @enderror
+                       focus:border-[#15A5ED] focus:ring-[#15A5ED]/30"
+                placeholder="Enter your full name" />
         </div>
 
-        {{-- IC Number --}}
         <div>
-            <label for="ic_number" class="block text-sm text-gray-500 mb-1">
+            <label class="block text-sm text-gray-500 mb-1">
                 {{ __('IC Number') }}
             </label>
 
-            <input id="ic_number" name="ic_number" type="text" value="{{ old('ic_number', $user->ic_number) }}"
-                placeholder="e.g. 990101-01-1234"
+            <input name="ic_number" type="text" value="{{ old('ic_number', $user->ic_number) }}"
                 class="w-full rounded-xl border-gray-200 text-base px-3 py-3
-                   focus:border-[#D4AF37] focus:ring-[#D4AF37]/30" />
-
-            @error('ic_number')
-                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-            @enderror
+                       focus:border-[#15A5ED] focus:ring-[#15A5ED]/30"
+                placeholder="e.g. 990101-01-1234" />
         </div>
     </div>
 
-
     {{-- Phone + Email --}}
     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-        {{-- Phone --}}
         <div>
-            <label for="phone" class="block text-sm text-gray-500 mb-1">
+            <label class="block text-sm text-gray-500 mb-1">
                 {{ __('Phone Number') }}
             </label>
 
-            <input id="phone" name="phone" type="text" value="{{ old('phone', $user->phone) }}"
-                placeholder="e.g. 0182222507"
+            <input name="phone" type="text" value="{{ old('phone', $user->phone) }}"
                 class="w-full rounded-xl border-gray-200 text-base px-3 py-3
-                   focus:border-[#D4AF37] focus:ring-[#D4AF37]/30" />
-
-            @error('phone')
-                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-            @enderror
+                       focus:border-[#15A5ED] focus:ring-[#15A5ED]/30"
+                placeholder="e.g. 0182222507" />
         </div>
 
-        {{-- Email --}}
         <div>
-            <label for="email" class="block text-sm text-gray-500 mb-1">
+            <label class="block text-sm text-gray-500 mb-1">
                 {{ __('Email') }}
             </label>
 
-            <input id="email" name="email" type="email" value="{{ old('email', $user->email) }}" required
-                autocomplete="username" placeholder="Enter your email address"
+            <input name="email" type="email" value="{{ old('email', $user->email) }}" required
                 class="w-full rounded-xl border-gray-200 text-base px-3 py-3
-                   focus:border-[#D4AF37] focus:ring-[#D4AF37]/30" />
+                       focus:border-[#15A5ED] focus:ring-[#15A5ED]/30"
+                placeholder="Enter your email address" />
 
-            @error('email')
-                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-            @enderror
-
-
-            {{-- 邮箱未验证提示 --}}
+            {{-- 未验证邮箱 --}}
             @if ($user instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && !$user->hasVerifiedEmail())
                 <div class="mt-2 text-sm text-gray-700 space-y-1">
                     <p>
                         {{ __('Your email address is unverified.') }}
 
                         <button form="send-verification"
-                            class="underline font-medium text-[#8f6a10] hover:text-[#D4AF37] rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#D4AF37]/60 text-sm">
+                            class="underline font-medium text-[#15A5ED]
+                                   hover:text-[#0F8DD1]
+                                   focus:outline-none focus:ring-2 focus:ring-offset-2
+                                   focus:ring-[#15A5ED]/50 text-sm">
                             {{ __('Click here to re-send the verification email.') }}
                         </button>
                     </p>
@@ -109,16 +90,17 @@
         </div>
     </div>
 
-    {{-- 底部按钮 --}}
+    {{-- Buttons --}}
     <div class="flex items-center gap-4 pt-3">
         <button type="submit"
-            class="px-7 py-3 rounded-full bg-[#D4AF37] text-white text-base font-semibold shadow hover:brightness-110 transition">
+            class="px-7 py-3 rounded-full bg-[#15A5ED] text-white
+                   text-base font-semibold shadow
+                   hover:bg-[#0F8DD1] transition">
             {{ __('Save') }}
         </button>
 
         @if (session('status') === 'profile-updated')
-            <p x-data="{ show: true }" x-show="show" x-transition x-init="setTimeout(() => show = false, 2000)"
-                class="text-sm text-[#8f6a10]">
+            <p class="text-sm text-[#15A5ED]">
                 {{ __('Saved.') }}
             </p>
         @endif

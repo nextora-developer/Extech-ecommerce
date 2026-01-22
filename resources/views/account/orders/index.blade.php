@@ -4,7 +4,7 @@
 
             {{-- Breadcrumb --}}
             <nav class="flex items-center gap-2 text-xs font-medium uppercase tracking-widest text-gray-400 mb-8">
-                <a href="{{ route('home') }}" class="hover:text-[#8f6a10] transition-colors">Home</a>
+                <a href="{{ route('home') }}" class="hover:text-[#15A5ED] transition-colors">Home</a>
                 <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path d="M9 5l7 7-7 7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                 </svg>
@@ -50,7 +50,7 @@
                                 <a href="{{ route('account.orders.index', ['status' => $key]) }}"
                                     class="whitespace-nowrap px-4 py-2 text-xs font-bold uppercase tracking-wider rounded-full transition-all duration-300
                                     {{ $isActive
-                                        ? 'bg-[#D4AF37] text-white shadow-md shadow-orange-900/20'
+                                        ? 'bg-[#15A5ED] text-white shadow-md shadow-[#15A5ED]/25'
                                         : 'text-gray-400 hover:text-gray-900 hover:bg-gray-100' }}">
                                     {{ $label }}
                                     <span
@@ -72,7 +72,7 @@
                                 </div>
                                 <input type="text" name="order_no" value="{{ request('order_no') }}"
                                     placeholder="Search by order ID..."
-                                    class="block w-full pl-11 pr-24 py-3 bg-gray-50 border-none rounded-2xl text-sm text-gray-900 focus:ring-2 focus:ring-[#D4AF37]/20 transition-all">
+                                    class="block w-full pl-11 pr-24 py-3 bg-gray-50 border-none rounded-2xl text-sm text-gray-900 focus:ring-2 focus:ring-[#15A5ED]/25 transition-all">
 
                                 <div class="absolute inset-y-1.5 right-1.5 flex gap-1">
                                     @if (request('order_no'))
@@ -80,7 +80,7 @@
                                             class="px-3 flex items-center text-xs font-bold text-gray-400 hover:text-gray-600">Reset</a>
                                     @endif
                                     <button type="submit"
-                                        class="px-4 bg-[#D4AF37] text-white rounded-xl text-xs font-bold hover:bg-[#EBCB5A] transition-colors">
+                                        class="px-4 bg-[#15A5ED] text-white rounded-xl text-xs font-bold hover:bg-[#0E8FD2] transition-colors">
                                         Find
                                     </button>
                                 </div>
@@ -92,7 +92,9 @@
                     <div class="space-y-4">
                         @forelse ($orders as $order)
                             <a href="{{ route('account.orders.show', $order) }}"
-                                class="group block bg-white rounded-3xl border border-gray-100 p-5 hover:border-[#D4AF37]/40 hover:shadow-xl hover:shadow-orange-100/30 transition-all duration-500">
+                                class="group block bg-white rounded-3xl border border-gray-100 p-5
+                                       hover:border-[#15A5ED]/40 hover:shadow-xl hover:shadow-[#15A5ED]/10
+                                       transition-all duration-500">
 
                                 <div class="flex flex-col md:flex-row md:items-center gap-6">
                                     {{-- Thumbnail Stack --}}
@@ -134,7 +136,7 @@
                                     <div class="flex-1 min-w-0">
                                         <div class="flex items-center gap-3 mb-1">
                                             <span
-                                                class="text-sm font-black text-gray-900 group-hover:text-[#8f6a10] transition-colors">#{{ $order->order_no }}</span>
+                                                class="text-sm font-black text-gray-900 group-hover:text-[#15A5ED] transition-colors">#{{ $order->order_no }}</span>
                                             <span class="w-1 h-1 rounded-full bg-gray-300"></span>
                                             <span
                                                 class="text-xs font-medium text-gray-400 uppercase tracking-tighter">{{ $order->created_at->format('d M Y') }}</span>
@@ -172,7 +174,7 @@
                                                 class="text-xs font-normal text-gray-400 mr-1">RM</span>{{ number_format($order->total, 2) }}
                                         </div>
                                         <div
-                                            class="text-[10px] font-bold text-[#8f6a10] uppercase tracking-widest flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                            class="text-[10px] font-bold text-[#15A5ED] uppercase tracking-widest flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                                             View Details
                                             <svg class="w-3 h-3" fill="none" stroke="currentColor"
                                                 viewBox="0 0 24 24">
