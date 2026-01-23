@@ -218,16 +218,6 @@
                                         </svg>
                                     </div>
                                 </div>
-
-                                {{-- Optional: secondary CTA like your "View Details" --}}
-                                <div class="mt-4">
-                                    <div
-                                        class="w-full inline-flex items-center justify-center rounded-xl bg-white/60 border border-slate-200 py-2.5
-                                           text-xs font-bold uppercase tracking-widest text-slate-600
-                                           hover:bg-[#15A5ED] hover:text-white hover:border-[#15A5ED] transition-all duration-300">
-                                        View Details
-                                    </div>
-                                </div>
                             </div>
 
                             {{-- Hover Bottom Bar --}}

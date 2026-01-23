@@ -244,8 +244,25 @@
 
                                     <div class="mt-4 flex items-center justify-between">
                                         <div class="text-base font-mono font-bold text-slate-900">
-                                            RM
-                                            {{ number_format($product->price ?? $product->variants->min('price'), 2) }}
+                                            @if ($product->has_variants && $product->variants->count())
+                                                @php
+                                                    $prices = $product->variants->pluck('price')->filter();
+                                                    $min = $prices->min();
+                                                    $max = $prices->max();
+                                                @endphp
+
+                                                @if ($min == $max)
+                                                    RM {{ number_format($min, 2) }}
+                                                @else
+                                                    <span
+                                                        class="text-[10px] font-medium text-slate-400 uppercase align-middle mr-1">
+                                                        From
+                                                    </span>
+                                                    RM {{ number_format($min, 2) }}
+                                                @endif
+                                            @else
+                                                RM {{ number_format($product->price ?? 0, 2) }}
+                                            @endif
                                         </div>
                                         <div
                                             class="h-8 w-8 rounded-lg bg-slate-50 border border-slate-100 flex items-center justify-center group-hover:bg-[#15A5ED] group-hover:text-white transition-all">

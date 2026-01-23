@@ -64,11 +64,11 @@
                                                 stroke="{{ $isFavorited ? '#15A5ED' : '#15A5ED' }}" stroke-width="1.5"
                                                 viewBox="0 0 24 24" class="h-6 w-6">
                                                 <path d="M12 21.35l-1.45-1.32C5.4 15.36
-                                                            2 12.28 2 8.5 2 5.42 4.42
-                                                            3 7.5 3c1.74 0 3.41.81 4.5
-                                                            2.09C13.09 3.81 14.76 3 16.5
-                                                            3 19.58 3 22 5.42 22 8.5c0
-                                                            3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                                                                2 12.28 2 8.5 2 5.42 4.42
+                                                                3 7.5 3c1.74 0 3.41.81 4.5
+                                                                2.09C13.09 3.81 14.76 3 16.5
+                                                                3 19.58 3 22 5.42 22 8.5c0
+                                                                3.78-3.4 6.86-8.55 11.54L12 21.35z" />
                                             </svg>
                                         </button>
                                     </form>
@@ -592,7 +592,25 @@
                                     {{-- Price + icon --}}
                                     <div class="mt-4 flex items-center justify-between gap-3">
                                         <div class="text-base font-mono font-bold text-slate-900">
-                                            RM {{ number_format($item->price ?? 0, 2) }}
+                                            @if ($product->has_variants && $product->variants->count())
+                                                @php
+                                                    $prices = $product->variants->pluck('price')->filter();
+                                                    $min = $prices->min();
+                                                    $max = $prices->max();
+                                                @endphp
+
+                                                @if ($min == $max)
+                                                    RM {{ number_format($min, 2) }}
+                                                @else
+                                                    <span
+                                                        class="text-[10px] font-medium text-slate-400 uppercase align-middle mr-1">
+                                                        From
+                                                    </span>
+                                                    RM {{ number_format($min, 2) }}
+                                                @endif
+                                            @else
+                                                RM {{ number_format($product->price ?? 0, 2) }}
+                                            @endif
                                         </div>
 
                                         <div
