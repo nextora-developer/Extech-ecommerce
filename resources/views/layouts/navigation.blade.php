@@ -58,11 +58,6 @@
                                     class="block px-4 py-2.5 text-sm text-gray-300 hover:bg-white/10 hover:text-[#15A5ED] rounded-xl transition">
                                     FAQ
                                 </a>
-                                {{-- ✅ Chat route: change if needed --}}
-                                <a href=""
-                                    class="block px-4 py-2.5 text-sm text-gray-300 hover:bg-white/10 hover:text-[#15A5ED] rounded-xl transition">
-                                    Chat
-                                </a>
                             </div>
                         </div>
                     </div>
@@ -155,7 +150,7 @@
 
                                     <a href="{{ route('account.favorites.index') }}" @click="openUser = false"
                                         class="block px-4 py-2.5 text-sm text-gray-300 hover:bg-white/10 hover:text-[#15A5ED] rounded-xl transition">
-                                        Wishlist
+                                        My Wishlist
                                     </a>
 
                                     <a href="{{ route('account.address.index') }}" @click="openUser = false"

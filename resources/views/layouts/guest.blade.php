@@ -21,18 +21,32 @@
 
 <body class="font-sans text-gray-900 antialiased">
     <div
-        class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gradient-to-br from-[#d4af37] via-[#f6e8b1] to-[#ffffff]">
+        class="relative min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0
+        bg-gradient-to-br from-[#000000] via-[#15a5ed] to-[#ffffff] overflow-hidden">
 
-        {{-- <div>
-                <a href="/">
-                    <x-application-logo class="w-20 h-20 fill-current text-gray-500" />
-                </a>
-            </div> --}}
+        <!-- 左右背景大字 -->
+        <div class="pointer-events-none absolute inset-0 flex items-center justify-between px-24">
+            <!-- 左：EXTECH -->
+            <div
+                class="text-[14rem] sm:text-[8rem] font-extrabold tracking-[0.18em]
+                       text-white/5 select-none whitespace-nowrap">
+                EXTECH
+            </div>
 
-        <div class="w-full sm:max-w-md mt-6 px-6 py-4  sm:rounded-lg">
+            <!-- 右：STUDIO -->
+            <div
+                class="text-[14rem] sm:text-[8rem] font-extrabold tracking-[0.18em]
+                       text-white/5 select-none whitespace-nowrap">
+                STUDIO
+            </div>
+        </div>
+
+        <!-- 内容（登录卡片） -->
+        <div class="relative w-full sm:max-w-md mt-6 px-6 py-4 sm:rounded-lg">
             {{ $slot }}
         </div>
     </div>
 </body>
+
 
 </html>
