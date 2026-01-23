@@ -7,7 +7,7 @@
             <p class="text-sm text-gray-500 mt-1">Manage bank transfer accounts & payment gateways</p>
         </div>
 
-        <a href="{{ route('admin.payment-methods.create') }}"
+        {{-- <a href="{{ route('admin.payment-methods.create') }}"
             class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gray-900 text-white text-sm font-semibold
                   hover:bg-gray-800 transition-all shadow-md hover:shadow-lg active:scale-95">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
@@ -15,7 +15,7 @@
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
             </svg>
             <span>New Payment Method</span>
-        </a>
+        </a> --}}
     </div>
 
     {{-- Filter --}}
@@ -163,7 +163,7 @@
                                     </a>
 
                                     {{-- Delete --}}
-                                    <form action="{{ route('admin.payment-methods.destroy', $m) }}" method="POST"
+                                    {{-- <form action="{{ route('admin.payment-methods.destroy', $m) }}" method="POST"
                                         class="inline" onsubmit="return confirm('Delete this payment method?')">
                                         @csrf @method('DELETE')
                                         <button class="p-2 rounded-lg text-red-500 hover:bg-red-50 transition-all"
@@ -174,7 +174,7 @@
                                  m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                             </svg>
                                         </button>
-                                    </form>
+                                    </form> --}}
 
                                 </div>
                             </td>
