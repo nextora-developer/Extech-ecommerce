@@ -50,23 +50,35 @@
                 <span>Back to List</span>
             </a>
 
+            <a href="{{ route('admin.orders.invoice.preview', $order) }}" target="_blank"
+                class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#0F172A] text-white text-sm font-bold hover:bg-black transition-all shadow-sm">
+             
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                    stroke="currentColor" class="w-4 h-4">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                </svg>
+
+                Invoice
+            </a>
+
             {{-- Show HitPay Dashboard Button only if payment is HitPay --}}
-            @if ($order->gateway === 'hitpay' || str_contains(strtolower($order->payment_method_name ?? ''), 'hitpay'))
+            {{-- @if ($order->gateway === 'hitpay' || str_contains(strtolower($order->payment_method_name ?? ''), 'hitpay'))
                 <a href="https://dashboard.hit-pay.com/payments/{{ $order->payment_reference }}" target="_blank"
                     class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#0F172A] text-white
                    text-sm font-bold hover:bg-black transition-all shadow-sm">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
                         stroke="currentColor" class="w-4 h-4">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5
-                                 c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639
-                                 C20.577 16.49 16.64 19.5 12 19.5
-                                 c-4.638 0-8.573-3.007-9.963-7.178z" />
+                                             c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639
+                                             C20.577 16.49 16.64 19.5 12 19.5
+                                             c-4.638 0-8.573-3.007-9.963-7.178z" />
                         <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                     </svg>
 
                     View in HitPay
                 </a>
-            @endif
+            @endif --}}
         </div>
 
 
@@ -210,7 +222,8 @@
                             <div
                                 class="min-h-[80px] w-full text-sm leading-relaxed px-5 py-4 rounded-2xl border border-gray-100 bg-gray-50/50 transition-colors group-hover:bg-gray-50">
                                 @if ($order->remark)
-                                    <p class="text-gray-700 whitespace-pre-line break-words">{{ trim($order->remark) }}</p>
+                                    <p class="text-gray-700 whitespace-pre-line break-words">{{ trim($order->remark) }}
+                                    </p>
                                 @else
                                     <p class="text-gray-400 italic font-light">No special instructions provided for this
                                         order.</p>
@@ -234,8 +247,8 @@
                                 <div class="flex justify-between items-center text-sm">
                                     <span class="text-gray-500 font-medium">Subtotal</span>
                                     <span class="text-gray-900 font-bold tracking-tight">
-                                        <span
-                                            class="text-sm text-gray-400 mr-0.5 font-normal">RM </span>{{ number_format($order->subtotal ?? 0, 2) }}
+                                        <span class="text-sm text-gray-400 mr-0.5 font-normal">RM
+                                        </span>{{ number_format($order->subtotal ?? 0, 2) }}
                                     </span>
                                 </div>
 
@@ -244,8 +257,8 @@
                                     <span
                                         class="font-bold tracking-tight {{ ($order->shipping_fee ?? 0) > 0 ? 'text-gray-900' : 'text-green-600' }}">
                                         @if (($order->shipping_fee ?? 0) > 0)
-                                            <span
-                                                class="text-sm text-gray-400 mr-0.5 font-normal">RM </span>{{ number_format($order->shipping_fee, 2) }}
+                                            <span class="text-sm text-gray-400 mr-0.5 font-normal">RM
+                                            </span>{{ number_format($order->shipping_fee, 2) }}
                                         @else
                                             FREE
                                         @endif
