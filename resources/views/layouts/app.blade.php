@@ -41,8 +41,8 @@
 
     {{-- Global Footer --}}
     {{-- <footer class="relative overflow-hidden bg-black border-t border-white/10"> --}}
-        <footer
-    class="relative overflow-hidden border-t border-white/10
+    <footer
+        class="relative overflow-hidden border-t border-white/10
            bg-gradient-to-br from-black via-[#0B1F2E] to-[#0E2A3F] pb-[92px] sm:pb-0">
 
         <div class="relative max-w-7xl5 mx-auto px-6 lg:px-12 py-16 lg:py-20">
@@ -238,17 +238,21 @@
 
             {{-- Bottom Bar --}}
             <div
-                class="mt-14 pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4">
-                <p class="text-sm text-gray-500 font-medium">
+                class="mt-14 pt-8 border-t border-white/10
+           flex flex-col md:flex-row
+           justify-between items-center gap-4">
+
+                <p class="text-sm text-gray-500 font-medium text-center md:text-left">
                     © {{ date('Y') }} Extech Studio. All rights reserved.
                 </p>
 
-                <div class="flex items-center gap-4">
+                <div class="flex flex-col items-center md:flex-row md:items-center gap-3 md:gap-4">
                     <span class="text-[10px] font-bold text-gray-500 uppercase tracking-widest">
                         Secure Payments
                     </span>
 
-                    <div class="flex items-center gap-4">
+                    <div
+                        class="flex flex-wrap justify-center md:justify-start items-center gap-4 max-w-xs md:max-w-none">
                         <img src="/images/payments/fpx.png" alt="FPX"
                             class="h-6 opacity-70 grayscale hover:opacity-100 hover:grayscale-0 transition" />
                         <img src="/images/payments/visa.png" alt="Visa"
@@ -271,6 +275,7 @@
                 </div>
             </div>
 
+
         </div>
     </footer>
 
@@ -289,7 +294,7 @@
     </button>
 
     <a href="https://wa.me/601156898898" target="_blank"
-   class="hidden sm:flex fixed right-4 bottom-4 z-50
+        class="hidden sm:flex fixed right-4 bottom-4 z-50
           w-12 h-12 rounded-full
           bg-[#25D366] text-white
           items-center justify-center
