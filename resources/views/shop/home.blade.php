@@ -171,7 +171,7 @@
 
                     <a href="{{ route('shop.index') }}"
                         class="group inline-flex items-center text-xs font-bold uppercase tracking-widest text-slate-500 hover:text-[#15A5ED] transition-all">
-                        Explore Catalog
+                        Explore more
                         <span
                             class="ml-2 w-8 h-[1px] bg-slate-300 group-hover:w-12 group-hover:bg-[#15A5ED] transition-all"></span>
                     </a>
