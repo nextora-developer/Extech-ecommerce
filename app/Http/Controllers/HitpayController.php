@@ -90,88 +90,39 @@ class HitpayController extends Controller
      */
     public function handleReturn(Request $request)
     {
+        // HitPay 可能会用 reference 或 reference_number
         $reference = $request->query('reference')
             ?? $request->query('reference_number');
 
-        if (! $reference) {
-            return redirect()->route('account.orders.index')
-                ->with('error', 'Invalid payment return.');
-        }
+        if ($reference) {
+            $order = Order::where('order_no', $reference)->first();
 
-        $order = Order::where('order_no', $reference)->first();
-        if (! $order) {
-            return redirect()->route('account.orders.index')
-                ->with('error', 'Order not found.');
-        }
+            if ($order) {
 
-        // ✅ 已经 paid → success
-        if ($order->status === 'paid') {
-            return redirect()->route('checkout.success', $order)
-                ->with('success', 'Payment completed successfully.');
-        }
-
-        /**
-         * ✅ 你要的规则：回跳时如果还没付 = 直接 failed
-         * 但不要用本地 status 猜，去 HitPay 查一次最准确
-         */
-        $hitpayStatusRaw = null;
-        $hitpayStatus    = null;
-
-        if ($order->payment_reference) {
-            try {
-                $baseUrl = rtrim(config('services.hitpay.url'), '/');
-
-                $resp = Http::withHeaders([
-                    'X-BUSINESS-API-KEY' => config('services.hitpay.api_key'),
-                    'Accept'             => 'application/json',
-                ])
-                    ->get($baseUrl . '/v1/payment-requests/' . $order->payment_reference);
-
-                if ($resp->successful()) {
-                    $data = $resp->json();
-                    $hitpayStatusRaw = $data['status'] ?? null;
-                    $hitpayStatus    = strtolower((string) $hitpayStatusRaw);
-                } else {
-                    Log::warning('HitPay return: status check failed', [
-                        'order_no' => $order->order_no,
-                        'http'     => $resp->status(),
-                        'body'     => $resp->body(),
-                    ]);
+                // ✅ 如果已经付款成功 → 直接去 checkout.success
+                if ($order->status === 'paid') {
+                    return redirect()
+                        ->route('checkout.success', $order)
                 }
-            } catch (\Throwable $e) {
-                Log::error('HitPay return: status check exception', [
-                    'order_no' => $order->order_no,
-                    'error'    => $e->getMessage(),
-                ]);
+
+                // ⏳ 其他情况（pending / processing / failed）
+                return redirect()
+                    ->route('account.orders.show', $order)
+                    ->with(
+                        'success',
+                        'We have received your payment result. If the order is still pending, it will be updated automatically once we confirm the payment.'
+                    );
             }
-        } else {
-            Log::warning('HitPay return: missing payment_reference on order', [
-                'order_no' => $order->order_no,
-            ]);
         }
 
-        // ✅ HitPay 确认成功 → paid
-        if (in_array($hitpayStatus, ['succeeded', 'completed', 'success', 'paid'], true)) {
-            $order->update([
-                'status'         => 'paid',
-                'payment_status' => $hitpayStatusRaw ?: 'completed',
-                'gateway'        => 'hitpay',
-            ]);
-
-            return redirect()->route('checkout.success', $order)
-                ->with('success', 'Payment completed successfully.');
-        }
-
-        // ❌ 你要的：只要回来了但不是成功 → failed
-        $order->update([
-            'status'         => 'failed',
-            'payment_status' => $hitpayStatusRaw ?: 'returned_not_paid',
-            'gateway'        => $order->gateway ?? 'hitpay',
-        ]);
-
-        return redirect()->route('account.orders.show', $order)
-            ->with('error', 'Payment was not completed.');
+        return redirect()
+            ->route('account.orders.index')
+            ->with(
+                'success',
+                'We have received your payment result. Please check your orders. If the status is still pending, it will update shortly after payment confirmation.'
+            );
     }
+
 
 
 
