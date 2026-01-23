@@ -102,7 +102,7 @@ class HitpayController extends Controller
                 // ✅ 如果已经付款成功 → 直接去 checkout.success
                 if ($order->status === 'paid') {
                     return redirect()
-                        ->route('checkout.success', $order)
+                        ->route('checkout.success', $order);
                 }
 
                 // ⏳ 其他情况（pending / processing / failed）
