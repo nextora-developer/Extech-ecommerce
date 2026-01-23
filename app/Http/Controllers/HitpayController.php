@@ -94,36 +94,83 @@ class HitpayController extends Controller
             ?? $request->query('reference_number');
 
         if (! $reference) {
-            return redirect()
-                ->route('account.orders.index')
+            return redirect()->route('account.orders.index')
                 ->with('error', 'Invalid payment return.');
         }
 
         $order = Order::where('order_no', $reference)->first();
-
         if (! $order) {
-            return redirect()
-                ->route('account.orders.index')
+            return redirect()->route('account.orders.index')
                 ->with('error', 'Order not found.');
         }
 
-        // ✅ 已经 paid → 去 checkout.success
+        // ✅ 已经 paid → success
         if ($order->status === 'paid') {
-            return redirect()
-                ->route('checkout.success', $order)
+            return redirect()->route('checkout.success', $order)
                 ->with('success', 'Payment completed successfully.');
         }
 
-        // ❌ 如果不是 paid → 直接 failed
+        /**
+         * ✅ 你要的规则：回跳时如果还没付 = 直接 failed
+         * 但不要用本地 status 猜，去 HitPay 查一次最准确
+         */
+        $hitpayStatusRaw = null;
+        $hitpayStatus    = null;
+
+        if ($order->payment_reference) {
+            try {
+                $baseUrl = rtrim(config('services.hitpay.url'), '/');
+
+                $resp = Http::withHeaders([
+                    'X-BUSINESS-API-KEY' => config('services.hitpay.api_key'),
+                    'Accept'             => 'application/json',
+                ])
+                    ->get($baseUrl . '/v1/payment-requests/' . $order->payment_reference);
+
+                if ($resp->successful()) {
+                    $data = $resp->json();
+                    $hitpayStatusRaw = $data['status'] ?? null;
+                    $hitpayStatus    = strtolower((string) $hitpayStatusRaw);
+                } else {
+                    Log::warning('HitPay return: status check failed', [
+                        'order_no' => $order->order_no,
+                        'http'     => $resp->status(),
+                        'body'     => $resp->body(),
+                    ]);
+                }
+            } catch (\Throwable $e) {
+                Log::error('HitPay return: status check exception', [
+                    'order_no' => $order->order_no,
+                    'error'    => $e->getMessage(),
+                ]);
+            }
+        } else {
+            Log::warning('HitPay return: missing payment_reference on order', [
+                'order_no' => $order->order_no,
+            ]);
+        }
+
+        // ✅ HitPay 确认成功 → paid
+        if (in_array($hitpayStatus, ['succeeded', 'completed', 'success', 'paid'], true)) {
+            $order->update([
+                'status'         => 'paid',
+                'payment_status' => $hitpayStatusRaw ?: 'completed',
+                'gateway'        => 'hitpay',
+            ]);
+
+            return redirect()->route('checkout.success', $order)
+                ->with('success', 'Payment completed successfully.');
+        }
+
+        // ❌ 你要的：只要回来了但不是成功 → failed
         $order->update([
             'status'         => 'failed',
-            'payment_status' => 'returned_not_paid',
+            'payment_status' => $hitpayStatusRaw ?: 'returned_not_paid',
             'gateway'        => $order->gateway ?? 'hitpay',
         ]);
 
-        return redirect()
-            ->route('account.orders.show', $order)
-            ->with('error', 'Payment was not completed. If you have been charged, please contact support.');
+        return redirect()->route('account.orders.show', $order)
+            ->with('error', 'Payment was not completed.');
     }
 
 
