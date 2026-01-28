@@ -105,7 +105,7 @@
                                         @if ($category->icon)
                                             <img src="{{ asset('storage/' . $category->icon) }}"
                                                 alt="{{ $category->name }}"
-                                                class="w-full h-full object-contain filter grayscale group-hover:grayscale-0 transition-all">
+                                                class="w-full h-full object-contain filter transition-all">
                                         @else
                                             <svg class="w-6 h-6 text-slate-300 group-hover:text-[#15A5ED]"
                                                 fill="none" stroke="currentColor" viewBox="0 0 24 24">
