@@ -78,9 +78,7 @@
                 style="background-image: linear-gradient(#15A5ED 1px, transparent 1px), linear-gradient(90deg, #15A5ED 1px, transparent 1px); background-size: 40px 40px;">
             </div>
 
-            <div class="relative z-10 max-w-7xl5 mx-auto px-4 sm:px-6 lg:px-8 py-10 lg:py-4">
-
-
+            <div class="relative z-10 max-w-7xl5 mx-auto px-4 sm:px-6 lg:px-8 lg:py-4">
 
                 @if (isset($categories) && $categories->count())
                     {{-- Horizontal Scroll Container --}}
@@ -143,7 +141,7 @@
 
 
         {{-- Featured products --}}
-        <section id="featured" class="relative bg-[#F8FAFC] overflow-hidden py-16 lg:py-18">
+        <section id="featured" class="relative bg-[#F8FAFC] overflow-hidden py-8 lg:py-18">
             {{-- High-tech Light Background --}}
             <div class="absolute inset-0 z-0 opacity-[0.4]"
                 style="background-image: radial-gradient(#cbd5e1 1px, transparent 1px); background-size: 32px 32px;">
