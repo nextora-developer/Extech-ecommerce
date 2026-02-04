@@ -14,9 +14,10 @@
             <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
 
                 {{-- Left sidebar --}}
-                <aside class="hidden lg:col-span-1">
+                <aside class="hidden md:block lg:col-span-1">
                     @include('account.partials.sidebar')
                 </aside>
+
 
                 {{-- Right Content --}}
                 <main class="lg:col-span-3 space-y-8">

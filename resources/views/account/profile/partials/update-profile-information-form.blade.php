@@ -25,7 +25,7 @@
             </label>
 
             <input name="name" type="text" value="{{ old('name', $user->name) }}" required
-                class="w-full rounded-xl border-gray-200 text-base px-3 py-3
+                class="w-full text-black rounded-xl border-gray-200 text-base px-3 py-3
                        focus:border-[#15A5ED] focus:ring-[#15A5ED]/30"
                 placeholder="Enter your full name" />
         </div>
@@ -36,7 +36,7 @@
             </label>
 
             <input name="ic_number" type="text" value="{{ old('ic_number', $user->ic_number) }}"
-                class="w-full rounded-xl border-gray-200 text-base px-3 py-3
+                class="w-full text-black rounded-xl border-gray-200 text-base px-3 py-3
                        focus:border-[#15A5ED] focus:ring-[#15A5ED]/30"
                 placeholder="e.g. 990101-01-1234" />
         </div>
@@ -50,7 +50,7 @@
             </label>
 
             <input name="phone" type="text" value="{{ old('phone', $user->phone) }}"
-                class="w-full rounded-xl border-gray-200 text-base px-3 py-3
+                class="w-full text-black rounded-xl border-gray-200 text-base px-3 py-3
                        focus:border-[#15A5ED] focus:ring-[#15A5ED]/30"
                 placeholder="e.g. 0182222507" />
         </div>
@@ -61,7 +61,7 @@
             </label>
 
             <input name="email" type="email" value="{{ old('email', $user->email) }}" required
-                class="w-full rounded-xl border-gray-200 text-base px-3 py-3
+                class="w-full text-black rounded-xl border-gray-200 text-base px-3 py-3
                        focus:border-[#15A5ED] focus:ring-[#15A5ED]/30"
                 placeholder="Enter your email address" />
 

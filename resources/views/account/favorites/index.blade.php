@@ -1,5 +1,5 @@
 <x-app-layout>
-    <div class="bg-[#f7f7f9] min-h-screen py-10">
+    <div class="bg-[#F4F8FD] min-h-screen py-10">
         <div class="max-w-7xl5 mx-auto px-4 sm:px-6 lg:px-8">
 
             {{-- Breadcrumb --}}
@@ -14,7 +14,7 @@
             <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
 
                 {{-- Left Sidebar --}}
-                <aside class="hidden lg:col-span-1">
+                <aside class="hidden md:block lg:col-span-1">
                     @include('account.partials.sidebar')
                 </aside>
 

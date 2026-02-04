@@ -22,7 +22,7 @@
 
             <input id="update_password_current_password" name="current_password" type="password"
                 autocomplete="current-password"
-                class="w-full rounded-xl border-gray-200 text-base px-3 py-3
+                class="w-full text-black rounded-xl border-gray-200 text-base px-3 py-3
                        focus:border-[#15A5ED] focus:ring-[#15A5ED]/30" />
 
             @error('current_password', 'updatePassword')
@@ -37,7 +37,7 @@
             </label>
 
             <input id="update_password_password" name="password" type="password" autocomplete="new-password"
-                class="w-full rounded-xl border-gray-200 text-base px-3 py-3
+                class="w-full text-black rounded-xl border-gray-200 text-base px-3 py-3
                        focus:border-[#15A5ED] focus:ring-[#15A5ED]/30" />
 
             @error('password', 'updatePassword')
@@ -53,7 +53,7 @@
 
             <input id="update_password_password_confirmation" name="password_confirmation" type="password"
                 autocomplete="new-password"
-                class="w-full rounded-xl border-gray-200 text-base px-3 py-3
+                class="w-full text-black rounded-xl border-gray-200 text-base px-3 py-3
                        focus:border-[#15A5ED] focus:ring-[#15A5ED]/30" />
 
             @error('password_confirmation', 'updatePassword')
