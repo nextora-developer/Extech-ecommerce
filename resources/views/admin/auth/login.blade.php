@@ -8,118 +8,175 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
-<body
-    class="min-h-screen bg-gradient-to-br from-[#d4af37] via-[#f6e8b1] to-white
- text-gray-900 flex items-center justify-center relative overflow-hidden selection:bg-[#D4AF37]/30">
+<body class="min-h-screen flex items-center justify-center bg-[#faf9f6] text-gray-900">
+    <div class="w-full max-w-5xl px-4 py-10">
 
-    <div class="relative z-10 w-full max-w-md px-4">
-
-        <!-- White Theme Card -->
-        <div
-            class="group rounded-3xl 
-            border border-amber-300/30 
-            bg-white/80 backdrop-blur-xl
-            shadow-[0_20px_40px_rgba(212,175,55,0.18)]
-            p-8 transition-all duration-500
-            hover:border-amber-400 hover:shadow-amber-300/30">
-
-            <!-- Header -->
-            <div class="mb-10 text-center">
-                <div
-                    class="inline-flex items-center justify-center w-12 h-12 mb-4 rounded-xl
-                        bg-gradient-to-br from-[#D4AF37] to-[#B8962E]
-                        shadow-lg shadow-[#D4AF37]/30">
-                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                    </svg>
-                </div>
-
-                <h1 class="text-2xl font-bold tracking-tight text-gray-900">
-                    Admin <span class="text-[#D4AF37]">Portal</span>
-                </h1>
-
-                <p class="mt-2 text-sm text-gray-600">
-                    Secure authentication required
-                </p>
-            </div>
-
-            <!-- Error Box -->
-            @if ($errors->any())
-                <div
-                    class="mb-6 rounded-xl border border-red-300/40 bg-red-50 p-4
-                    text-sm text-red-700 flex items-center gap-3">
-                    <svg class="w-5 h-5 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+        {{-- Error Banner --}}
+        @if ($errors->any())
+            <div class="mb-6 px-4 py-3 rounded-xl bg-red-50 text-red-700 border border-red-200 text-sm">
+                <div class="flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd"
                             d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
                             clip-rule="evenodd"></path>
                     </svg>
                     {{ $errors->first() }}
                 </div>
-            @endif
+            </div>
+        @endif
 
-            <!-- Form -->
-            <form method="POST" action="{{ route('admin.login.submit') }}" class="space-y-6">
-                @csrf
+        <div
+            class="w-full overflow-hidden rounded-[2rem] bg-white border border-black/10 shadow-[0_30px_90px_-45px_rgba(0,0,0,0.35)]">
+            <div class="grid grid-cols-1 lg:grid-cols-2">
 
-                <div>
-                    <label class="block text-xs font-bold uppercase tracking-widest text-gray-600 mb-2 ml-1">
-                        Username
-                    </label>
-                    <input type="email" name="email" required
-                        class="w-full rounded-xl bg-white border border-amber-300/40 
-                        px-4 py-3 text-gray-900 placeholder-gray-400
-                        focus:border-[#D4AF37] focus:ring-4 focus:ring-[#D4AF37]/15
-                        transition-all outline-none"
-                        placeholder="admin@internal.com">
+                {{-- =======================
+                    LEFT: Visual / Welcome (BLUE like user login)
+                    ======================= --}}
+                <div class="relative hidden lg:block">
+                    {{-- Blue gradient background --}}
+                    <div class="absolute inset-0 bg-[linear-gradient(135deg,#0ea5e9_0%,#2563eb_45%,#0b3a7a_100%)]">
+                    </div>
+
+                    {{-- Grid overlay --}}
+                    <div class="absolute inset-0 opacity-30"
+                        style="background-image:
+                            linear-gradient(to right, rgba(255,255,255,0.15) 1px, transparent 1px),
+                            linear-gradient(to bottom, rgba(255,255,255,0.15) 1px, transparent 1px);
+                            background-size: 42px 42px;">
+                    </div>
+
+                    {{-- Glow --}}
+                    <div class="absolute -top-24 -left-24 w-72 h-72 rounded-full bg-white/15 blur-3xl"></div>
+                    <div class="absolute -bottom-24 -right-24 w-80 h-80 rounded-full bg-cyan-300/20 blur-3xl"></div>
+
+                    <div class="relative h-full p-10 flex flex-col justify-center text-white">
+                        {{-- Logo --}}
+                        <div class="mb-4">
+                            <img src="{{ asset('images/logo/extechstudio-white-logo.png') }}" alt="Extech Studio"
+                                class="h-14 w-auto opacity-90">
+                        </div>
+
+                        <div class="mt-3">
+                            <p class="text-sm font-semibold text-white/90">
+                                Restricted access area
+                            </p>
+
+                            <h1 class="mt-3 text-4xl font-extrabold tracking-tight leading-tight">
+                                ADMIN PORTAL
+                            </h1>
+
+                            <p class="mt-5 text-sm leading-relaxed text-white/80 max-w-md">
+                                Secure authentication for administrators to manage system operations and internal tools.
+                            </p>
+                        </div>
+
+                        <div class="mt-10 flex items-center gap-3 text-white/80 text-xs">
+                            <span class="inline-flex h-2 w-2 rounded-full bg-white/70"></span>
+                            <span>Secure access • Audit ready • Admin only</span>
+                        </div>
+                    </div>
                 </div>
 
-                <div>
-                    <label class="block text-xs font-bold uppercase tracking-widest text-gray-600 mb-2 ml-1">
-                        Password
-                    </label>
-                    <input type="password" name="password" required
-                        class="w-full rounded-xl bg-white border border-amber-300/40 
-                        px-4 py-3 text-gray-900 placeholder-gray-400
-                        focus:border-[#D4AF37] focus:ring-4 focus:ring-[#D4AF37]/15
-                        transition-all outline-none"
-                        placeholder="••••••••">
+                {{-- =======================
+                    RIGHT: Form (same style as user login)
+                    ======================= --}}
+                <div class="relative p-7 sm:p-10">
+                    {{-- Top line --}}
+                    <div
+                        class="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-[#15a5ed]/30 to-transparent">
+                    </div>
+
+                    <div class="max-w-sm mx-auto">
+                        <div class="text-center mb-8">
+                            <h2 class="text-2xl font-extrabold text-gray-900 tracking-tight">
+                                Sign in to admin
+                            </h2>
+                            <p class="mt-2 text-sm text-gray-500">
+                                Enter your admin credentials to continue.
+                            </p>
+                        </div>
+
+                        <form method="POST" action="{{ route('admin.login.submit') }}" class="space-y-5">
+                            @csrf
+
+                            {{-- Email --}}
+                            <div>
+                                <label for="email"
+                                    class="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-2">
+                                    Admin Email
+                                </label>
+
+                                <div class="relative">
+                                    <span
+                                        class="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-10 rounded-r bg-[#15a5ed]/70"></span>
+
+                                    <input id="email" type="email" name="email" value="{{ old('email') }}"
+                                        required autofocus placeholder="admin@internal.com"
+                                        class="w-full pl-5 pr-4 py-3 rounded-xl border border-gray-200 bg-gray-50/40
+                                            focus:bg-white focus:border-[#15a5ed] focus:ring-4 focus:ring-[#15a5ed]/20
+                                            transition-all duration-200 outline-none text-gray-900 placeholder:text-gray-400" />
+                                </div>
+                            </div>
+
+                            {{-- Password --}}
+                            <div>
+                                <label for="password"
+                                    class="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-2">
+                                    Password
+                                </label>
+
+                                <div class="relative">
+                                    <span
+                                        class="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-10 rounded-r bg-[#15a5ed]/70"></span>
+
+                                    <input id="password" type="password" name="password" required
+                                        autocomplete="current-password" placeholder="••••••••"
+                                        class="w-full pl-5 pr-4 py-3 rounded-xl border border-gray-200 bg-gray-50/40
+                                            focus:bg-white focus:border-[#15a5ed] focus:ring-4 focus:ring-[#15a5ed]/20
+                                            transition-all duration-200 outline-none text-gray-900 placeholder:text-gray-400" />
+                                </div>
+                            </div>
+
+                            {{-- Remember + Exit --}}
+                            <div class="flex items-center justify-between pt-1">
+                                <label class="inline-flex items-center gap-2 text-sm text-gray-600">
+                                    <input id="remember_me" type="checkbox" name="remember"
+                                        class="rounded border-gray-300 text-[#15a5ed] focus:ring-[#15a5ed]/30">
+                                    Keep me signed in
+                                </label>
+                            </div>
+
+                            {{-- Submit --}}
+                            <button type="submit"
+                                class="w-full inline-flex items-center justify-center px-6 py-3.5 rounded-xl
+                                    bg-gradient-to-r from-[#15a5ed] to-[#6dbae1]
+                                    text-white shadow-lg shadow-[#15a5ed]/25
+                                    hover:shadow-[#15a5ed]/40 hover:-translate-y-0.5 active:translate-y-0
+                                    transition-all duration-200 text-base font-extrabold tracking-wide">
+                                AUTHORIZE ACCESS
+                            </button>
+
+                            {{-- Back to Shop --}}
+                            <a href="{{ route('home') }}"
+                                class="w-full inline-flex items-center justify-center px-5 py-3 rounded-xl
+                                    border border-gray-200 text-gray-700 hover:bg-gray-50 hover:border-gray-300
+                                    transition-all duration-200 text-sm font-semibold">
+                                ← Back to Shop
+                            </a>
+                        </form>
+
+                        {{-- Footer --}}
+                        <div class="mt-6 pt-6 border-t border-gray-100 text-center">
+                            <p class="text-[10px] uppercase tracking-[0.2em] text-gray-400">
+                                Admin System • Secure Layer Active
+                            </p>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="flex items-center justify-between text-sm font-medium">
-                    <label
-                        class="inline-flex items-center gap-2 text-gray-600 cursor-pointer hover:text-gray-900 transition-colors">
-                        <input type="checkbox" name="remember"
-                            class="rounded border-amber-300/60 text-[#D4AF37] focus:ring-0">
-                        Remember
-                    </label>
-
-                    <a href="{{ route('home') }}" class="text-gray-600 hover:text-[#D4AF37] transition-colors">
-                        ← Exit to Shop
-                    </a>
-                </div>
-
-                <button
-                    class="w-full py-4 rounded-xl bg-gradient-to-r from-[#D4AF37] to-[#B8962E]
-                    text-white font-bold uppercase tracking-widest text-sm
-                    shadow-lg shadow-[#D4AF37]/20
-                    hover:shadow-[#D4AF37]/30 hover:-translate-y-0.5
-                    active:scale-[0.98] transition-all duration-200">
-                    Authorize Access
-                </button>
-            </form>
-
-            <!-- Footer -->
-            <div class="mt-5 pt-6 border-t border-amber-200/40 text-center">
-                <p class="text-[10px] uppercase tracking-[0.2em] text-gray-500">
-                    System Core v2.4.0 <span class="mx-2">•</span> Secure Layer Active
-                </p>
             </div>
         </div>
     </div>
-
 </body>
-
 
 </html>
