@@ -90,38 +90,37 @@ class HitpayController extends Controller
      */
     public function handleReturn(Request $request)
     {
-        // HitPay 可能会用 reference 或 reference_number
         $reference = $request->query('reference')
             ?? $request->query('reference_number');
 
-        if ($reference) {
-            $order = Order::where('order_no', $reference)->first();
-
-            if ($order) {
-
-                // ✅ 如果已经付款成功 → 直接去 checkout.success
-                if ($order->status === 'paid') {
-                    return redirect()
-                        ->route('checkout.success', $order);
-                }
-
-                // ⏳ 其他情况（pending / processing / failed）
-                return redirect()
-                    ->route('account.orders.show', $order)
-                    ->with(
-                        'success',
-                        'We have received your payment result. If the order is still pending, it will be updated automatically once we confirm the payment.'
-                    );
-            }
+        if (!$reference) {
+            return redirect()
+                ->route('account.orders.index')
+                ->with('error', 'Payment failed or was cancelled.');
         }
 
+        $order = Order::where('order_no', $reference)->first();
+        if (!$order) {
+            return redirect()
+                ->route('account.orders.index')
+                ->with('error', 'Payment failed or was cancelled.');
+        }
+
+        // ✅ 已成功 → success
+        if ($order->status === 'paid') {
+            return redirect()->route('checkout.success', $order);
+        }
+
+        // ❌ 只要不是 paid，一律标 failed（UX）
+        $order->update([
+            'status' => 'failed',
+        ]);
+
         return redirect()
-            ->route('account.orders.index')
-            ->with(
-                'success',
-                'We have received your payment result. Please check your orders. If the status is still pending, it will update shortly after payment confirmation.'
-            );
+            ->route('account.orders.show', $order)
+            ->with('error', 'Payment failed or was cancelled.');
     }
+
 
 
 
@@ -257,28 +256,97 @@ class HitpayController extends Controller
             'old_status'    => $oldStatus,
         ]);
 
+        // /**
+        //  * 4️⃣ 根据 HitPay status 更新订单
+        //  */
+
+        // // ✅ 付款成功
+        // if (in_array($status, ['succeeded', 'completed', 'success', 'paid'], true)) {
+
+        //     $alreadyPaid = $order->status === 'paid';
+
+        //     $order->update([
+        //         'status'         => 'paid',
+        //         'payment_status' => $statusRaw ?: 'completed',
+        //         'payment_reference' => $payload['payment_id'] ?? $order->payment_reference,
+        //         'gateway'           => 'hitpay',
+        //     ]);
+
+        //     Log::info('HitPay webhook set order to paid', [
+        //         'order_no'     => $order->order_no,
+        //         'already_paid' => $alreadyPaid,
+        //     ]);
+
+        //     // 只在第一次从非 paid 变成 paid 的时候发 email
+        //     if (! $alreadyPaid) {
+        //         try {
+        //             if ($order->customer_email) {
+        //                 Mail::to($order->customer_email)
+        //                     ->send(new OrderPlacedMail($order));
+        //             }
+
+        //             if (config('mail.admin_address')) {
+        //                 Mail::to(config('mail.admin_address'))
+        //                     ->send(new AdminOrderNotificationMail($order));
+        //             }
+
+        //             Log::info('HitPay webhook emails sent for order ' . $order->order_no);
+        //         } catch (\Throwable $e) {
+        //             Log::error('HitPay webhook email failed for ' . $order->order_no . ' : ' . $e->getMessage());
+        //         }
+        //     }
+        // }
+        // // ❌ 付款失败 / 被取消
+        // elseif (in_array($status, ['failed', 'cancelled', 'canceled', 'void'], true)) {
+        //     $order->update([
+        //         'status'         => 'failed',
+        //         'payment_status' => $statusRaw ?: 'failed',
+        //         'gateway'        => $order->gateway ?? 'hitpay',
+        //     ]);
+
+        //     Log::info('HitPay webhook marked payment as FAILED', [
+        //         'order_no'      => $order->order_no,
+        //         'hitpay_status' => $statusRaw,
+        //     ]);
+        // }
+        // // 其他状态先只记 log
+        // else {
+        //     Log::info('HitPay webhook unhandled status', [
+        //         'order_no' => $order->order_no,
+        //         'status'   => $statusRaw,
+        //     ]);
+        // }
+
+        // return response('OK', 200);
+
         /**
          * 4️⃣ 根据 HitPay status 更新订单
          */
 
-        // ✅ 付款成功
-        if (in_array($status, ['succeeded', 'completed', 'success', 'paid'], true)) {
+        $isSuccess = in_array($status, ['succeeded', 'completed', 'success', 'paid'], true);
+        $isFail    = in_array($status, ['failed', 'cancelled', 'canceled', 'void', 'expired'], true);
+
+        // ✅ A) 成功：永远允许覆盖（包括 failed → paid）
+        if ($isSuccess) {
 
             $alreadyPaid = $order->status === 'paid';
 
             $order->update([
-                'status'         => 'paid',
-                'payment_status' => $statusRaw ?: 'completed',
+                'status'            => 'paid',
+                'payment_status'    => $statusRaw ?: 'completed',
                 'payment_reference' => $payload['payment_id'] ?? $order->payment_reference,
                 'gateway'           => 'hitpay',
+                // 建议：加 paid_at（如果你有这个字段）
+                // 'paid_at'           => $order->paid_at ?? now(),
             ]);
 
-            Log::info('HitPay webhook set order to paid', [
+            Log::info('HitPay webhook set order to paid (override allowed)', [
                 'order_no'     => $order->order_no,
+                'old_status'   => $oldStatus,
                 'already_paid' => $alreadyPaid,
             ]);
 
-            // 只在第一次从非 paid 变成 paid 的时候发 email
+            // 只在第一次从非 paid → paid 发 email
             if (! $alreadyPaid) {
                 try {
                     if ($order->customer_email) {
@@ -296,27 +364,44 @@ class HitpayController extends Controller
                     Log::error('HitPay webhook email failed for ' . $order->order_no . ' : ' . $e->getMessage());
                 }
             }
+
+            return response('OK', 200);
         }
-        // ❌ 付款失败 / 被取消
-        elseif (in_array($status, ['failed', 'cancelled', 'canceled', 'void'], true)) {
+
+        // ❌ B) 失败/取消/过期：绝对不能把 paid 打回 failed
+        if ($isFail) {
+
+            if ($order->status === 'paid') {
+                Log::warning('HitPay webhook FAIL ignored because order already paid', [
+                    'order_no'      => $order->order_no,
+                    'hitpay_status' => $statusRaw,
+                    'old_status'    => $oldStatus,
+                ]);
+
+                return response('OK', 200);
+            }
+
             $order->update([
                 'status'         => 'failed',
                 'payment_status' => $statusRaw ?: 'failed',
-                'gateway'        => $order->gateway ?? 'hitpay',
+                'gateway'        => 'hitpay',
             ]);
 
             Log::info('HitPay webhook marked payment as FAILED', [
                 'order_no'      => $order->order_no,
                 'hitpay_status' => $statusRaw,
+                'old_status'    => $oldStatus,
             ]);
+
+            return response('OK', 200);
         }
-        // 其他状态先只记 log
-        else {
-            Log::info('HitPay webhook unhandled status', [
-                'order_no' => $order->order_no,
-                'status'   => $statusRaw,
-            ]);
-        }
+
+        // 其他状态先只记 log（pending / processing 之类）
+        Log::info('HitPay webhook unhandled status', [
+            'order_no' => $order->order_no,
+            'status'   => $statusRaw,
+            'old_status' => $oldStatus,
+        ]);
 
         return response('OK', 200);
     }
