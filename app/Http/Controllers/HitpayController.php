@@ -93,38 +93,54 @@ class HitpayController extends Controller
         $reference = $request->query('reference')
             ?? $request->query('reference_number');
 
-        // 1) 没 reference：无法定位订单，但 UX 一律失败
-        if (!$reference) {
-            return redirect()
-                ->route('account.orders.index')
-                ->with('error', 'Payment failed or was cancelled.');
+        // ✅ 优先：从 session 拿 order_id（不依赖 reference）
+        $orderId = session('checkout_order_id');
+
+        // 1️⃣ 有 order_id：只要不是 paid → failed
+        if ($orderId) {
+            $order = Order::find($orderId);
+
+            if ($order) {
+                // 已成功 → success
+                if ($order->status === 'paid') {
+                    return redirect()->route('checkout.success', $order);
+                }
+
+                // ❌ 有订单 + 非 paid → 直接 failed
+                if ($order->status !== 'failed') {
+                    $order->update(['status' => 'failed']);
+                }
+
+                return redirect()
+                    ->route('account.orders.show', $order)
+                    ->with('error', 'Payment failed or was cancelled.');
+            }
         }
 
-        $order = Order::where('order_no', $reference)->first();
+        // 2️⃣ 没 order_id，再 fallback 用 reference
+        if ($reference) {
+            $order = Order::where('order_no', $reference)->first();
 
-        // 2) 找不到订单：同样无法更新，但 UX 一律失败
-        if (!$order) {
-            return redirect()
-                ->route('account.orders.index')
-                ->with('error', 'Payment failed or was cancelled.');
+            if ($order) {
+                if ($order->status === 'paid') {
+                    return redirect()->route('checkout.success', $order);
+                }
+
+                if ($order->status !== 'failed') {
+                    $order->update(['status' => 'failed']);
+                }
+
+                return redirect()
+                    ->route('account.orders.show', $order)
+                    ->with('error', 'Payment failed or was cancelled.');
+            }
         }
 
-        // 3) 已 paid：成功页（唯一成功出口）
-        if ($order->status === 'paid') {
-            return redirect()->route('checkout.success', $order);
-        }
-
-        // 4) 其他：直接标 failed（不留 pending）
-        if ($order->status !== 'failed') {
-            $order->update(['status' => 'failed']);
-        }
-
+        // 3️⃣ 什么都没有：只能 UX failed（无法改 DB）
         return redirect()
-            ->route('account.orders.show', $order)
+            ->route('account.orders.index')
             ->with('error', 'Payment failed or was cancelled.');
     }
-
-
 
 
 
