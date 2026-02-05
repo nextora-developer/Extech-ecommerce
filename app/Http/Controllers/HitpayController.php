@@ -93,6 +93,7 @@ class HitpayController extends Controller
         $reference = $request->query('reference')
             ?? $request->query('reference_number');
 
+        // 1) 没 reference：无法定位订单，但 UX 一律失败
         if (!$reference) {
             return redirect()
                 ->route('account.orders.index')
@@ -100,26 +101,29 @@ class HitpayController extends Controller
         }
 
         $order = Order::where('order_no', $reference)->first();
+
+        // 2) 找不到订单：同样无法更新，但 UX 一律失败
         if (!$order) {
             return redirect()
                 ->route('account.orders.index')
                 ->with('error', 'Payment failed or was cancelled.');
         }
 
-        // ✅ 已成功 → success
+        // 3) 已 paid：成功页（唯一成功出口）
         if ($order->status === 'paid') {
             return redirect()->route('checkout.success', $order);
         }
 
-        // ❌ 只要不是 paid，一律标 failed（UX）
-        $order->update([
-            'status' => 'failed',
-        ]);
+        // 4) 其他：直接标 failed（不留 pending）
+        if ($order->status !== 'failed') {
+            $order->update(['status' => 'failed']);
+        }
 
         return redirect()
             ->route('account.orders.show', $order)
             ->with('error', 'Payment failed or was cancelled.');
     }
+
 
 
 
