@@ -101,12 +101,12 @@ class HitpayController extends Controller
             $order = Order::find($orderId);
 
             if ($order) {
-                // 已成功 → success
+                // ✅ 已成功 → success
                 if ($order->status === 'paid') {
                     return redirect()->route('checkout.success', $order);
                 }
 
-                // ❌ 有订单 + 非 paid → 直接 failed
+                // ❌ 非 paid 一律失败（不留 pending/processing）
                 if ($order->status !== 'failed') {
                     $order->update(['status' => 'failed']);
                 }
@@ -117,7 +117,7 @@ class HitpayController extends Controller
             }
         }
 
-        // 2️⃣ 没 order_id，再 fallback 用 reference
+        // 2️⃣ fallback：用 reference 找订单
         if ($reference) {
             $order = Order::where('order_no', $reference)->first();
 
@@ -136,11 +136,37 @@ class HitpayController extends Controller
             }
         }
 
-        // 3️⃣ 什么都没有：只能 UX failed（无法改 DB）
+        /**
+         * 3️⃣ 最后兜底：session/reference 都没有
+         *    👉 只要用户已登录，就把他「最近一单 pending/processing」也直接 failed，
+         *    然后跳去那单详情页，确保用户回来不会看到 pending。
+         */
+        if (auth()->check()) {
+            $latest = Order::where('user_id', auth()->id())
+                ->whereIn('status', ['pending', 'processing'])
+                ->latest()
+                ->first();
+
+            if ($latest) {
+                // 如果 webhook 已经把它变 paid，直接 success
+                if ($latest->status === 'paid') {
+                    return redirect()->route('checkout.success', $latest);
+                }
+
+                $latest->update(['status' => 'failed']);
+
+                return redirect()
+                    ->route('account.orders.show', $latest)
+                    ->with('error', 'Payment failed or was cancelled.');
+            }
+        }
+
+        // 4️⃣ 真的无法定位任何订单：只能 UX failed
         return redirect()
             ->route('account.orders.index')
             ->with('error', 'Payment failed or was cancelled.');
     }
+
 
 
 

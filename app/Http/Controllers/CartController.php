@@ -73,6 +73,25 @@ class CartController extends Controller
         // 统一入口：游客 / 会员都可以
         $cart = $this->getOrCreateCart();
 
+        // ✅ 购物车类型锁定：digital vs physical 不能混
+        $incomingIsDigital = (bool) $product->is_digital;
+
+        // 取购物车里任意一个 item 的 product.is_digital（有一个就代表 cart 已经“定型”）
+        $firstItem = $cart->items()
+            ->with('product:id,is_digital')
+            ->first();
+
+        if ($firstItem && $firstItem->product) {
+            $cartIsDigital = (bool) $firstItem->product->is_digital;
+
+            if ($cartIsDigital !== $incomingIsDigital) {
+                $msg = $cartIsDigital
+                    ? 'Your cart contains digital items. Please checkout or clear the cart before adding physical items.'
+                    : 'Your cart contains physical items. Please checkout or clear the cart before adding digital items.';
+
+                return back()->with('error', $msg);
+            }
+        }
         $qty = max(1, (int) $request->input('quantity', 1));
 
         $variantId    = null;

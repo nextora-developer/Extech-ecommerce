@@ -69,7 +69,7 @@ class ShopController extends Controller
                 $query->latest();
         }
 
-        $products = $query->paginate(15)->withQueryString();
+        $products = $query->paginate(16)->withQueryString();
         $categories = Category::where('is_active', true)->orderBy('sort_order')->get();
 
         return view('shop.index', compact('products', 'categories'));
