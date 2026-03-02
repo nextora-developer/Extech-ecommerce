@@ -63,6 +63,8 @@ class HitpayController extends Controller
                 ->with('error', 'HitPay response invalid. Please contact support.');
         }
 
+        session(['checkout_order_id' => $order->id]);
+
         $order->update([
             'payment_reference' => $data['id'] ?? null,
         ]);
@@ -72,89 +74,83 @@ class HitpayController extends Controller
 
 
 
-    /**
-     * 用户付款后浏览器跳回来的页面（redirect_url）
-     */
     public function handleReturn(Request $request)
     {
-        $reference = $request->query('reference')
-            ?? $request->query('reference_number');
+        Log::info('HITPAY RETURN HIT', [
+            'ip'    => $request->ip(),
+            'query' => $request->query(),
+        ]);
 
-        // ✅ 优先：从 session 拿 order_id（不依赖 reference）
-        $orderId = session('checkout_order_id');
+        $reference = $request->query('reference') ?? $request->query('reference_number');
 
-        // 1️⃣ 有 order_id：只要不是 paid → failed
-        if ($orderId) {
-            $order = Order::find($orderId);
+        $order = null;
 
-            if ($order) {
-                // ✅ 已成功 → success
-                if ($order->status === 'paid') {
-                    return redirect()->route('checkout.success', $order);
-                }
-
-                // ❌ 非 paid 一律失败（不留 pending/processing）
-                if ($order->status !== 'failed') {
-                    $order->update(['status' => 'failed']);
-                }
-
-                return redirect()
-                    ->route('account.orders.show', $order)
-                    ->with('error', 'Payment failed or was cancelled.');
-            }
+        // ✅ 先拿 session
+        $sessionOrderId = session('checkout_order_id');
+        if ($sessionOrderId) {
+            $order = Order::find($sessionOrderId);
         }
 
-        // 2️⃣ fallback：用 reference 找订单
+        // ✅ 有 reference 就做校验 / fallback（避免 session 拿错单）
         if ($reference) {
-            $order = Order::where('order_no', $reference)->first();
-
-            if ($order) {
-                if ($order->status === 'paid') {
-                    return redirect()->route('checkout.success', $order);
-                }
-
-                if ($order->status !== 'failed') {
-                    $order->update(['status' => 'failed']);
-                }
-
-                return redirect()
-                    ->route('account.orders.show', $order)
-                    ->with('error', 'Payment failed or was cancelled.');
+            if (! $order || $order->order_no !== $reference) {
+                $order = Order::where('order_no', $reference)->first();
             }
         }
 
-        /**
-         * 3️⃣ 最后兜底：session/reference 都没有
-         *    👉 只要用户已登录，就把他「最近一单 pending/processing」也直接 failed，
-         *    然后跳去那单详情页，确保用户回来不会看到 pending。
-         */
-        if (auth()->check()) {
-            $latest = Order::where('user_id', auth()->id())
-                ->whereIn('status', ['pending', 'processing'])
-                ->latest()
-                ->first();
-
-            if ($latest) {
-                // 如果 webhook 已经把它变 paid，直接 success
-                if ($latest->status === 'paid') {
-                    return redirect()->route('checkout.success', $latest);
-                }
-
-                $latest->update(['status' => 'failed']);
-
-                return redirect()
-                    ->route('account.orders.show', $latest)
-                    ->with('error', 'Payment failed or was cancelled.');
-            }
+        if (! $order) {
+            return redirect()->route('account.orders.index')
+                ->with('error', 'Order not found.');
         }
 
-        // 4️⃣ 真的无法定位任何订单：只能 UX failed
-        return redirect()
-            ->route('account.orders.index')
-            ->with('error', 'Payment failed or was cancelled.');
+        $localStatus = strtolower((string) $order->status);
+
+        $returnStatusRaw = $request->query('status')
+            ?? $request->query('payment_status')
+            ?? '';
+
+        $returnStatus = strtolower(trim((string) $returnStatusRaw));
+
+        Log::info('HITPAY RETURN status snapshot', [
+            'order_no' => $order->order_no,
+            'local'    => $localStatus,
+            'return'   => $returnStatusRaw,
+        ]);
+
+        // ✅ 已 paid -> success
+        if ($localStatus === 'paid') {
+            // ✅ 用完清掉，避免下次拿错单
+            session()->forget('checkout_order_id');
+
+            return redirect()->route('checkout.success', $order);
+        }
+
+        // ✅ 只有 pending/processing 才允许 return 判失败
+        $failSignals = ['failed', 'cancelled', 'canceled', 'expired', 'void'];
+
+        if (
+            in_array($localStatus, ['pending', 'processing'], true)
+            && $returnStatus !== ''
+            && in_array($returnStatus, $failSignals, true)
+        ) {
+            $order->update([
+                'status'         => 'failed',
+                'payment_status' => $returnStatusRaw ?: 'failed',
+                'gateway'        => $order->gateway ?? 'hitpay',
+            ]);
+
+            // ✅ 用完清掉
+            session()->forget('checkout_order_id');
+
+            return redirect()->route('account.orders.show', $order)
+                ->with('error', 'Payment not completed. Order marked as failed.');
+        }
+
+        // ✅ 其他情况：不要改状态，让 webhook 来更新
+        // 这里建议跳去 processing 页面（轮询），不然用户要手动 refresh
+        return redirect()->route('account.orders.show', $order)
+            ->with('info', 'Payment is processing. Please refresh in a moment.');
     }
-
-
 
 
 
