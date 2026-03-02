@@ -26,7 +26,9 @@ class HitpayController extends Controller
             'email'            => $order->customer_email ?? null,
             'phone'            => $order->customer_phone ?? null,
             'purpose'          => 'Order ' . $order->order_no,
-            'redirect_url'     => route('hitpay.return'),
+            'redirect_url'     => route('hitpay.return', [
+                'reference' => $order->order_no
+            ]),
             'webhook'          => route('hitpay.webhook'),
         ];
 
@@ -81,75 +83,52 @@ class HitpayController extends Controller
             'query' => $request->query(),
         ]);
 
-        $reference = $request->query('reference') ?? $request->query('reference_number');
+        // ✅ 1) 强制从 query 拿 order_no（你在 redirect_url 自己塞的）
+        $reference = $request->query('reference')
+            ?? $request->query('reference_number')
+            ?? null;
 
         $order = null;
 
-        // ✅ 先拿 session
-        $sessionOrderId = session('checkout_order_id');
-        if ($sessionOrderId) {
-            $order = Order::find($sessionOrderId);
+        // ✅ 2) 有 reference -> 直接找订单（最稳）
+        if ($reference) {
+            $order = Order::where('order_no', $reference)->first();
         }
 
-        // ✅ 有 reference 就做校验 / fallback（避免 session 拿错单）
-        if ($reference) {
-            if (! $order || $order->order_no !== $reference) {
-                $order = Order::where('order_no', $reference)->first();
+        // ✅ 3) 没 reference -> 才尝试 session
+        if (! $order) {
+            $sessionOrderId = session('checkout_order_id');
+            if ($sessionOrderId) {
+                $order = Order::find($sessionOrderId);
             }
         }
 
+        // ✅ 4) 兜底：如果 HitPay 有带 payment_request_id / id 之类（看你 log 的 query）
         if (! $order) {
-            return redirect()->route('account.orders.index')
-                ->with('error', 'Order not found.');
+            $maybePaymentReqId = $request->query('payment_request_id')
+                ?? $request->query('id')
+                ?? $request->query('payment_id');
+
+            if ($maybePaymentReqId) {
+                $order = Order::where('payment_reference', $maybePaymentReqId)->first();
+            }
         }
 
-        $localStatus = strtolower((string) $order->status);
-
-        $returnStatusRaw = $request->query('status')
-            ?? $request->query('payment_status')
-            ?? '';
-
-        $returnStatus = strtolower(trim((string) $returnStatusRaw));
-
-        Log::info('HITPAY RETURN status snapshot', [
-            'order_no' => $order->order_no,
-            'local'    => $localStatus,
-            'return'   => $returnStatusRaw,
-        ]);
+        // ✅ 5) 真的找不到：不要吓用户，直接回订单列表 + 提示
+        if (! $order) {
+            return redirect()->route('account.orders.index')
+                ->with('info', 'Payment received. We are verifying your order, please refresh in a moment.');
+        }
 
         // ✅ 已 paid -> success
-        if ($localStatus === 'paid') {
-            // ✅ 用完清掉，避免下次拿错单
+        if (strtolower((string)$order->status) === 'paid') {
             session()->forget('checkout_order_id');
-
             return redirect()->route('checkout.success', $order);
         }
 
-        // ✅ 只有 pending/processing 才允许 return 判失败
-        $failSignals = ['failed', 'cancelled', 'canceled', 'expired', 'void'];
-
-        if (
-            in_array($localStatus, ['pending', 'processing'], true)
-            && $returnStatus !== ''
-            && in_array($returnStatus, $failSignals, true)
-        ) {
-            $order->update([
-                'status'         => 'failed',
-                'payment_status' => $returnStatusRaw ?: 'failed',
-                'gateway'        => $order->gateway ?? 'hitpay',
-            ]);
-
-            // ✅ 用完清掉
-            session()->forget('checkout_order_id');
-
-            return redirect()->route('account.orders.show', $order)
-                ->with('error', 'Payment not completed. Order marked as failed.');
-        }
-
-        // ✅ 其他情况：不要改状态，让 webhook 来更新
-        // 这里建议跳去 processing 页面（轮询），不然用户要手动 refresh
+        // ✅ 未 paid：让它去一个 processing 页面（建议你做自动轮询）
         return redirect()->route('account.orders.show', $order)
-            ->with('info', 'Payment is processing. Please refresh in a moment.');
+            ->with('info', 'Payment is processing. Please wait a moment...');
     }
 
 
