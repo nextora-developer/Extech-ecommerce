@@ -117,7 +117,7 @@ class HitpayController extends Controller
         // ✅ 5) 真的找不到：不要吓用户
         if (! $order) {
             return redirect()->route('account.orders.index')
-                ->with('info', 'We are verifying your payment. Please check your order status in a moment.');
+                ->with('info', 'Your payment is currently being verified. Please try refreshing your order page in a moment.');
         }
 
         // ✅ 已 paid -> success
@@ -128,7 +128,7 @@ class HitpayController extends Controller
 
         // ✅ 未 paid：等待 webhook 更新
         return redirect()->route('account.orders.show', $order)
-            ->with('info', 'Your payment is being verified. Please wait a moment...');
+            ->with('info', 'We are verifying your payment. Please refresh this page shortly to see the updated status.');
     }
 
 
