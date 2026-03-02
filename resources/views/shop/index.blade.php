@@ -179,12 +179,39 @@
                             {{ $products->withQueryString()->links() }}
                         </div>
                     @else
-                        <div class="text-center py-20 border-2 border-dashed border-slate-200 rounded-3xl bg-white/50">
-                            <p class="font-mono text-sm text-slate-400">NO_RESULTS: Try adjusting your filters.</p>
-                            <a href="{{ route('shop.index') }}"
-                                class="mt-4 inline-flex text-xs font-bold uppercase tracking-widest text-slate-500 hover:text-[#15A5ED] transition">
-                                Back to shop
-                            </a>
+                        <div class="flex items-center justify-center min-h-[60vh] w-full text-center px-6">
+
+                            <div class="flex flex-col items-center">
+
+                                <!-- Icon -->
+                                <div class="h-16 w-16 rounded-2xl bg-slate-100 flex items-center justify-center mb-6">
+                                    <svg class="h-8 w-8 text-slate-400" xmlns="http://www.w3.org/2000/svg"
+                                        fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007ZM8.625 10.5a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm7.5 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
+                                    </svg>
+
+                                </div>
+
+                                <!-- Title -->
+                                <h3 class="text-lg sm:text-xl font-extrabold text-slate-900 tracking-tight">
+                                    No products found
+                                </h3>
+
+                                <!-- Description -->
+                                <p class="mt-3 text-sm text-slate-500 max-w-md">
+                                    We couldn't find any items matching your filters.
+                                    Try adjusting your search or explore all products.
+                                </p>
+
+                                <!-- CTA -->
+                                <a href="{{ route('shop.index') }}"
+                                    class="mt-8 inline-flex items-center justify-center px-8 h-11 rounded-2xl bg-[#15A5ED] text-white text-xs font-black uppercase tracking-widest shadow-md shadow-[#15A5ED]/25 hover:scale-105 active:scale-95 transition-all duration-300">
+                                    Back to Shop
+                                </a>
+
+                            </div>
+
                         </div>
                     @endif
                 </main>

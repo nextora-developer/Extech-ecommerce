@@ -387,7 +387,7 @@
             {{-- Payment Metadata --}}
             <div class="bg-gray-50 border border-gray-200 rounded-2xl p-6">
                 <h3 class="text-base font-bold tracking-widest text-black-400">Payment</h3>
-                <p class="text-sm text-gray-400 mb-6">No display transaction id mean failed.</p>
+                <p class="text-sm text-gray-400 mb-6">No display status(Gateway) mean failed.</p>
 
                 <div class="space-y-5">
                     {{-- Payment Method --}}

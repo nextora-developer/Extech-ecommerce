@@ -238,9 +238,7 @@
 
             {{-- Bottom Bar --}}
             <div
-                class="mt-14 pt-8 border-t border-white/10
-           flex flex-col md:flex-row
-           justify-between items-center gap-4">
+                class="mt-14 pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4">
 
                 <p class="text-sm text-gray-500 font-medium text-center md:text-left">
                     © {{ date('Y') }} Extech Studio. All rights reserved.
@@ -254,23 +252,23 @@
                     <div
                         class="flex flex-wrap justify-center md:justify-start items-center gap-4 max-w-xs md:max-w-none">
                         <img src="/images/payments/fpx.png" alt="FPX"
-                            class="h-6 opacity-70 grayscale hover:opacity-100 hover:grayscale-0 transition" />
+                            class="h-6 transition" />
                         <img src="/images/payments/visa.png" alt="Visa"
-                            class="h-6 opacity-70 grayscale hover:opacity-100 hover:grayscale-0 transition" />
+                            class="h-6 transition" />
                         <img src="/images/payments/mastercard.png" alt="Mastercard"
-                            class="h-6 opacity-70 grayscale hover:opacity-100 hover:grayscale-0 transition" />
+                            class="h-6 transition" />
                         <img src="/images/payments/shopeepay.png" alt="ShopeePay"
-                            class="h-6 opacity-70 grayscale hover:opacity-100 hover:grayscale-0 transition" />
+                            class="h-6 transition" />
                         <img src="/images/payments/spaylater.png" alt="SPayLater"
-                            class="h-6 opacity-70 grayscale hover:opacity-100 hover:grayscale-0 transition" />
+                            class="h-6 transition" />
                         <img src="/images/payments/grabpay.png" alt="GrabPay"
-                            class="h-6 opacity-70 grayscale hover:opacity-100 hover:grayscale-0 transition" />
+                            class="h-6 transition" />
                         <img src="/images/payments/grabpaylater.png" alt="GrabPayLater"
-                            class="h-6 opacity-70 grayscale hover:opacity-100 hover:grayscale-0 transition" />
+                            class="h-6 transition" />
                         <img src="/images/payments/tng.png" alt="TNG"
-                            class="h-6 opacity-70 grayscale hover:opacity-100 hover:grayscale-0 transition" />
+                            class="h-6 transition" />
                         <img src="/images/payments/alipay.png" alt="Alipay"
-                            class="h-6 opacity-70 grayscale hover:opacity-100 hover:grayscale-0 transition" />
+                            class="h-6 transition" />
                     </div>
                 </div>
             </div>
