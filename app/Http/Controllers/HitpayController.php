@@ -114,10 +114,10 @@ class HitpayController extends Controller
             }
         }
 
-        // ✅ 5) 真的找不到：不要吓用户，直接回订单列表 + 提示
+        // ✅ 5) 真的找不到：不要吓用户
         if (! $order) {
             return redirect()->route('account.orders.index')
-                ->with('info', 'Payment received. We are verifying your order, please refresh in a moment.');
+                ->with('info', 'We are verifying your payment. Please check your order status in a moment.');
         }
 
         // ✅ 已 paid -> success
@@ -126,9 +126,9 @@ class HitpayController extends Controller
             return redirect()->route('checkout.success', $order);
         }
 
-        // ✅ 未 paid：让它去一个 processing 页面（建议你做自动轮询）
+        // ✅ 未 paid：等待 webhook 更新
         return redirect()->route('account.orders.show', $order)
-            ->with('info', 'Payment is processing. Please wait a moment...');
+            ->with('info', 'Your payment is being verified. Please wait a moment...');
     }
 
 

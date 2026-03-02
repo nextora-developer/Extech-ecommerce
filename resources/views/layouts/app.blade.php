@@ -386,6 +386,17 @@
         </script>
     @endif
 
+    @if (session('info'))
+        <script>
+            Swal.fire({
+                icon: 'info',
+                title: 'Notice',
+                text: {!! json_encode(session('info')) !!},
+                confirmButtonColor: '#15A5ED'
+            });
+        </script>
+    @endif
+
     @stack('scripts')
 </body>
 
