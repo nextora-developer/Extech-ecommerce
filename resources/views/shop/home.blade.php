@@ -354,14 +354,6 @@
                                             No Image
                                         </div>
                                     @endif
-
-                                    <div
-                                        class="absolute inset-x-0 bottom-0 p-3 bg-gradient-to-t from-black/65 via-black/20 to-transparent">
-                                        <div
-                                            class="text-white text-sm md:text-base font-medium line-clamp-2 text-center">
-                                            {{ $product->name }}
-                                        </div>
-                                    </div>
                                 </a>
                             @endforeach
                         </div>
