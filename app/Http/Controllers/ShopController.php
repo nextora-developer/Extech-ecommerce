@@ -17,6 +17,7 @@ class ShopController extends Controller
             ->get();
 
         $featured = Product::where('is_active', true)
+            ->with(['category', 'variants'])
             ->latest()
             ->limit(10)
             ->get();
@@ -25,7 +26,31 @@ class ShopController extends Controller
             ->orderBy('sort_order')
             ->get();
 
-        return view('shop.home', compact('featured', 'categories', 'banners'));
+        $entertainmentProducts = Product::where('is_active', true)
+            ->with('category')
+            ->whereHas('category', function ($q) {
+                $q->where('slug', 'entertainment');
+            })
+            ->latest()
+            ->limit(4)
+            ->get();
+
+        $gameProducts = Product::where('is_active', true)
+            ->with('category')
+            ->whereHas('category', function ($q) {
+                $q->where('slug', 'gaming');
+            })
+            ->latest()
+            ->limit(4)
+            ->get();
+
+        return view('shop.home', compact(
+            'featured',
+            'categories',
+            'banners',
+            'entertainmentProducts',
+            'gameProducts'
+        ));
     }
 
     // Shop listing + Search

@@ -286,14 +286,94 @@
             </div>
         </section>
 
-        {{-- Trust & Value Section --}}
-        <section class="relative bg-white border-t border-slate-100 overflow-hidden">
-            {{-- Background Tech Detail --}}
-            <div
-                class="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-[#15A5ED]/20 to-transparent">
-            </div>
+        {{-- Category Showcase --}}
+        <section class="relative bg-[#F8FAFC] py-10 lg:py-20 overflow-hidden">
+            <div class="relative z-10 max-w-7xl5 mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="grid grid-cols-1 xl:grid-cols-2 gap-8">
 
-            <div class="max-w-7xl5 mx-auto px-4 sm:px-6 lg:px-8 py-14 lg:py-20 relative">
+                    {{-- Entertainment --}}
+                    <div class="bg-white rounded-[28px] bg-[#F3F3F3] p-6 md:p-8">
+                        <div class="flex items-center justify-between mb-6">
+                            <h2 class="text-2xl md:text-3xl font-semibold text-black">Entertainment</h2>
+                            <a href="{{ route('shop.index', ['category' => 'entertainment']) }}"
+                                class="inline-flex items-center gap-2 text-sm font-medium text-black hover:text-[#15A5ED] transition">
+                                View all
+                                <span>→</span>
+                            </a>
+                        </div>
+
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            @foreach ($entertainmentProducts->take(4) as $product)
+                                <a href="{{ route('shop.show', $product->slug) }}"
+                                    class="group relative block aspect-square overflow-hidden rounded-[20px] bg-white">
+                                    @if ($product->image)
+                                        <img src="{{ asset('storage/' . $product->image) }}"
+                                            alt="{{ $product->name }}"
+                                            class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                                    @else
+                                        <div
+                                            class="w-full h-full flex items-center justify-center text-sm text-slate-400">
+                                            No Image
+                                        </div>
+                                    @endif
+
+                                    <div
+                                        class="absolute inset-x-0 bottom-0 p-3 bg-gradient-to-t from-black/65 via-black/20 to-transparent">
+                                        <div
+                                            class="text-white text-sm md:text-base font-medium line-clamp-2 text-center">
+                                            {{ $product->name }}
+                                        </div>
+                                    </div>
+                                </a>
+                            @endforeach
+                        </div>
+                    </div>
+
+                    {{-- Games --}}
+                    <div class="bg-white rounded-[28px] bg-[#F3F3F3] p-6 md:p-8">
+                        <div class="flex items-center justify-between mb-6">
+                            <h2 class="text-2xl md:text-3xl font-semibold text-black">Games</h2>
+                            <a href="{{ route('shop.index', ['category' => 'games']) }}"
+                                class="inline-flex items-center gap-2 text-sm font-medium text-black hover:text-[#15A5ED] transition">
+                                View all
+                                <span>→</span>
+                            </a>
+                        </div>
+
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            @foreach ($gameProducts->take(4) as $product)
+                                <a href="{{ route('shop.show', $product->slug) }}"
+                                    class="group relative block aspect-square overflow-hidden rounded-[20px] bg-white">
+                                    @if ($product->image)
+                                        <img src="{{ asset('storage/' . $product->image) }}"
+                                            alt="{{ $product->name }}"
+                                            class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                                    @else
+                                        <div
+                                            class="w-full h-full flex items-center justify-center text-sm text-slate-400">
+                                            No Image
+                                        </div>
+                                    @endif
+
+                                    <div
+                                        class="absolute inset-x-0 bottom-0 p-3 bg-gradient-to-t from-black/65 via-black/20 to-transparent">
+                                        <div
+                                            class="text-white text-sm md:text-base font-medium line-clamp-2 text-center">
+                                            {{ $product->name }}
+                                        </div>
+                                    </div>
+                                </a>
+                            @endforeach
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        {{-- Trust & Value Section --}}
+        <section class="relative bg-white overflow-hidden">
+            <div class="max-w-7xl5 mx-auto px-4 sm:px-6 lg:px-8 py-14 lg:py-16 relative">
 
                 {{-- Decorative Corner Brackets --}}
                 <div class="absolute top-10 left-8 w-4 h-4 border-t border-l border-slate-200"></div>
@@ -301,7 +381,7 @@
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8">
 
-                    {{-- Delivery Component --}}
+                    {{-- Instant Delivery --}}
                     <div class="flex items-start gap-5 group">
                         <div class="relative flex-shrink-0">
                             <div
@@ -309,7 +389,7 @@
                                 <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7" fill="none"
                                     viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.2">
                                     <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.129-1.125V11.25c0-4.446-3.51-8.11-8.048-8.11h-.852a4.482 4.482 0 00-4.488 4.488v2.602M19.5 14.25l-2.25-6.75m-10.5 6.75h12.75" />
+                                        d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
                                 </svg>
                             </div>
                         </div>
@@ -317,16 +397,16 @@
                             <div class="flex items-center gap-2 mb-1">
                                 <span class="w-1 h-1 rounded-full bg-[#15A5ED] group-hover:animate-ping"></span>
                                 <h4 class="text-sm font-mono font-bold text-slate-900 uppercase tracking-[0.15em]">
-                                    Logistics.v1</h4>
+                                    Instant.Delivery</h4>
                             </div>
                             <p class="text-base text-slate-500 leading-snug">
-                                Fast delivery processed in <span class="text-slate-900 font-bold">1–3 business
-                                    days</span>.
+                                Most digital products are delivered <span class="text-slate-900 font-bold">quickly and
+                                    automatically</span> after payment.
                             </p>
                         </div>
                     </div>
 
-                    {{-- Payment Component --}}
+                    {{-- Secure Payment --}}
                     <div class="flex items-start gap-5 group">
                         <div class="relative flex-shrink-0">
                             <div
@@ -342,16 +422,16 @@
                             <div class="flex items-center gap-2 mb-1">
                                 <span class="w-1 h-1 rounded-full bg-[#15A5ED]"></span>
                                 <h4 class="text-sm font-mono font-bold text-slate-900 uppercase tracking-[0.15em]">
-                                    Secure.Enc</h4>
+                                    Secure.Payment</h4>
                             </div>
                             <p class="text-base text-slate-500 leading-snug">
-                                Transactions via <span class="text-slate-900 font-bold">Industry Standard</span> SSL
-                                encryption.
+                                Checkout with <span class="text-slate-900 font-bold">safe and trusted payment
+                                    channels</span> protected by secure encryption.
                             </p>
                         </div>
                     </div>
 
-                    {{-- Returns Component --}}
+                    {{-- Trusted Service --}}
                     <div class="flex items-start gap-5 group">
                         <div class="relative flex-shrink-0">
                             <div
@@ -359,7 +439,7 @@
                                 <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7" fill="none"
                                     viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.2">
                                     <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="M9 15L3 9m0 0l6-6M3 9h12a6 6 0 010 12h-3" />
+                                        d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-1.5 0h12a1.5 1.5 0 011.5 1.5v6a1.5 1.5 0 01-1.5 1.5h-12A1.5 1.5 0 014.5 18v-6A1.5 1.5 0 016 10.5z" />
                                 </svg>
                             </div>
                         </div>
@@ -367,16 +447,17 @@
                             <div class="flex items-center gap-2 mb-1">
                                 <span class="w-1 h-1 rounded-full bg-[#15A5ED]"></span>
                                 <h4 class="text-sm font-mono font-bold text-slate-900 uppercase tracking-[0.15em]">
-                                    Return.Poly</h4>
+                                    Trusted.Service</h4>
                             </div>
                             <p class="text-base text-slate-500 leading-snug">
-                                Hassle-free <span class="text-slate-900 font-bold">14-day return</span> policy for all
-                                hardware.
+                                Shop digital essentials with a <span class="text-slate-900 font-bold">smooth, reliable,
+                                    and
+                                    verified</span> ordering experience.
                             </p>
                         </div>
                     </div>
 
-                    {{-- Local Component --}}
+                    {{-- Local Support --}}
                     <div class="flex items-start gap-5 group">
                         <div class="relative flex-shrink-0">
                             <div
@@ -384,9 +465,8 @@
                                 <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7" fill="none"
                                     viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.2">
                                     <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
+                                        d="M18 10.5c0 3.75-3 6.75-6 6.75s-6-3-6-6.75S9 3.75 12 3.75s6 3 6 6.75z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 17.25v3m-3-1.5h6" />
                                 </svg>
                             </div>
                         </div>
@@ -394,10 +474,12 @@
                             <div class="flex items-center gap-2 mb-1">
                                 <span class="w-1 h-1 rounded-full bg-[#15A5ED]"></span>
                                 <h4 class="text-sm font-mono font-bold text-slate-900 uppercase tracking-[0.15em]">
-                                    Origin.MY</h4>
+                                    Support.MY</h4>
                             </div>
                             <p class="text-base text-slate-500 leading-snug">
-                                Proudly <span class="text-slate-900 font-bold">Malaysian-owned</span> and operated.
+                                Proudly <span class="text-slate-900 font-bold">Malaysia-based</span> with
+                                local-friendly
+                                service and support.
                             </p>
                         </div>
                     </div>
@@ -407,14 +489,10 @@
         </section>
 
         {{-- Bottom CTA Section --}}
-        <section class="relative bg-white overflow-hidden border-b border-slate-100">
-            {{-- Technical Background Glow --}}
-            <div
-                class="absolute bottom-0 right-0 w-96 h-96 bg-[#15A5ED]/5 rounded-full blur-[100px] -translate-x-1/4 translate-y-1/2">
-            </div>
-            <div class="absolute top-0 left-0 w-full h-px bg-slate-100"></div>
+        <section class="relative bg-white overflow-hidden">
 
-            <div class="relative max-w-7xl5 mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24">
+
+            <div class="relative max-w-7xl5 mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-20">
                 {{-- Main Glass Panel --}}
                 <div
                     class="relative flex flex-col md:flex-row items-center justify-between gap-10 bg-[#F8FAFC] rounded-[2rem] p-8 md:p-16 border border-slate-200/60 shadow-[0_20px_50px_rgba(0,0,0,0.02)]">
