@@ -67,14 +67,17 @@
             class="fixed inset-y-0 left-0 h-screen z-30 bg-white border-r border-gray-100 flex flex-col transition-all duration-300 ease-in-out shadow-sm"
             :class="collapsed ? 'w-20' : 'w-64'">
 
-            {{-- Brand Section --}}
             <div class="h-20 flex items-center px-6 border-b border-gray-50">
                 <div class="flex items-center gap-3 overflow-hidden">
-                    <div x-show="!collapsed" x-transition.opacity class="whitespace-nowrap">
-                        <span class="font-extrabold text-xl text-gray-800 tracking-tight">
-                            Extech<span class="text-[#D4AF37]"> Studio</span>
-                        </span>
-                    </div>
+
+                    {{-- Full Logo --}}
+                    <img x-show="!collapsed" x-transition.opacity src="{{ asset('images/logo/extechstudio-logo.png') }}"
+                        alt="Extech Studio" class="h-10 w-auto">
+
+                    {{-- Icon Logo --}}
+                    <img x-show="collapsed" x-transition.opacity src="{{ asset('images/logo/extechstudio-icon.png') }}"
+                        alt="Extech" class="h-8 w-8">
+
                 </div>
             </div>
 
