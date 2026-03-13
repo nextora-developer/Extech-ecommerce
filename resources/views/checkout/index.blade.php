@@ -15,6 +15,17 @@
                 <span class="text-gray-900 font-medium">Checkout</span>
             </nav>
 
+            @php
+                $digitalInputProducts = collect($items)
+                    ->map(fn($item) => $item->product)
+                    ->filter(
+                        fn($product) => $product && $product->is_digital && !empty($product->customer_input_fields),
+                    )
+                    ->values();
+
+                $hasDigitalInputs = $digitalInputProducts->isNotEmpty();
+            @endphp
+
             {{-- 整个 checkout 表单 --}}
             <form method="POST" action="{{ route('checkout.store') }}" enctype="multipart/form-data">
                 @csrf
@@ -28,15 +39,19 @@
                             class="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden lg:col-span-2">
                             {{-- Header Section --}}
                             <div class="p-6 sm:p-8 border-b border-gray-50">
-                                <h1 class="text-2xl font-bold text-gray-900 mb-1">Shipping Details</h1>
+                                <h1 class="text-2xl font-bold text-gray-900 mb-1">
+                                    {{ $hasPhysical ? 'Shipping Details' : 'Customer Details' }}
+                                </h1>
                                 <p class="text-sm text-gray-500">
-                                    Please provide your delivery information to complete your order.
+                                    {{ $hasPhysical
+                                        ? 'Please provide your delivery information to complete your order.'
+                                        : 'Please provide your contact information to complete your order.' }}
                                 </p>
                             </div>
 
                             <div class="p-6 sm:p-8 space-y-8">
                                 {{-- 🔹 Saved Addresses Section --}}
-                                @if (isset($addresses) && $addresses->count())
+                                @if ($hasPhysical && isset($addresses) && $addresses->count())
                                     <div>
                                         <div class="flex items-center justify-between mb-4">
                                             <h3 class="text-sm font-bold text-gray-900 uppercase tracking-wider">
@@ -174,84 +189,152 @@
                                         </div>
                                     </div>
 
-                                    {{-- Shipping Address Group --}}
-                                    <div class="p-2">
-                                        <h3 class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">
-                                            Shipping Address
-                                        </h3>
+                                    @if ($hasDigitalInputs)
+                                        <div class="bg-gray-50/50 p-5 rounded-2xl border border-gray-100">
+                                            <h3 class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">
+                                                Customer Should Provide
+                                            </h3>
 
-                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
-                                            <div>
-                                                <label class="block text-xs font-bold text-gray-700 mb-2 uppercase">
-                                                    Address Line 1
-                                                </label>
-                                                <input type="text" name="address_line1"
-                                                    value="{{ old('address_line1', $defaultAddress->address_line1 ?? '') }}"
-                                                    class="w-full text-black px-4 py-3 rounded-xl border-gray-200 focus:border-[#15a5ed] focus:ring-2 focus:ring-[#15a5ed]/20 transition-all text-sm shadow-sm"
-                                                    placeholder="No. 123, Street Name" required>
-                                            </div>
+                                            <div class="space-y-6">
+                                                @foreach ($digitalInputProducts as $product)
+                                                    <div class="space-y-4">
+                                                        <div class="flex items-center gap-3">
+                                                            <div
+                                                                class="h-10 w-10 rounded-xl bg-white border border-gray-200 overflow-hidden flex-shrink-0">
+                                                                @if ($product->image)
+                                                                    <img src="{{ asset('storage/' . $product->image) }}"
+                                                                        alt="{{ $product->name }}"
+                                                                        class="w-full h-full object-cover">
+                                                                @else
+                                                                    <div
+                                                                        class="w-full h-full flex items-center justify-center text-[10px] text-gray-400">
+                                                                        N/A
+                                                                    </div>
+                                                                @endif
+                                                            </div>
 
-                                            <div>
-                                                <label class="block text-xs font-bold text-gray-700 mb-2 uppercase">
-                                                    Address Line 2 (Optional)
-                                                </label>
-                                                <input type="text" name="address_line2"
-                                                    value="{{ old('address_line2', $defaultAddress->address_line2 ?? '') }}"
-                                                    class="w-full text-black px-4 py-3 rounded-xl border-gray-200 focus:border-[#15a5ed] focus:ring-2 focus:ring-[#15a5ed]/20 transition-all text-sm shadow-sm"
-                                                    placeholder="Apartment, unit, etc.">
-                                            </div>
-                                        </div>
+                                                            <div>
+                                                                <p class="text-sm font-bold text-gray-900">
+                                                                    {{ $product->name }}</p>
+                                                                <p class="text-xs text-gray-500">
+                                                                    Please provide the required information for this
+                                                                    digital product.
+                                                                </p>
+                                                            </div>
+                                                        </div>
 
-                                        <div class="grid grid-cols-2 md:grid-cols-4 gap-5">
-                                            <div>
-                                                <label class="block text-xs font-bold text-gray-700 mb-2 uppercase">
-                                                    Postcode
-                                                </label>
-                                                <input type="text" name="postcode"
-                                                    value="{{ old('postcode', $defaultAddress->postcode ?? '') }}"
-                                                    class="w-full text-black px-4 py-3 rounded-xl border-gray-200 focus:border-[#15a5ed] focus:ring-2 focus:ring-[#15a5ed]/20 transition-all text-sm shadow-sm"
-                                                    placeholder="43000" required>
-                                            </div>
+                                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                            @foreach ($product->customer_input_fields as $fieldIndex => $field)
+                                                                <div>
+                                                                    <label
+                                                                        class="block text-xs font-bold text-gray-700 mb-2 uppercase">
+                                                                        {{ $field['label'] }}
+                                                                        @if (!empty($field['required']))
+                                                                            <span class="text-red-500">*</span>
+                                                                        @endif
+                                                                    </label>
 
-                                            <div>
-                                                <label class="block text-xs font-bold text-gray-700 mb-2 uppercase">
-                                                    City
-                                                </label>
-                                                <input type="text" name="city"
-                                                    value="{{ old('city', $defaultAddress->city ?? '') }}"
-                                                    class="w-full text-black px-4 py-3 rounded-xl border-gray-200 focus:border-[#15a5ed] focus:ring-2 focus:ring-[#15a5ed]/20 transition-all text-sm shadow-sm"
-                                                    placeholder="Kajang" required>
-                                            </div>
-
-                                            <div>
-                                                <label class="block text-xs font-bold text-gray-700 mb-2 uppercase">
-                                                    State
-                                                </label>
-                                                <select name="state"
-                                                    class="w-full text-black px-4 py-3 rounded-xl border-gray-200 focus:border-[#15a5ed] focus:ring-2 focus:ring-[#15a5ed]/20 transition-all text-sm shadow-sm bg-white"
-                                                    data-state-select required>
-                                                    <option value="">Select State</option>
-                                                    @foreach ($states as $s)
-                                                        <option value="{{ $s['name'] }}"
-                                                            data-zone="{{ $s['zone'] }}"
-                                                            @selected(old('state', $defaultAddress->state ?? '') === $s['name'])>
-                                                            {{ $s['name'] }}
-                                                        </option>
-                                                    @endforeach
-                                                </select>
-                                            </div>
-
-                                            <div>
-                                                <label class="block text-xs font-bold text-gray-700 mb-2 uppercase">
-                                                    Country
-                                                </label>
-                                                <input type="text" name="country"
-                                                    value="{{ old('country', $defaultAddress->country ?? 'Malaysia') }}"
-                                                    class="w-full text-black px-4 py-3 rounded-xl border-gray-200 focus:border-[#15a5ed] focus:ring-2 focus:ring-[#15a5ed]/20 transition-all text-sm shadow-sm"
-                                                    required>
+                                                                    <input type="text"
+                                                                        name="digital_inputs[{{ $product->id }}][{{ $field['key'] }}]"
+                                                                        value="{{ old('digital_inputs.' . $product->id . '.' . $field['key']) }}"
+                                                                        class="w-full text-black px-4 py-3 rounded-xl border-gray-200 focus:border-[#15a5ed] focus:ring-2 focus:ring-[#15a5ed]/20 transition-all text-sm shadow-sm"
+                                                                        placeholder="Enter {{ $field['label'] }}"
+                                                                        @if (!empty($field['required'])) required @endif>
+                                                                </div>
+                                                            @endforeach
+                                                        </div>
+                                                    </div>
+                                                @endforeach
                                             </div>
                                         </div>
-                                    </div>
+                                    @endif
+
+                                    @if ($hasPhysical)
+                                        {{-- Shipping Address Group --}}
+                                        <div class="p-2">
+                                            <h3 class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">
+                                                Shipping Address
+                                            </h3>
+
+                                            <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
+                                                <div>
+                                                    <label
+                                                        class="block text-xs font-bold text-gray-700 mb-2 uppercase">
+                                                        Address Line 1
+                                                    </label>
+                                                    <input type="text" name="address_line1"
+                                                        value="{{ old('address_line1', $defaultAddress->address_line1 ?? '') }}"
+                                                        class="w-full text-black px-4 py-3 rounded-xl border-gray-200 focus:border-[#15a5ed] focus:ring-2 focus:ring-[#15a5ed]/20 transition-all text-sm shadow-sm"
+                                                        placeholder="No. 123, Street Name" required>
+                                                </div>
+
+                                                <div>
+                                                    <label
+                                                        class="block text-xs font-bold text-gray-700 mb-2 uppercase">
+                                                        Address Line 2 (Optional)
+                                                    </label>
+                                                    <input type="text" name="address_line2"
+                                                        value="{{ old('address_line2', $defaultAddress->address_line2 ?? '') }}"
+                                                        class="w-full text-black px-4 py-3 rounded-xl border-gray-200 focus:border-[#15a5ed] focus:ring-2 focus:ring-[#15a5ed]/20 transition-all text-sm shadow-sm"
+                                                        placeholder="Apartment, unit, etc.">
+                                                </div>
+                                            </div>
+
+                                            <div class="grid grid-cols-2 md:grid-cols-4 gap-5">
+                                                <div>
+                                                    <label
+                                                        class="block text-xs font-bold text-gray-700 mb-2 uppercase">
+                                                        Postcode
+                                                    </label>
+                                                    <input type="text" name="postcode"
+                                                        value="{{ old('postcode', $defaultAddress->postcode ?? '') }}"
+                                                        class="w-full text-black px-4 py-3 rounded-xl border-gray-200 focus:border-[#15a5ed] focus:ring-2 focus:ring-[#15a5ed]/20 transition-all text-sm shadow-sm"
+                                                        placeholder="43000" required>
+                                                </div>
+
+                                                <div>
+                                                    <label
+                                                        class="block text-xs font-bold text-gray-700 mb-2 uppercase">
+                                                        City
+                                                    </label>
+                                                    <input type="text" name="city"
+                                                        value="{{ old('city', $defaultAddress->city ?? '') }}"
+                                                        class="w-full text-black px-4 py-3 rounded-xl border-gray-200 focus:border-[#15a5ed] focus:ring-2 focus:ring-[#15a5ed]/20 transition-all text-sm shadow-sm"
+                                                        placeholder="Kajang" required>
+                                                </div>
+
+                                                <div>
+                                                    <label
+                                                        class="block text-xs font-bold text-gray-700 mb-2 uppercase">
+                                                        State
+                                                    </label>
+                                                    <select name="state"
+                                                        class="w-full text-black px-4 py-3 rounded-xl border-gray-200 focus:border-[#15a5ed] focus:ring-2 focus:ring-[#15a5ed]/20 transition-all text-sm shadow-sm bg-white"
+                                                        data-state-select required>
+                                                        <option value="">Select State</option>
+                                                        @foreach ($states as $s)
+                                                            <option value="{{ $s['name'] }}"
+                                                                data-zone="{{ $s['zone'] }}"
+                                                                @selected(old('state', $defaultAddress->state ?? '') === $s['name'])>
+                                                                {{ $s['name'] }}
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+
+                                                <div>
+                                                    <label
+                                                        class="block text-xs font-bold text-gray-700 mb-2 uppercase">
+                                                        Country
+                                                    </label>
+                                                    <input type="text" name="country"
+                                                        value="{{ old('country', $defaultAddress->country ?? 'Malaysia') }}"
+                                                        class="w-full text-black px-4 py-3 rounded-xl border-gray-200 focus:border-[#15a5ed] focus:ring-2 focus:ring-[#15a5ed]/20 transition-all text-sm shadow-sm"
+                                                        required>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endif
                                 </div>
                             </div>
                         </section>
@@ -903,7 +986,7 @@
             const shippingRates = @json($shippingRates);
             const subtotal = Number({{ $subtotal }});
 
-            if (!stateSelect || !shippingText || !totalText) return;
+            if (!shippingText || !totalText) return;
 
             // 全部 digital
             if (!hasPhysical) {
@@ -916,11 +999,12 @@
                 return;
             }
 
+            if (!stateSelect) return;
+
             function updateShipping() {
                 const selected = stateSelect.selectedOptions[0];
                 const zone = selected ? selected.dataset.zone : null;
 
-                // 还没选州：先显示 subtotal
                 if (!zone) {
                     shippingText.innerHTML = '<span class="text-gray-400 font-normal">TBC</span>';
                     totalText.textContent = 'RM ' + subtotal.toFixed(2);

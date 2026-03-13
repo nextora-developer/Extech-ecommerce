@@ -15,6 +15,11 @@ class OrderItem extends Model
         'unit_price',
         'product_variant_id',   // ⭐ 新增
         'variant_label',        // ⭐ 新增
+        'customer_input_data',
+    ];
+
+    protected $casts = [
+        'customer_input_data' => 'array',
     ];
 
     public function order(): BelongsTo

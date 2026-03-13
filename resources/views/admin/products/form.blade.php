@@ -575,7 +575,111 @@
                 </div>
             </div>
 
-            {{-- SECTION 6: Toggles + Actions --}}
+            {{-- SECTION 6: Customer Info Required (Digital Product) --}}
+            <div id="digitalFieldsSection" class="hidden">
+                <div class="flex items-center gap-2 mb-4">
+                    <span class="w-1.5 h-6 bg-[#D4AF37] rounded-full"></span>
+                    <h2 class="font-bold text-gray-900">Customer Info Required</h2>
+                </div>
+
+                @php
+                    $customerInputFields = old('customer_input_fields', $product->customer_input_fields ?? []);
+                @endphp
+
+                <div class="border rounded-xl p-5 space-y-4">
+                    <div>
+                        <p class="text-sm font-medium text-gray-900">What should customer provide?</p>
+                        <p class="text-xs text-gray-500 mt-1">
+                            Example: Game ID, Server, Platform, Player Name, UID, Zone ID, etc.
+                        </p>
+                    </div>
+
+                    <div id="customer-input-fields-wrapper" class="space-y-3">
+                        @if (!empty($customerInputFields))
+                            @foreach ($customerInputFields as $index => $field)
+                                <div class="customer-input-row grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                                    <div class="md:col-span-4">
+                                        <input type="text" name="customer_input_fields[{{ $index }}][label]"
+                                            value="{{ $field['label'] ?? '' }}"
+                                            class="w-full rounded-xl border-gray-200 focus:border-[#D4AF37] focus:ring-[#D4AF37]/30 text-sm"
+                                            placeholder="Label (e.g. Game ID)">
+                                    </div>
+
+                                    <div class="md:col-span-4">
+                                        <input type="text" name="customer_input_fields[{{ $index }}][key]"
+                                            value="{{ $field['key'] ?? '' }}"
+                                            class="w-full rounded-xl border-gray-200 focus:border-[#D4AF37] focus:ring-[#D4AF37]/30 text-sm"
+                                            placeholder="Key (e.g. game_id)">
+                                    </div>
+
+                                    <div class="md:col-span-2">
+                                        <label class="inline-flex items-center gap-2 text-sm text-gray-600">
+                                            <input type="checkbox"
+                                                name="customer_input_fields[{{ $index }}][required]"
+                                                value="1"
+                                                class="rounded border-gray-300 text-[#D4AF37] focus:ring-[#D4AF37]/30"
+                                                @checked(!empty($field['required']))>
+                                            <span>Required</span>
+                                        </label>
+                                    </div>
+
+                                    <div class="md:col-span-2 text-right">
+                                        <button type="button"
+                                            class="px-3 py-2 text-xs rounded-lg border border-red-200 text-red-500 hover:bg-red-50"
+                                            onclick="removeCustomerInputRow(this)">
+                                            Remove
+                                        </button>
+                                    </div>
+                                </div>
+                            @endforeach
+                        @else
+                            <div class="customer-input-row grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                                <div class="md:col-span-4">
+                                    <input type="text" name="customer_input_fields[0][label]"
+                                        class="w-full rounded-xl border-gray-200 focus:border-[#D4AF37] focus:ring-[#D4AF37]/30 text-sm"
+                                        placeholder="Label (e.g. Game ID)">
+                                </div>
+
+                                <div class="md:col-span-4">
+                                    <input type="text" name="customer_input_fields[0][key]"
+                                        class="w-full rounded-xl border-gray-200 focus:border-[#D4AF37] focus:ring-[#D4AF37]/30 text-sm"
+                                        placeholder="Key (e.g. game_id)">
+                                </div>
+
+                                <div class="md:col-span-2">
+                                    <label class="inline-flex items-center gap-2 text-sm text-gray-600">
+                                        <input type="checkbox" name="customer_input_fields[0][required]" value="1"
+                                            class="rounded border-gray-300 text-[#D4AF37] focus:ring-[#D4AF37]/30" checked>
+                                        <span>Required</span>
+                                    </label>
+                                </div>
+
+                                <div class="md:col-span-2 text-right">
+                                    <button type="button"
+                                        class="px-3 py-2 text-xs rounded-lg border border-red-200 text-red-500 hover:bg-red-50"
+                                        onclick="removeCustomerInputRow(this)">
+                                        Remove
+                                    </button>
+                                </div>
+                            </div>
+                        @endif
+                    </div>
+
+                    <div class="flex flex-wrap gap-2">
+                        <button type="button" onclick="addCustomerInputRow()"
+                            class="inline-flex items-center px-4 py-2 rounded-xl bg-[#D4AF37] text-white text-sm hover:bg-[#c29c2f]">
+                            + Add Field
+                        </button>
+
+                        <button type="button" onclick="addPresetDigitalFields()"
+                            class="inline-flex items-center px-4 py-2 rounded-xl border border-gray-200 bg-white text-sm text-gray-700 hover:bg-gray-50">
+                            Add Game Top Up Preset
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            {{-- SECTION 7: Toggles + Actions --}}
             <div class="pt-4 border-t border-gray-100 flex items-center justify-between flex-wrap gap-4">
                 <div class="flex items-center gap-4 flex-wrap">
                     {{-- Digital toggle --}}
@@ -1105,6 +1209,126 @@
             const row = btn.closest('.spec-row');
             if (!row) return;
             row.remove();
+        }
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const digitalCheckbox = document.querySelector('input[name="is_digital"]');
+            const digitalFieldsSection = document.getElementById('digitalFieldsSection');
+
+            function toggleDigitalFieldsSection() {
+                if (!digitalCheckbox || !digitalFieldsSection) return;
+
+                if (digitalCheckbox.checked) {
+                    digitalFieldsSection.classList.remove('hidden');
+                } else {
+                    digitalFieldsSection.classList.add('hidden');
+                }
+            }
+
+            if (digitalCheckbox) {
+                toggleDigitalFieldsSection();
+                digitalCheckbox.addEventListener('change', toggleDigitalFieldsSection);
+            }
+        });
+
+        function addCustomerInputRow(label = '', key = '', required = true) {
+            const wrapper = document.getElementById('customer-input-fields-wrapper');
+            if (!wrapper) return;
+
+            const index = wrapper.querySelectorAll('.customer-input-row').length;
+
+            wrapper.insertAdjacentHTML('beforeend', `
+            <div class="customer-input-row grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                <div class="md:col-span-4">
+                    <input type="text"
+                        name="customer_input_fields[${index}][label]"
+                        value="${label}"
+                        class="w-full rounded-xl border-gray-200 focus:border-[#D4AF37] focus:ring-[#D4AF37]/30 text-sm"
+                        placeholder="Label (e.g. Game ID)">
+                </div>
+
+                <div class="md:col-span-4">
+                    <input type="text"
+                        name="customer_input_fields[${index}][key]"
+                        value="${key}"
+                        class="w-full rounded-xl border-gray-200 focus:border-[#D4AF37] focus:ring-[#D4AF37]/30 text-sm"
+                        placeholder="Key (e.g. game_id)">
+                </div>
+
+                <div class="md:col-span-2">
+                    <label class="inline-flex items-center gap-2 text-sm text-gray-600">
+                        <input type="checkbox"
+                            name="customer_input_fields[${index}][required]"
+                            value="1"
+                            class="rounded border-gray-300 text-[#D4AF37] focus:ring-[#D4AF37]/30"
+                            ${required ? 'checked' : ''}>
+                        <span>Required</span>
+                    </label>
+                </div>
+
+                <div class="md:col-span-2 text-right">
+                    <button type="button"
+                        class="px-3 py-2 text-xs rounded-lg border border-red-200 text-red-500 hover:bg-red-50"
+                        onclick="removeCustomerInputRow(this)">
+                        Remove
+                    </button>
+                </div>
+            </div>
+        `);
+        }
+
+        function removeCustomerInputRow(btn) {
+            const row = btn.closest('.customer-input-row');
+            if (!row) return;
+            row.remove();
+        }
+
+        function addPresetDigitalFields() {
+            const wrapper = document.getElementById('customer-input-fields-wrapper');
+            if (!wrapper) return;
+
+            // 先删掉“完全空白”的 row
+            wrapper.querySelectorAll('.customer-input-row').forEach(row => {
+                const labelInput = row.querySelector('input[name*="[label]"]');
+                const keyInput = row.querySelector('input[name*="[key]"]');
+
+                const label = labelInput?.value.trim() || '';
+                const key = keyInput?.value.trim() || '';
+
+                if (label === '' && key === '') {
+                    row.remove();
+                }
+            });
+
+            // 重新抓一次现在已有的 label
+            const existingLabels = Array.from(wrapper.querySelectorAll('input[name*="[label]"]'))
+                .map(input => input.value.trim().toLowerCase())
+                .filter(Boolean);
+
+            const presets = [{
+                    label: 'Game ID',
+                    key: 'game_id',
+                    required: true
+                },
+                {
+                    label: 'Server',
+                    key: 'server',
+                    required: true
+                },
+                {
+                    label: 'Platform',
+                    key: 'platform',
+                    required: true
+                },
+            ];
+
+            presets.forEach(field => {
+                if (!existingLabels.includes(field.label.toLowerCase())) {
+                    addCustomerInputRow(field.label, field.key, field.required);
+                }
+            });
         }
     </script>
 @endpush

@@ -24,6 +24,14 @@
             'FAILED' => 'border-rose-500 bg-rose-50 text-rose-700',
         ];
         $badgeColor = $styles[$status] ?? 'border-gray-400 bg-gray-100 text-gray-700';
+
+        $hasPhysicalItems = $order->items->contains(function ($item) {
+            return !$item->product?->is_digital;
+        });
+
+        $digitalItems = $order->items->filter(function ($item) {
+            return $item->product?->is_digital && !empty($item->customer_input_data);
+        });
     @endphp
 
     {{-- Header Section --}}
@@ -52,7 +60,7 @@
 
             <a href="{{ route('admin.orders.invoice.preview', $order) }}" target="_blank"
                 class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#0F172A] text-white text-sm font-bold hover:bg-black transition-all shadow-sm">
-             
+
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
                     stroke="currentColor" class="w-4 h-4">
                     <path stroke-linecap="round" stroke-linejoin="round"
@@ -94,27 +102,126 @@
             {{-- Customer & Shipping Card --}}
             <div class="bg-white border border-[#D4AF37]/20 rounded-2xl shadow-[0_18px_40px_rgba(0,0,0,0.04)]">
                 <div class="px-6 py-4 border-b border-gray-100">
-                    <h3 class="font-bold text-gray-900">Delivery Information</h3>
+                    <h3 class="font-bold text-gray-900">
+                        {{ $hasPhysicalItems ? 'Delivery Information' : 'Customer Information' }}
+                    </h3>
                 </div>
 
-                <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-8 text-sm">
-                    <div class="space-y-4">
+                <div class="p-8 grid grid-cols-1 md:grid-cols-2 gap-10 text-sm bg-white rounded-b-2xl">
+
+                    {{-- Left Column: Customer Profile --}}
+                    <div class="space-y-6">
                         <div>
                             <label
-                                class="block text-xs uppercase tracking-widest text-gray-400 font-bold mb-1">Customer</label>
-                            <div class="font-semibold text-gray-900 text-base">{{ $order->customer_name ?? '-' }}</div>
-                            <div class="text-gray-500 mt-0.5">{{ $order->customer_email ?? 'No Email' }}</div>
-                            <div class="text-gray-500">{{ $order->customer_phone ?? '-' }}</div>
-                        </div>
-                    </div>
-                    <div>
-                        <label class="block text-xs uppercase tracking-widest text-gray-400 font-bold mb-1">Shipping
-                            To</label>
-                        <div class="text-gray-700 leading-relaxed font-medium">
-                            {!! nl2br(e($fullAddress)) ?: '<span class="text-gray-400 italic">No address provided</span>' !!}
+                                class="inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] text-gray-400 font-bold mb-3">
+                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                </svg>
+                                Customer Profile
+                            </label>
+
+                            <div class="bg-gray-50/50 rounded-2xl p-5 border border-gray-100">
+                                <div class="font-bold text-gray-900 text-lg tracking-tight">
+                                    {{ $order->customer_name ?? '-' }}</div>
+
+                                <div class="mt-4 space-y-2">
+                                    <div class="flex items-center gap-3 text-gray-600">
+                                        <div
+                                            class="w-8 h-8 rounded-full bg-white border border-gray-100 flex items-center justify-center shadow-sm">
+                                            <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                            </svg>
+                                        </div>
+                                        <span class="font-medium">{{ $order->customer_email ?? 'No Email' }}</span>
+                                    </div>
+
+                                    <div class="flex items-center gap-3 text-gray-600">
+                                        <div
+                                            class="w-8 h-8 rounded-full bg-white border border-gray-100 flex items-center justify-center shadow-sm">
+                                            <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                                            </svg>
+                                        </div>
+                                        <span
+                                            class="font-medium font-mono text-sm tracking-tight">{{ $order->customer_phone ?? '-' }}</span>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
+                    {{-- Right Column: Shipping or Digital Info --}}
+                    <div class="space-y-6">
+                        <div>
+                            <label
+                                class="inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] text-gray-400 font-bold mb-3">
+                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                        d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                        d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
+                                {{ $hasPhysicalItems ? 'Delivery Destination' : 'Service Requirements' }}
+                            </label>
+
+                            @if ($hasPhysicalItems)
+                                <div class="bg-indigo-50/30 rounded-2xl p-5 border border-indigo-100/50">
+                                    <div class="text-gray-800 leading-relaxed font-medium text-sm">
+                                        {!! nl2br(e($fullAddress)) ?: '<span class="text-gray-400 italic">No address provided</span>' !!}
+                                    </div>
+                                </div>
+                            @else
+                                <div class="space-y-3">
+                                    @forelse ($digitalItems as $item)
+                                        <div class="rounded-2xl border border-gray-100 bg-white shadow-sm overflow-hidden">
+                                            <div
+                                                class="bg-gray-50/80 px-4 py-2 border-b border-gray-100 flex justify-between items-center">
+                                                <span
+                                                    class="font-bold text-gray-900 text-xs truncate uppercase tracking-tight">
+                                                    {{ $item->product_name ?? ($item->product->name ?? 'Digital Product') }}
+                                                </span>
+                                                @if ($item->variant_label)
+                                                    <span
+                                                        class="text-[10px] px-2 py-0.5 bg-white rounded-md border border-gray-200 text-gray-500 font-medium">
+                                                        {{ $item->variant_label }}
+                                                    </span>
+                                                @endif
+                                            </div>
+
+                                            <div class="p-4 space-y-2">
+                                                @if (!empty($item->customer_input_data))
+                                                    @foreach ($item->customer_input_data as $key => $value)
+                                                        <div class="flex flex-col sm:flex-row sm:justify-between gap-1">
+                                                            <span
+                                                                class="text-[11px] font-bold text-gray-400 uppercase tracking-wide">
+                                                                {{ str_replace('_', ' ', $key) }}
+                                                            </span>
+                                                            <span class="text-sm text-gray-900 font-semibold break-all">
+                                                                {{ $value }}
+                                                            </span>
+                                                        </div>
+                                                    @endforeach
+                                                @else
+                                                    <div class="text-center py-2 text-gray-400 italic text-xs">Standard
+                                                        digital fulfillment</div>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    @empty
+                                        <div
+                                            class="bg-gray-50 rounded-xl p-8 text-center border-2 border-dashed border-gray-200">
+                                            <span class="text-gray-400 italic">No additional information provided.</span>
+                                        </div>
+                                    @endforelse
+                                </div>
+                            @endif
+                        </div>
+                    </div>
                 </div>
 
                 {{-- Order Items Table --}}
@@ -225,7 +332,7 @@
                                     <p class="text-gray-700 whitespace-pre-line break-words">{{ trim($order->remark) }}
                                     </p>
                                 @else
-                                    <p class="text-gray-400 italic font-light">No special instructions provided for this
+                                    <p class="text-gray-400">No special instructions provided for this
                                         order.</p>
                                 @endif
                             </div>
@@ -334,47 +441,84 @@
                         </select>
                     </div>
 
-                    {{-- 物流信息区块 --}}
-                    <div id="shipping-fields" class="space-y-3 mt-3 hidden">
-                        <div class="flex items-center justify-between gap-2">
-                            <h4 class="text-xs font-bold uppercase tracking-widest text-gray-400">
-                                Shipping Information
-                            </h4>
-                            <span
-                                class="inline-flex items-center px-2 py-0.5 rounded-full bg-blue-50 text-[10px] font-bold text-blue-700 border border-blue-200">
-                                Required when SHIPPED
-                            </span>
-                        </div>
+                    @if ($hasPhysicalItems)
+                        {{-- 实体商品：物流信息 --}}
+                        <div id="shipping-fields" class="space-y-3 mt-3 hidden">
+                            <div class="flex items-center justify-between gap-2">
+                                <h4 class="text-xs font-bold uppercase tracking-widest text-gray-400">
+                                    Shipping Information
+                                </h4>
+                                <span
+                                    class="inline-flex items-center px-2 py-0.5 rounded-full bg-blue-50 text-[10px] font-bold text-blue-700 border border-blue-200">
+                                    Required when SHIPPED
+                                </span>
+                            </div>
 
-                        <div>
-                            <label class="block text-xs font-semibold text-gray-500 mb-1">
-                                Courier / Shipping Provider
-                            </label>
-                            <input type="text" name="shipping_courier"
-                                value="{{ old('shipping_courier', $order->shipping_courier) }}"
-                                class="w-full rounded-xl border-gray-200 focus:border-[#D4AF37] focus:ring-[#D4AF37]/30 text-sm"
-                                placeholder="e.g. J&T, Ninja Van, PosLaju">
-                        </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-500 mb-1">
+                                    Courier / Shipping Provider
+                                </label>
+                                <input type="text" name="shipping_courier"
+                                    value="{{ old('shipping_courier', $order->shipping_courier) }}"
+                                    class="w-full rounded-xl border-gray-200 focus:border-[#D4AF37] focus:ring-[#D4AF37]/30 text-sm"
+                                    placeholder="e.g. J&T, Ninja Van, PosLaju">
+                            </div>
 
-                        <div>
-                            <label class="block text-xs font-semibold text-gray-500 mb-1">
-                                Tracking Number
-                            </label>
-                            <input type="text" name="tracking_number"
-                                value="{{ old('tracking_number', $order->tracking_number) }}"
-                                class="w-full rounded-xl border-gray-200 focus:border-[#D4AF37] focus:ring-[#D4AF37]/30 text-sm"
-                                placeholder="e.g. JV0123456789MY">
-                        </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-500 mb-1">
+                                    Tracking Number
+                                </label>
+                                <input type="text" name="tracking_number"
+                                    value="{{ old('tracking_number', $order->tracking_number) }}"
+                                    class="w-full rounded-xl border-gray-200 focus:border-[#D4AF37] focus:ring-[#D4AF37]/30 text-sm"
+                                    placeholder="e.g. JV0123456789MY">
+                            </div>
 
-                        <div>
-                            <label class="block text-xs font-semibold text-gray-500 mb-1">
-                                Shipped At
-                            </label>
-                            <input type="datetime-local" name="shipped_at"
-                                value="{{ old('shipped_at', $order->shipped_at ? $order->shipped_at->format('Y-m-d\TH:i') : '') }}"
-                                class="w-full rounded-xl border-gray-200 focus:border-[#D4AF37] focus:ring-[#D4AF37]/30 text-sm">
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-500 mb-1">
+                                    Shipped At
+                                </label>
+                                <input type="datetime-local" name="shipped_at"
+                                    value="{{ old('shipped_at', $order->shipped_at ? $order->shipped_at->format('Y-m-d\TH:i') : '') }}"
+                                    class="w-full rounded-xl border-gray-200 focus:border-[#D4AF37] focus:ring-[#D4AF37]/30 text-sm">
+                            </div>
                         </div>
-                    </div>
+                    @else
+                        {{-- 数码商品：处理备注 + 日期 --}}
+                        <div id="digital-fields" class="space-y-3 mt-3 hidden">
+                            <div class="flex items-center justify-between gap-2">
+                                <h4 class="text-xs font-bold uppercase tracking-widest text-gray-400">
+                                    Digital Fulfillment
+                                </h4>
+                                <span
+                                    class="inline-flex items-center px-2 py-0.5 rounded-full bg-emerald-50 text-[10px] font-bold text-emerald-700 border border-emerald-200">
+                                    Used when PROCESSING / COMPLETED
+                                </span>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-500 mb-1">
+                                    Fulfillment Note
+                                </label>
+                                <textarea name="admin_note" rows="4"
+                                    class="w-full rounded-xl border-gray-200 focus:border-[#D4AF37] focus:ring-[#D4AF37]/30 text-sm resize-none"
+                                    placeholder="e.g. Topped up successfully, code delivered, account credited, manual verification completed...">{{ old('admin_note', $order->admin_note) }}</textarea>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-500 mb-1">
+                                    Processed At
+                                </label>
+                                <input type="datetime-local" name="processed_at"
+                                    value="{{ old('processed_at', $order->processed_at ? $order->processed_at->format('Y-m-d\TH:i') : '') }}"
+                                    class="w-full rounded-xl border-gray-200 focus:border-[#D4AF37] focus:ring-[#D4AF37]/30 text-sm">
+
+                                <p class="mt-1 text-[11px] text-gray-400">
+                                    Leave empty to auto-fill with current date & time.
+                                </p>
+                            </div>
+                        </div>
+                    @endif
 
                     <button
                         class="w-full py-3 rounded-xl bg-[#D4AF37] text-white font-bold text-sm hover:bg-[#c29c2f] transition-all shadow-lg shadow-[#D4AF37]/20 active:scale-[0.98]">
@@ -487,31 +631,53 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const statusSelect = document.getElementById('order-status-select');
+            if (!statusSelect) return;
+
             const shippingFields = document.getElementById('shipping-fields');
+            const digitalFields = document.getElementById('digital-fields');
+
             const courierInput = document.querySelector('input[name="shipping_courier"]');
             const trackingInput = document.querySelector('input[name="tracking_number"]');
-            const shippedAtInput = document.querySelector('input[name="shipped_at"]');
 
-            function toggleShippingFields() {
+            const adminNoteInput = document.querySelector('textarea[name="admin_note"]');
+            const processedAtInput = document.querySelector('input[name="processed_at"]');
+
+            const hasPhysicalItems = @json($hasPhysicalItems);
+
+            function toggleProcessFields() {
                 const value = statusSelect.value;
 
-                const needShipping = (value === 'shipped' || value === 'completed');
+                if (hasPhysicalItems) {
+                    const needShipping = (value === 'shipped' || value === 'completed');
 
-                if (needShipping) {
-                    shippingFields.classList.remove('hidden');
-                    courierInput?.setAttribute('required', 'required');
-                    trackingInput?.setAttribute('required', 'required');
+                    if (shippingFields) {
+                        shippingFields.classList.toggle('hidden', !needShipping);
+                    }
+
+                    courierInput?.toggleAttribute('required', needShipping);
+                    trackingInput?.toggleAttribute('required', needShipping);
                 } else {
-                    shippingFields.classList.add('hidden');
-                    courierInput?.removeAttribute('required');
-                    trackingInput?.removeAttribute('required');
+                    const needDigitalFields = (value === 'processing' || value === 'completed');
+
+                    if (digitalFields) {
+                        digitalFields.classList.toggle('hidden', !needDigitalFields);
+                    }
+
+                    if (adminNoteInput) {
+                        if (needDigitalFields) {
+                            adminNoteInput.setAttribute('required', 'required');
+                        } else {
+                            adminNoteInput.removeAttribute('required');
+                        }
+                    }
+
+                    // processed_at 不强制，后端自动填
+                    processedAtInput?.removeAttribute('required');
                 }
             }
 
-            statusSelect.addEventListener('change', toggleShippingFields);
-
-            // 初次载入时根据当前状态决定要不要显示（例如订单已经是 shipped）
-            toggleShippingFields();
+            statusSelect.addEventListener('change', toggleProcessFields);
+            toggleProcessFields();
         });
     </script>
 @endpush

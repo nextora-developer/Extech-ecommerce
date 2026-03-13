@@ -22,11 +22,13 @@ class Product extends Model
         'is_digital',
         'has_variants',
         'is_active',
-        'image'
+        'image',
+        'customer_input_fields',
     ];
 
     protected $casts = [
         'specs' => 'array',
+        'customer_input_fields' => 'array',
     ];
 
 

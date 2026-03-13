@@ -116,7 +116,7 @@ class ShopController extends Controller
             ->where('id', '!=', $product->id)
             ->where('is_active', true) // ✅ 只拿 active
             ->latest()
-            ->limit(4)
+            ->limit(5)
             ->get();
 
 

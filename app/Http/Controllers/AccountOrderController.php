@@ -78,25 +78,39 @@ class AccountOrderController extends Controller
 
         $order->refresh();
 
-        // ✅ 通知 Admin（用户确认收货）
-        if ($order->customer_email) {
+        // 取 admin email
+        $adminEmail = config('mail.admin_address') ?: env('MAIL_ADMIN_ADDRESS');
 
+        // ✅ 通知 Admin（用户确认收货）
+        if ($adminEmail) {
             Log::info('📩 Sending AdminOrderCompletedMail', [
                 'order_no' => $order->order_no,
                 'user'     => $order->customer_email,
-                'to'       => config('mail.admin_address', env('MAIL_ADMIN_ADDRESS')),
+                'to'       => $adminEmail,
                 'old'      => $oldStatus,
                 'new'      => $order->status,
             ]);
 
-            Mail::to(config('mail.admin_address', env('MAIL_ADMIN_ADDRESS')))
-                ->send(new AdminOrderCompletedMail($order, $oldStatus, $order->status));
+            try {
+                Mail::to($adminEmail)
+                    ->send(new AdminOrderCompletedMail($order, $oldStatus, $order->status));
 
-            Log::info('✅ AdminOrderCompletedMail sent successfully', [
+                Log::info('✅ AdminOrderCompletedMail sent successfully', [
+                    'order_no' => $order->order_no,
+                    'to'       => $adminEmail,
+                ]);
+            } catch (\Throwable $e) {
+                Log::error('❌ AdminOrderCompletedMail failed', [
+                    'order_no' => $order->order_no,
+                    'to'       => $adminEmail,
+                    'error'    => $e->getMessage(),
+                ]);
+            }
+        } else {
+            Log::warning('⚠️ Admin email not configured, skipping AdminOrderCompletedMail', [
                 'order_no' => $order->order_no,
             ]);
         }
-
 
         return back()->with('success', 'Order marked as received. Thank you!');
     }

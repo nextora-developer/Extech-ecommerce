@@ -216,125 +216,172 @@
                         {{-- 🔥 END STATUS BAR --}}
 
                         {{-- 3 : 2 Layout --}}
-                        <div class="grid grid-cols-1 md:grid-cols-5 gap-6 pt-5">
+                        <div class="grid grid-cols-1 lg:grid-cols-5 gap-6 pt-5">
 
-                            {{-- 🟡 左侧（占 3） --}}
-                            <div class="md:col-span-3">
+                            {{-- 🟡 Left Side (3/5) --}}
+                            <div class="lg:col-span-3 space-y-6">
+                                @php
+                                    $hasPhysicalItems = $order->items->contains(
+                                        fn($item) => !$item->product?->is_digital,
+                                    );
+                                    $digitalItems = $order->items->filter(
+                                        fn($item) => $item->product?->is_digital && !empty($item->customer_input_data),
+                                    );
+                                    $hasDigitalFulfillment = !$hasPhysicalItems && !empty($order->admin_note);
+                                @endphp
 
-                                {{-- 上排：Customer + Shipping --}}
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {{-- Top Row: Customer & Delivery Info --}}
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-                                    {{-- Customer --}}
-                                    <div class="rounded-2xl border border-gray-200 bg-white/70 p-5 shadow-sm">
-                                        <h2 class="text-xs font-semibold text-gray-500 tracking-[0.16em] uppercase">
-                                            Customer
-                                        </h2>
-
-                                        <div class="mt-3 space-y-1">
-                                            <p class="text-gray-900 font-medium">{{ $order->customer_name }}</p>
-                                            <p class="text-gray-600 text-sm">{{ $order->customer_phone }}</p>
-                                            <p class="text-gray-600 text-sm">{{ $order->customer_email }}</p>
-                                        </div>
-                                    </div>
-
-                                    {{-- Shipping --}}
-                                    <div class="rounded-2xl border border-gray-200 bg-white/70 p-5 shadow-sm">
-                                        <div class="flex items-center justify-between">
-                                            <h2 class="text-xs font-semibold text-gray-500 tracking-[0.16em] uppercase">
-                                                Shipping Address
-                                            </h2>
-
-                                            @if ($order->shipping_courier || $order->tracking_number)
-                                                <button type="button" onclick="openTrackingModal({{ $order->id }})"
-                                                    class="text-xs font-semibold text-indigo-600 underline underline-offset-2 hover:text-indigo-700">
-                                                    View Tracking
-                                                </button>
-                                            @endif
-                                        </div>
-
-                                        <div class="mt-3 text-gray-900 leading-relaxed text-sm">
-                                            {{ $order->address_line1 }}<br>
-                                            @if ($order->address_line2)
-                                                {{ $order->address_line2 }}<br>
-                                            @endif
-                                            {{ $order->postcode }} {{ $order->city }}<br>
-                                            {{ $order->state }}
-                                        </div>
-                                    </div>
-
-                                    {{-- Remark（永远显示，全宽） --}}
+                                    {{-- Customer Card --}}
                                     <div
-                                        class="md:col-span-2 rounded-2xl border border-gray-200 bg-white/70 p-5 shadow-sm">
-
-                                        <h2 class="text-xs font-semibold text-gray-500 tracking-[0.16em] uppercase">
-                                            Order Remark
-                                        </h2>
-
-                                        <p
-                                            class="mt-2 text-sm leading-relaxed break-words whitespace-pre-line {{ $order->remark ? 'text-gray-900' : 'text-gray-400 italic' }}">
-                                            {{ $order->remark ? trim($order->remark) : 'No remark' }}</p>
+                                        class="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm transition-all hover:shadow-md">
+                                        <div class="flex items-center gap-2 mb-4">
+                                            
+                                            <h2 class="text-[10px] font-bold text-gray-400 tracking-widest uppercase">
+                                                Customer Details</h2>
+                                        </div>
+                                        <div class="space-y-1">
+                                            <p class="text-gray-900 font-semibold text-base">
+                                                {{ $order->customer_name }}</p>
+                                            <p class="text-gray-600 text-sm flex items-center gap-2">
+                                                <span class="text-gray-400">Phone:</span> {{ $order->customer_phone }}
+                                            </p>
+                                            <p class="text-gray-600 text-sm flex items-center gap-2">
+                                                <span class="text-gray-400">Email:</span> {{ $order->customer_email }}
+                                            </p>
+                                        </div>
                                     </div>
 
+                                    {{-- Shipping / Digital Info Card --}}
+                                    <div
+                                        class="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm transition-all hover:shadow-md">
+                                        <div class="flex items-center justify-between mb-4">
+                                            <div class="flex items-center gap-2">
+                                                
+                                                <h2
+                                                    class="text-[10px] font-bold text-gray-400 tracking-widest uppercase">
+                                                    {{ $hasPhysicalItems ? 'Shipping Address' : 'Digital Delivery' }}
+                                                </h2>
+                                            </div>
 
+                                            @if ($hasPhysicalItems && ($order->shipping_courier || $order->tracking_number))
+                                                <button type="button" onclick="openTrackingModal({{ $order->id }})"
+                                                    class="text-xs font-bold text-indigo-600 hover:text-indigo-800 bg-indigo-50 px-3 py-1 rounded-full transition-colors">Track</button>
+                                            @elseif ($hasDigitalFulfillment)
+                                                <button type="button"
+                                                    onclick="openDigitalFulfillmentModal({{ $order->id }})"
+                                                    class="text-xs font-bold text-emerald-600 hover:text-emerald-800 bg-emerald-50 px-3 py-1 rounded-full transition-colors">View
+                                                    Keys</button>
+                                            @endif
+                                        </div>
+
+                                        @if ($hasPhysicalItems)
+                                            <div class="text-gray-700 leading-relaxed text-sm">
+                                                {{ $order->address_line1 }}<br>
+                                                @if ($order->address_line2)
+                                                    {{ $order->address_line2 }}<br>
+                                                @endif
+                                                <span class="font-medium text-gray-900">{{ $order->postcode }}
+                                                    {{ $order->city }}</span><br>
+                                                {{ $order->state }}{{ $order->country ? ', ' . $order->country : '' }}
+                                            </div>
+                                        @else
+                                            <div class="space-y-3">
+                                                @forelse ($digitalItems as $item)
+                                                    <div class="text-sm">
+                                                        <p class="font-semibold text-gray-900 line-clamp-1">
+                                                            {{ $item->product_name }}</p>
+                                                        <div class="mt-1 pl-3 border-l-2 border-gray-100 space-y-1">
+                                                            @foreach ($item->customer_input_data as $key => $value)
+                                                                <div class="flex justify-between text-xs">
+                                                                    <span
+                                                                        class="text-gray-400">{{ ucwords(str_replace('_', ' ', $key)) }}</span>
+                                                                    <span
+                                                                        class="text-gray-700 font-mono">{{ $value }}</span>
+                                                                </div>
+                                                            @endforeach
+                                                        </div>
+                                                    </div>
+                                                @empty
+                                                    <p class="text-sm text-gray-400 italic text-center py-2">Instant
+                                                        delivery via email</p>
+                                                @endforelse
+                                            </div>
+                                        @endif
+                                    </div>
+                                </div>
+
+                                {{-- Order Remark (Full Width) --}}
+                                <div class="rounded-2xl border border-gray-100 bg-gray-50/50 p-6 shadow-sm">
+                                    <h2 class="text-[10px] font-bold text-gray-400 tracking-widest uppercase mb-2">
+                                        Order Remark</h2>
+                                    <p
+                                        class="text-sm leading-relaxed {{ $order->remark ? 'text-gray-700' : 'text-gray-400' }}">
+                                        {{ $order->remark ? trim($order->remark) : 'No specific instructions provided by customer.' }}
+                                    </p>
                                 </div>
                             </div>
 
+                            {{-- 🟣 Right Side (2/5): Order Summary --}}
+                            <div class="lg:col-span-2">
+                                <div
+                                    class="sticky top-6 rounded-3xl border border-blue-100 bg-gradient-to-b from-[#F9FCFF] to-[#F4F8FD] p-6 shadow-sm">
+                                    <h2 class="font-bold text-gray-900 text-lg mb-6 flex items-center gap-2">
+                                        Order Summary
+                                        <span class="h-1 w-1 rounded-full bg-blue-400"></span>
+                                    </h2>
 
-                            {{-- 🟣 右侧（占 2）：Order Summary --}}
-                            <div
-                                class="md:col-span-2 bg-[#F4F8FD] border border-[#15A5ED]/25 rounded-2xl p-5 text-base shadow-sm">
-
-                                <h2 class="font-semibold text-[#0A0A0C] text-base mb-4">
-                                    Order Summary
-                                </h2>
-
-                                <div class="space-y-2 text-sm">
-                                    <div class="flex justify-between text-gray-600">
-                                        <span>Subtotal</span>
-                                        <span>RM {{ number_format($order->subtotal, 2) }}</span>
-                                    </div>
-
-                                    <div class="flex justify-between text-gray-600">
-                                        <span>Shipping Fee</span>
-                                        <span>RM {{ number_format($order->shipping_fee, 2) }}</span>
-                                    </div>
-                                </div>
-
-                                <div class="h-px bg-[#15A5ED]/20 my-4"></div>
-
-                                <div class="flex justify-between items-baseline">
-                                    <span class="text-sm font-semibold text-[#0A0A0C]">Total</span>
-                                    <span class="text-2xl font-semibold text-[#0A0A0C]">
-                                        RM {{ number_format($order->total, 2) }}
-                                    </span>
-                                </div>
-
-                                {{-- Payment --}}
-                                <div class="mt-5 pt-4 border-t border-[#15A5ED]/20 space-y-2 text-sm">
-                                    <div class="flex justify-between">
-                                        <span class="text-gray-600">Payment Method</span>
-                                        <span class="font-medium text-gray-900">
-                                            {{ $order->payment_method_name }}
-                                        </span>
-                                    </div>
-
-                                    @if ($order->payment_receipt_path)
-                                        <div class="flex items-center gap-2 pt-1">
-                                            <button type="button" onclick="openReceiptModal({{ $order->id }})"
-                                                class="inline-flex items-center px-3 py-1.5 rounded-lg
-                           border border-gray-300 bg-white/80 hover:bg-white
-                           text-xs font-medium text-gray-800">
-                                                View Receipt
-                                            </button>
-
-                                            <a href="{{ asset('storage/' . $order->payment_receipt_path) }}" download
-                                                class="inline-flex items-center px-3 py-1.5 rounded-lg
-                           text-xs font-medium
-                           bg-[#15A5ED] text-white hover:bg-[#0F8DD1]">
-                                                Download
-                                            </a>
+                                    <div class="space-y-4">
+                                        <div class="flex justify-between text-sm">
+                                            <span class="text-gray-500">Subtotal</span>
+                                            <span class="font-medium text-gray-900 font-mono">RM
+                                                {{ number_format($order->subtotal, 2) }}</span>
                                         </div>
-                                    @endif
+
+                                        <div class="flex justify-between text-sm">
+                                            <span class="text-gray-500">Shipping Fee</span>
+                                            <span class="font-medium text-gray-900 font-mono">RM
+                                                {{ number_format($order->shipping_fee, 2) }}</span>
+                                        </div>
+
+                                        <div class="pt-4 border-t border-blue-200/50">
+                                            <div class="flex justify-between items-end">
+                                                <span
+                                                    class="text-sm font-bold text-gray-900 uppercase tracking-tight">Total
+                                                    Amount</span>
+                                                <span
+                                                    class="text-3xl font-black text-blue-600 font-mono tracking-tighter">
+                                                    RM {{ number_format($order->total, 2) }}
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        {{-- Payment Status --}}
+                                        <div class="mt-6 p-4 rounded-2xl bg-white/60 border border-white space-y-3">
+                                            <div class="flex justify-between items-center">
+                                                <span
+                                                    class="text-xs font-semibold text-gray-400 uppercase">Method</span>
+                                                <span
+                                                    class="text-sm font-bold text-gray-800">{{ $order->payment_method_name }}</span>
+                                            </div>
+
+                                            @if ($order->payment_receipt_path)
+                                                <div class="grid grid-cols-2 gap-2 pt-1">
+                                                    <button type="button"
+                                                        onclick="openReceiptModal({{ $order->id }})"
+                                                        class="flex justify-center items-center px-3 py-2 rounded-xl border border-gray-200 bg-white hover:bg-gray-50 text-xs font-bold text-gray-700 transition-all">
+                                                        View Receipt
+                                                    </button>
+                                                    <a href="{{ asset('storage/' . $order->payment_receipt_path) }}"
+                                                        download
+                                                        class="flex justify-center items-center px-3 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-xs font-bold text-white shadow-sm shadow-blue-200 transition-all">
+                                                        Download
+                                                    </a>
+                                                </div>
+                                            @endif
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -555,6 +602,48 @@
         </div>
     @endif
 
+    @if ($hasDigitalFulfillment)
+        <div id="digitalFulfillmentModal-{{ $order->id }}" class="fixed inset-0 z-50 hidden bg-black/50">
+            <div class="flex items-center justify-center min-h-screen"
+                onclick="closeDigitalFulfillmentModal({{ $order->id }})">
+
+                <div class="bg-white rounded-2xl shadow-xl max-w-md w-[90%] overflow-hidden"
+                    onclick="event.stopPropagation()">
+
+                    <div class="flex items-center justify-between px-4 py-3 border-b border-gray-100">
+                        <h3 class="text-sm font-semibold text-gray-900">
+                            Digital Fulfillment
+                        </h3>
+                        <button type="button" class="text-gray-400 hover:text-gray-600"
+                            onclick="closeDigitalFulfillmentModal({{ $order->id }})">
+                            ✕
+                        </button>
+                    </div>
+
+                    <div class="p-4 space-y-4 text-sm text-gray-900">
+
+                        @if ($order->processed_at)
+                            <div class="flex justify-between items-start gap-4">
+                                <span class="text-gray-600">Processed At</span>
+                                <span class="font-semibold text-right">
+                                    {{ \Illuminate\Support\Carbon::parse($order->processed_at)->timezone('Asia/Kuala_Lumpur')->format('d M Y, h:i A') }}
+                                </span>
+                            </div>
+                        @endif
+
+                        <div class="pt-1">
+                            <div class="text-gray-600 mb-2">Fulfillment Note</div>
+                            <div
+                                class="rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm leading-relaxed whitespace-pre-line break-words">
+                                {{ $order->admin_note }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
 
     <script>
         function openReceiptModal(orderId) {
@@ -571,7 +660,6 @@
             }
         }
 
-        // 👇 新增这两个
         function openTrackingModal(orderId) {
             const el = document.getElementById('trackingModal-' + orderId);
             if (el) {
@@ -581,6 +669,20 @@
 
         function closeTrackingModal(orderId) {
             const el = document.getElementById('trackingModal-' + orderId);
+            if (el) {
+                el.classList.add('hidden');
+            }
+        }
+
+        function openDigitalFulfillmentModal(orderId) {
+            const el = document.getElementById('digitalFulfillmentModal-' + orderId);
+            if (el) {
+                el.classList.remove('hidden');
+            }
+        }
+
+        function closeDigitalFulfillmentModal(orderId) {
+            const el = document.getElementById('digitalFulfillmentModal-' + orderId);
             if (el) {
                 el.classList.add('hidden');
             }

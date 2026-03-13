@@ -88,6 +88,11 @@ class AdminProductController extends Controller
 
             'is_active' => ['nullable', 'boolean'],
             'is_digital' => ['nullable', 'boolean'],
+
+            'customer_input_fields' => ['nullable', 'array'],
+            'customer_input_fields.*.label' => ['nullable', 'string', 'max:100'],
+            'customer_input_fields.*.key' => ['nullable', 'string', 'max:100'],
+            'customer_input_fields.*.required' => ['nullable', 'boolean'],
         ]);
 
         // slug auto
@@ -101,8 +106,10 @@ class AdminProductController extends Controller
         // 先拿出来 variants & specs & images，剩下的是 products 表的数据
         $variantsInput = $data['variants'] ?? [];
         $specsInput    = $data['specs'] ?? [];
+        $customerInputFieldsInput = $data['customer_input_fields'] ?? [];
 
         unset($data['variants']);
+        unset($data['customer_input_fields']);
 
         $imagesInput = $request->file('images', []); // 这里直接从 request 拿 file
 
@@ -112,6 +119,20 @@ class AdminProductController extends Controller
         $specs = collect($specsInput)
             ->filter(function ($row) {
                 return filled($row['name'] ?? null) || filled($row['value'] ?? null);
+            })
+            ->values()
+            ->all();
+
+        $customerInputFields = collect($customerInputFieldsInput)
+            ->map(function ($field) {
+                return [
+                    'label' => trim($field['label'] ?? ''),
+                    'key' => Str::slug($field['key'] ?? '', '_'),
+                    'required' => !empty($field['required']),
+                ];
+            })
+            ->filter(function ($field) {
+                return filled($field['label']) && filled($field['key']);
             })
             ->values()
             ->all();
@@ -130,6 +151,7 @@ class AdminProductController extends Controller
 
         // ⭐ 把处理好的 specs 塞回 data
         $data['specs'] = $specs;
+        $data['customer_input_fields'] = $data['is_digital'] ? $customerInputFields : [];
 
         // 先创建产品（先不处理 image 字段）
         $product = Product::create($data);
@@ -310,6 +332,11 @@ class AdminProductController extends Controller
 
             'is_active' => ['nullable', 'boolean'],
             'is_digital' => ['nullable', 'boolean'],
+
+            'customer_input_fields' => ['nullable', 'array'],
+            'customer_input_fields.*.label' => ['nullable', 'string', 'max:100'],
+            'customer_input_fields.*.key' => ['nullable', 'string', 'max:100'],
+            'customer_input_fields.*.required' => ['nullable', 'boolean'],
         ]);
 
         // slug auto
@@ -323,8 +350,10 @@ class AdminProductController extends Controller
         // 拆出 variants / specs，其余为 products 字段
         $variantsInput = $data['variants'] ?? [];
         $specsInput    = $data['specs'] ?? [];
+        $customerInputFieldsInput = $data['customer_input_fields'] ?? [];
 
         unset($data['variants']);
+        unset($data['customer_input_fields']);
 
         $imagesInput = $request->file('images', []);
 
@@ -334,6 +363,20 @@ class AdminProductController extends Controller
                 fn($row) =>
                 filled($row['name'] ?? null) || filled($row['value'] ?? null)
             )
+            ->values()
+            ->all();
+
+        $customerInputFields = collect($customerInputFieldsInput)
+            ->map(function ($field) {
+                return [
+                    'label' => trim($field['label'] ?? ''),
+                    'key' => Str::slug($field['key'] ?? '', '_'),
+                    'required' => !empty($field['required']),
+                ];
+            })
+            ->filter(function ($field) {
+                return filled($field['label']) && filled($field['key']);
+            })
             ->values()
             ->all();
 
@@ -350,6 +393,7 @@ class AdminProductController extends Controller
 
         // ⭐ 保存 specs
         $data['specs'] = $specs;
+        $data['customer_input_fields'] = $data['is_digital'] ? $customerInputFields : [];
 
         // 先更新 product 本体（不动 image 字段，后面根据新图片再 update）
         $product->update($data);

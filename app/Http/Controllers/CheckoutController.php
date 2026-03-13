@@ -12,6 +12,7 @@ use App\Mail\OrderPlacedMail;
 use App\Mail\AdminOrderNotificationMail;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class CheckoutController extends Controller
 {
@@ -40,6 +41,11 @@ class CheckoutController extends Controller
         $hasPhysical = $items->contains(function ($item) {
             return !$item->product->is_digital;   // 没勾 digital = 实体
         });
+
+        $digitalInputProducts = $items
+            ->map(fn($item) => $item->product)
+            ->filter(fn($product) => $product && $product->is_digital && !empty($product->customer_input_fields))
+            ->values();
 
         // ✅ 先给 shippingFee = null，表示“待计算”
         $shippingFee = null;
@@ -81,6 +87,7 @@ class CheckoutController extends Controller
             'shippingRates',
             'hasPhysical',
             'states',
+            'digitalInputProducts',
         ));
     }
 
@@ -89,59 +96,88 @@ class CheckoutController extends Controller
     public function store(Request $request)
     {
         /**
-         * 1️⃣ 验证规则（HitPay 不需要收据，Bank Transfer 才强制收据）
-         */
-        $rules = [
-            'name'           => 'required',
-            'phone'          => 'required',
-            'email'          => 'required|email',
-            'address_line1'  => 'required',
-            'postcode'       => 'required',
-            'city'           => 'required',
-            'state'          => 'required',
-            'country'        => 'required',
-            'payment_method' => 'required|exists:payment_methods,code',
-            'remark'         => 'nullable|string|max:500',
-        ];
-
-        // 默认：收据可空（给 HitPay 用）
-        $rules['payment_receipt'] = 'nullable|image|max:4096';
-
-        // Bank Transfer（online_transfer）才强制上传收据
-        if ($request->input('payment_method') === 'online_transfer') {
-            $rules['payment_receipt'] = 'required|image|max:4096';
-        }
-
-        $request->validate($rules);
-
-
-        /**
-         * 2️⃣ 读取 Payment Method
-         */
-        $paymentMethod = PaymentMethod::where('code', $request->payment_method)
-            ->where('is_active', true)
-            ->firstOrFail();
-
-
-        /**
-         * 3️⃣ 读取购物车 + 计算金额
+         * 1️⃣ 先读取购物车
          */
         $cart = Cart::with('items.product')
             ->where('user_id', auth()->id())
             ->firstOrFail();
 
-        $items    = $cart->items;
+        $items = $cart->items;
+
+        if ($items->isEmpty()) {
+            return redirect()->route('cart.index');
+        }
+
         $subtotal = $items->sum(fn($i) => $i->unit_price * $i->qty);
 
-        // 是否包含实体产品
         $hasPhysical = $items->contains(fn($item) => !$item->product->is_digital);
 
+        /**
+         * 2️⃣ 动态验证规则
+         */
+        $rules = [
+            'name'           => ['required', 'string', 'max:255'],
+            'phone'          => ['required', 'string', 'max:50'],
+            'email'          => ['required', 'email', 'max:255'],
+            'address_line1'  => [$hasPhysical ? 'required' : 'nullable', 'string', 'max:255'],
+            'address_line2'  => ['nullable', 'string', 'max:255'],
+            'postcode'       => [$hasPhysical ? 'required' : 'nullable', 'string', 'max:20'],
+            'city'           => [$hasPhysical ? 'required' : 'nullable', 'string', 'max:100'],
+            'state'          => [$hasPhysical ? 'required' : 'nullable', 'string', 'max:100'],
+            'country'        => [$hasPhysical ? 'required' : 'nullable', 'string', 'max:100'],
+            'payment_method' => ['required', 'exists:payment_methods,code'],
+            'remark'         => ['nullable', 'string', 'max:500'],
+            'payment_receipt' => ['nullable', 'image', 'max:4096'],
+        ];
+
+        // Bank Transfer 才强制上传收据
+        if ($request->input('payment_method') === 'online_transfer') {
+            $rules['payment_receipt'] = ['required', 'image', 'max:4096'];
+        }
+
+        // digital product dynamic fields validation
+        foreach ($items as $item) {
+            $product = $item->product;
+
+            if (!$product || !$product->is_digital || empty($product->customer_input_fields)) {
+                continue;
+            }
+
+            foreach ($product->customer_input_fields as $field) {
+                $key = $field['key'] ?? null;
+
+                if (!$key) {
+                    continue;
+                }
+
+                $fieldRules = ['nullable', 'string', 'max:255'];
+
+                if (!empty($field['required'])) {
+                    $fieldRules[0] = 'required';
+                }
+
+                $rules["digital_inputs.{$product->id}.{$key}"] = $fieldRules;
+            }
+        }
+
+        $validated = $request->validate($rules);
+
+        /**
+         * 3️⃣ 读取 Payment Method
+         */
+        $paymentMethod = PaymentMethod::where('code', $validated['payment_method'])
+            ->where('is_active', true)
+            ->firstOrFail();
+
+        /**
+         * 4️⃣ 计算金额
+         */
         $shippingFee = 0;
 
         if ($hasPhysical) {
             $eastStates = ['Sabah', 'Sarawak', 'Labuan'];
 
-            $zoneCode = in_array($request->state, $eastStates)
+            $zoneCode = in_array($validated['state'], $eastStates)
                 ? 'east_my'
                 : 'west_my';
 
@@ -152,9 +188,8 @@ class CheckoutController extends Controller
 
         $total = $subtotal + $shippingFee;
 
-
         /**
-         * 4️⃣ 处理收据文件（HitPay 通常不会有）
+         * 5️⃣ 处理收据文件
          */
         $receiptPath = null;
 
@@ -163,21 +198,20 @@ class CheckoutController extends Controller
                 ->store('payment_receipts', 'public');
         }
 
-
         /**
-         * 5️⃣ 生成订单编号
+         * 6️⃣ 生成订单编号
          */
         do {
             $orderNo = 'ORD-' . date('Ymd') . '-' . strtoupper(Str::random(6));
         } while (Order::where('order_no', $orderNo)->exists());
 
-
         /**
-         * 6️⃣ 建立订单（事务）
+         * 7️⃣ 建立订单
          */
         $order = null;
 
         DB::transaction(function () use (
+            $validated,
             $request,
             $items,
             $subtotal,
@@ -187,83 +221,87 @@ class CheckoutController extends Controller
             $cart,
             $orderNo,
             $total,
+            $hasPhysical,
             &$order
         ) {
             $order = Order::create([
-                'order_no'            => $orderNo,
-                'user_id'             => auth()->id(),
-                'customer_name'       => $request->name,
-                'customer_phone'      => $request->phone,
-                'customer_email'      => $request->email,
-                'address_line1'       => $request->address_line1,
-                'address_line2'       => $request->address_line2,
-                'postcode'            => $request->postcode,
-                'city'                => $request->city,
-                'state'               => $request->state,
-                'country'             => $request->country,
-                'subtotal'            => $subtotal,
-                'shipping_fee'        => $shippingFee,
-                'total'               => $total,
-                'status'              => 'pending',
-                'payment_method_code' => $paymentMethod->code,
-                'payment_method_name' => $paymentMethod->name,
+                'order_no'             => $orderNo,
+                'user_id'              => auth()->id(),
+                'customer_name'        => $validated['name'],
+                'customer_phone'       => $validated['phone'],
+                'customer_email'       => $validated['email'],
+                'address_line1'        => $hasPhysical ? ($validated['address_line1'] ?? null) : null,
+                'address_line2'        => $hasPhysical ? ($validated['address_line2'] ?? null) : null,
+                'postcode'             => $hasPhysical ? ($validated['postcode'] ?? null) : null,
+                'city'                 => $hasPhysical ? ($validated['city'] ?? null) : null,
+                'state'                => $hasPhysical ? ($validated['state'] ?? null) : null,
+                'country'              => $hasPhysical ? ($validated['country'] ?? null) : null,
+                'subtotal'             => $subtotal,
+                'shipping_fee'         => $shippingFee,
+                'total'                => $total,
+                'status'               => 'pending',
+                'payment_method_code'  => $paymentMethod->code,
+                'payment_method_name'  => $paymentMethod->name,
                 'payment_receipt_path' => $receiptPath,
-                'remark'               => $request->input('remark'),
+                'remark'               => $validated['remark'] ?? null,
             ]);
 
             foreach ($items as $item) {
+                $product = $item->product;
+
+                $customerInputData = null;
+
+                if ($product && $product->is_digital && !empty($product->customer_input_fields)) {
+                    $customerInputData = $request->input("digital_inputs.{$product->id}", []);
+                }
+
                 $order->items()->create([
-                    'product_id'         => $item->product_id,
-                    'product_name'       => $item->product->name ?? '',
-                    'qty'                => $item->qty,
-                    'unit_price'         => $item->unit_price,
-                    'product_variant_id' => $item->product_variant_id ?? null,
-                    'variant_label'      => $item->variant_label ?? null,
+                    'product_id'          => $item->product_id,
+                    'product_name'        => $product->name ?? '',
+                    'qty'                 => $item->qty,
+                    'unit_price'          => $item->unit_price,
+                    'product_variant_id'  => $item->product_variant_id ?? null,
+                    'variant_label'       => $item->variant_label ?? null,
+                    'customer_input_data' => $customerInputData,
                 ]);
             }
 
             $cart->items()->delete();
         });
 
-
-        // 7️⃣ 发邮件
+        /**
+         * 8️⃣ 发邮件
+         */
         $isHitpay = $paymentMethod->code === 'hitpay';
 
         if ($order) {
-            \Log::info('Checkout order created: ' . $order->order_no);
-            \Log::info('Config admin_address is: ' . config('mail.admin_address'));
+            Log::info('Checkout order created: ' . $order->order_no);
+            Log::info('Config admin_address is: ' . config('mail.admin_address'));
 
-            // ⛔ HitPay 的订单先不要这里发邮件
             if (! $isHitpay) {
                 try {
                     if ($order->customer_email) {
-                        \Log::info('Sending customer email for order: ' . $order->order_no);
+                        Log::info('Sending customer email for order: ' . $order->order_no);
                         Mail::to($order->customer_email)->send(new OrderPlacedMail($order));
                     }
 
                     if (config('mail.admin_address')) {
-                        \Log::info('Sending admin email for order: ' . $order->order_no);
+                        Log::info('Sending admin email for order: ' . $order->order_no);
                         Mail::to(config('mail.admin_address'))->send(new AdminOrderNotificationMail($order));
                     }
                 } catch (\Throwable $e) {
-                    \Log::error('Order email send failed for ' . $order->order_no . ' : ' . $e->getMessage());
+                    Log::error('Order email send failed for ' . $order->order_no . ' : ' . $e->getMessage());
                 }
             }
         }
 
         /**
-         * 8️⃣ HitPay 付款方式：下单完成后直接跳 HitPay
+         * 9️⃣ HitPay
          */
         if ($isHitpay) {
             return redirect()->route('hitpay.pay', $order);
         }
 
-
-        /**
-         * 9️⃣ 其他付款方式 → 回订单列表
-         */
-        // return redirect()->route('account.orders.index')
-        //     ->with('success', 'Order placed successfully.');
         return redirect()->route('checkout.success', $order);
     }
 

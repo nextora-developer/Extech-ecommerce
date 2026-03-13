@@ -43,10 +43,14 @@ class Order extends Model
         'gateway',
 
         'remark',
+
+        'admin_note',
+        'processed_at',
     ];
 
     protected $casts = [
         'shipped_at' => 'datetime',
+        'processed_at' => 'datetime',
     ];
 
     public function items(): HasMany
