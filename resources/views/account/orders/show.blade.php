@@ -237,7 +237,7 @@
                                     <div
                                         class="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm transition-all hover:shadow-md">
                                         <div class="flex items-center gap-2 mb-4">
-                                            
+
                                             <h2 class="text-[10px] font-bold text-gray-400 tracking-widest uppercase">
                                                 Customer Details</h2>
                                         </div>
@@ -258,7 +258,7 @@
                                         class="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm transition-all hover:shadow-md">
                                         <div class="flex items-center justify-between mb-4">
                                             <div class="flex items-center gap-2">
-                                                
+
                                                 <h2
                                                     class="text-[10px] font-bold text-gray-400 tracking-widest uppercase">
                                                     {{ $hasPhysicalItems ? 'Shipping Address' : 'Digital Delivery' }}
@@ -304,8 +304,9 @@
                                                         </div>
                                                     </div>
                                                 @empty
-                                                    <p class="text-sm text-gray-400 italic text-center py-2">Instant
-                                                        delivery via email</p>
+                                                    <p class="text-sm text-gray-400 italic text-center py-2">
+                                                        No additional information was required for this digital item.
+                                                    </p>
                                                 @endforelse
                                             </div>
                                         @endif
