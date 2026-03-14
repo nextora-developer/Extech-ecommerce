@@ -150,14 +150,31 @@
                 </td>
                 <td class="info-column">
                     <div class="label">Shipping Destination</div>
-                    <div>
-                        {{ $order->address_line1 }}<br>
-                        @if ($order->address_line2)
-                            {{ $order->address_line2 }}<br>
-                        @endif
-                        <span class="font-bold">{{ $order->postcode }} {{ $order->city }}</span><br>
-                        {{ $order->state }}, Malaysia
-                    </div>
+
+                    @if ($order->address_line1)
+
+                        <div>
+                            {{ $order->address_line1 }}<br>
+
+                            @if ($order->address_line2)
+                                {{ $order->address_line2 }}<br>
+                            @endif
+
+                            <span class="font-bold">
+                                {{ $order->postcode }} {{ $order->city }}
+                            </span><br>
+
+                            {{ $order->state }}
+                            @if ($order->country)
+                                , {{ $order->country }}
+                            @endif
+                        </div>
+                    @else
+                        <div class="muted">
+                            Digital Product — No Shipping Required
+                        </div>
+
+                    @endif
                 </td>
             </tr>
         </table>

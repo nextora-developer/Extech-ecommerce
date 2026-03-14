@@ -24,7 +24,7 @@ class AccountOrderInvoiceController extends Controller
 
         $order->load(['items', 'items.product']);
 
-        $pdf = Pdf::loadView('admin.orders.invoice', ['order' => $order])
+        $pdf = Pdf::loadView('account.orders.invoice', ['order' => $order])
             ->setPaper('A4', 'portrait');
 
         return $pdf->stream("invoice-{$order->order_no}.pdf");
