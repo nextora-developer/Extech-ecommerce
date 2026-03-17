@@ -58,6 +58,10 @@
                                     class="block px-4 py-2.5 text-sm text-gray-300 hover:bg-white/10 hover:text-[#15A5ED] rounded-xl transition">
                                     FAQ
                                 </a>
+                                <a href="{{ route('agents.index') }}"
+                                    class="block px-4 py-2.5 text-sm text-gray-300 hover:bg-white/10 hover:text-[#15A5ED] rounded-xl transition">
+                                    Verify Agent
+                                </a>
                             </div>
                         </div>
                     </div>

@@ -5,6 +5,8 @@ use App\Http\Controllers\ShopController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\PageController;
+use App\Http\Controllers\PublicAgentController;
+
 use App\Http\Controllers\Admin\AdminCategoryController;
 use App\Http\Controllers\Admin\AdminProductController;
 use App\Http\Controllers\Admin\AdminOrderController;
@@ -17,6 +19,7 @@ use App\Http\Controllers\Admin\AdminBannerController;
 use App\Http\Controllers\Admin\AdminPaymentMethodController;
 use App\Http\Controllers\Admin\AdminShippingController;
 use App\Http\Controllers\Admin\AdminOrderInvoiceController;
+use App\Http\Controllers\Admin\AgentController;
 
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AccountOrderController;
@@ -78,6 +81,9 @@ Route::get('/privacy-policy', [PageController::class, 'privacyPolicy'])->name('p
 Route::get('/terms', [PageController::class, 'terms'])->name('terms');
 Route::get('/shipping', [PageController::class, 'shippingDelivery'])->name('shipping');
 Route::get('/returns', [PageController::class, 'returnsRefunds'])->name('returns');
+
+Route::get('/verify-agent', [PublicAgentController::class, 'index'])->name('agents.index');
+Route::get('/verify-agent/pdf', [PublicAgentController::class, 'pdf'])->name('agents.verify.pdf');
 /*
 |--------------------------------------------------------------------------
 | Customer (需要登录的功能：Cart + Checkout + Account
@@ -187,23 +193,26 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->name('admin.')->group(fun
     Route::get('orders/{order}/invoice', [AdminOrderInvoiceController::class, 'preview'])->name('orders.invoice.preview');
     Route::post('/admin/orders/bulk-update', [AdminOrderController::class, 'bulkUpdateStatus'])->name('orders.bulk-update');
 
-    Route::resource('users', AdminUserController::class)
-        ->only(['index', 'show', 'edit', 'update']);
+    Route::resource('users', AdminUserController::class)->only(['index', 'show', 'edit', 'update']);
+    Route::post('users/{user}/set-agent', [AgentController::class, 'setAsAgent'])->name('users.set-agent');
+    Route::delete('users/{user}/remove-agent', [AgentController::class, 'removeAgent'])->name('users.remove-agent');
+
+    Route::get('agents', [AgentController::class, 'index'])->name('agents.index');
+    Route::get('agents/{agent}', [AgentController::class, 'show'])->name('agents.show');
+    Route::patch('agents/{agent}/suspend', [AgentController::class, 'suspend'])->name('agents.suspend');
+    Route::patch('agents/{agent}/activate', [AgentController::class, 'activate'])->name('agents.activate');
 
     // 地址：新增依附 user，其他用 address id
     Route::get('users/{user}/addresses/create', [AdminAddressController::class, 'create'])
         ->name('addresses.create');
     Route::post('users/{user}/addresses', [AdminAddressController::class, 'store'])
         ->name('addresses.store');
-
     Route::get('addresses/{address}/edit', [AdminAddressController::class, 'edit'])
         ->name('addresses.edit');
     Route::put('addresses/{address}', [AdminAddressController::class, 'update'])
         ->name('addresses.update');
-
     Route::delete('addresses/{address}', [AdminAddressController::class, 'destroy'])
         ->name('addresses.destroy');
-
     Route::post('addresses/{address}/make-default', [AdminAddressController::class, 'makeDefault'])
         ->name('addresses.make-default');
 

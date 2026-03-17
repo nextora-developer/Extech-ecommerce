@@ -60,11 +60,9 @@
                 <div class="flex items-center gap-2">
                     {{-- Active Badge --}}
                     <span
-                        class="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-bold border
-        {{ $user->is_active ? 'border-green-500 bg-green-50 text-green-700' : 'border-gray-300 bg-gray-50 text-gray-500' }}">
+                        class="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-bold border {{ $user->is_active ? 'border-green-500 bg-green-50 text-green-700' : 'border-gray-300 bg-gray-50 text-gray-500' }}">
                         <span
-                            class="w-1.5 h-1.5 rounded-full mr-2
-            {{ $user->is_active ? 'bg-green-500' : 'bg-gray-400' }}"></span>
+                            class="w-1.5 h-1.5 rounded-full mr-2 {{ $user->is_active ? 'bg-green-500' : 'bg-gray-400' }}"></span>
                         {{ $user->is_active ? 'ACTIVE ACCOUNT' : 'INACTIVE' }}
                     </span>
 
@@ -72,8 +70,8 @@
                     @if ($user->is_verified)
                         <span
                             class="inline-flex items-center gap-1 px-3 py-1 rounded-full
-                   text-[11px] font-bold uppercase tracking-wider
-                   bg-emerald-100 text-emerald-700 border border-emerald-200">
+                                    text-[11px] font-bold uppercase tracking-wider
+                                    bg-emerald-100 text-emerald-700 border border-emerald-200">
                             <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                             </svg>
@@ -82,9 +80,18 @@
                     @else
                         <span
                             class="inline-flex items-center gap-1 px-3 py-1 rounded-full
-                   text-[11px] font-bold uppercase tracking-wider
-                   bg-gray-100 text-gray-500 border border-gray-200">
+                                    text-[11px] font-bold uppercase tracking-wider
+                                    bg-gray-100 text-gray-500 border border-gray-200">
                             Unverified
+                        </span>
+                    @endif
+
+                    @if ($user->agent)
+                        <span
+                            class="inline-flex items-center gap-1 px-3 py-1 rounded-full
+                                    text-[11px] font-bold uppercase tracking-wider
+                                    bg-sky-100 text-sky-700 border border-sky-200">
+                            Agent
                         </span>
                     @endif
                 </div>
@@ -113,6 +120,96 @@
                 </div>
             </div>
         </div>
+
+        @if ($user->is_verified)
+            <div
+                class="relative overflow-hidden bg-white border border-gray-100 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+                {{-- Subtle Gold Accent Line at Top --}}
+                <div
+                    class="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-[#D4AF37]/30 to-transparent">
+                </div>
+
+                <div class="p-6 md:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6">
+
+                    {{-- Left Side: Info --}}
+                    <div class="flex items-start gap-4">
+                        <div
+                            class="hidden sm:flex shrink-0 w-12 h-12 rounded-2xl bg-slate-50 border border-slate-100 items-center justify-center text-slate-400">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                    d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.99 7.99 0 0120 13a7.99 7.99 0 01-2.343 5.657z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                    d="M9.879 16.121A3 3 0 1012.015 11L11 14l.879 2.121z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h2 class="font-bold text-gray-900 text-lg flex items-center gap-2">
+                                Agent Access
+                                @if ($user->agent)
+                                    <span class="inline-block w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                                @endif
+                            </h2>
+                            <p class="text-sm text-gray-500 mt-0.5 leading-relaxed max-w-md">
+                                Manage whether this verified user can act as an agent.
+                            </p>
+                        </div>
+                    </div>
+
+                    {{-- Right Side: Actions & Status --}}
+                    <div class="flex items-center gap-3 self-end md:self-center">
+                        @if ($user->agent)
+                            <div class="flex flex-col items-end mr-2">
+                                <span class="text-[10px] font-bold text-gray-400 uppercase tracking-[0.1em]">Agent
+                                    Code</span>
+                                <span
+                                    class="text-base font-mono font-bold text-gray-900 tracking-tight">{{ $user->agent->agent_code }}</span>
+                            </div>
+
+                            <div class="h-8 w-px bg-gray-100 mx-2 hidden sm:block"></div>
+
+                            <div class="flex items-center gap-3">
+                                <span
+                                    class="px-3 py-1.5 rounded-lg text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-100 uppercase tracking-wide">
+                                    {{ $user->agent->status }}
+                                </span>
+
+                                <form action="{{ route('admin.users.remove-agent', $user) }}" method="POST"
+                                    onsubmit="return confirm('Are you sure you want to revoke agent access?')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit"
+                                        class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-rose-600 font-bold text-sm hover:bg-rose-50 border border-transparent hover:border-rose-100 transition-all active:scale-95">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                        </svg>
+                                        Revoke
+                                    </button>
+                                </form>
+                            </div>
+                        @elseif ($user->is_active)
+                            <form action="{{ route('admin.users.set-agent', $user) }}" method="POST">
+                                @csrf
+                                <button type="submit"
+                                    class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-sky-600 text-white font-bold text-sm shadow-lg shadow-sky-200 hover:bg-sky-700 hover:-translate-y-0.5 transition-all active:scale-95">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                                    </svg>
+                                    Promote to Agent
+                                </button>
+                            </form>
+                        @else
+                            <div class="flex items-center gap-2 px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl">
+                                <div class="w-2 h-2 rounded-full bg-gray-300"></div>
+                                <span class="text-xs font-bold text-gray-500 uppercase tracking-wider">User Account
+                                    Inactive</span>
+                            </div>
+                        @endif
+                    </div>
+                </div>
+            </div>
+        @endif
 
         <div x-data="{
             open: false,

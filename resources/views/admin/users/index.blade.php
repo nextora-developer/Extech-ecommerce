@@ -80,6 +80,9 @@
                         <th class="px-6 py-4 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">
                             Verification
                         </th>
+                        <th class="px-6 py-4 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">
+                            Agent
+                        </th>
                         <th class="px-6 py-4"></th>
                     </tr>
                 </thead>
@@ -157,33 +160,90 @@
                                 @endif
                             </td>
 
+                            <td class="px-6 py-4">
+                                @if ($u->agent)
+                                    @if ($u->agent->status === 'active')
+                                        <span
+                                            class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full
+                text-[11px] font-bold bg-sky-50 text-sky-700
+                border border-sky-100 uppercase tracking-wider">
+                                            Agent
+                                        </span>
+                                    @elseif ($u->agent->status === 'suspended')
+                                        <span
+                                            class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full
+                text-[11px] font-bold bg-rose-50 text-rose-700
+                border border-rose-100 uppercase tracking-wider">
+                                            Suspended
+                                        </span>
+                                    @else
+                                        <span
+                                            class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full
+                text-[11px] font-bold bg-slate-50 text-slate-500
+                border border-slate-100 uppercase tracking-wider">
+                                            {{ ucfirst($u->agent->status) }}
+                                        </span>
+                                    @endif
+                                @else
+                                    <span
+                                        class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full
+            text-[11px] font-bold bg-gray-50 text-gray-400
+            border border-gray-100 uppercase tracking-wider">
+                                        No
+                                    </span>
+                                @endif
+                            </td>
+
                             <td class="px-6 py-4 text-right whitespace-nowrap">
-                                <div class="flex items-center justify-end gap-2">
+                                <div class="flex items-center justify-end gap-2 flex-wrap">
+
+                                    {{-- @if ($u->is_verified && $u->is_active && !$u->agent)
+                                        <form action="{{ route('admin.users.set-agent', $u) }}" method="POST"
+                                            class="inline">
+                                            @csrf
+                                            <button type="submit"
+                                                class="inline-flex items-center px-3 py-2 rounded-lg bg-sky-50 text-sky-700 border border-sky-200 text-xs font-bold hover:bg-sky-600 hover:text-white transition-all">
+                                                Set as Agent
+                                            </button>
+                                        </form>
+                                    @endif
+
+                                    @if ($u->agent)
+                                        <form action="{{ route('admin.users.remove-agent', $u) }}" method="POST"
+                                            class="inline" onsubmit="return confirm('Remove this user as agent?')">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit"
+                                                class="inline-flex items-center px-3 py-2 rounded-lg bg-rose-50 text-rose-700 border border-rose-200 text-xs font-bold hover:bg-rose-600 hover:text-white transition-all">
+                                                Remove Agent
+                                            </button>
+                                        </form>
+                                    @endif --}}
 
                                     {{-- View --}}
                                     <a href="{{ route('admin.users.show', $u) }}"
                                         class="p-2 rounded-lg text-gray-400 hover:text-[#8f6a10]
-              hover:bg-[#D4AF37]/10 transition-all mr-1"
+            hover:bg-[#D4AF37]/10 transition-all"
                                         title="View">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none"
                                             viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7
-                                             -1.274 4.057-5.065 7-9.542 7
-                                             -4.477 0-8.268-2.943-9.542-7z" />
+                        -1.274 4.057-5.065 7-9.542 7
+                        -4.477 0-8.268-2.943-9.542-7z" />
                                         </svg>
                                     </a>
 
                                     {{-- Edit --}}
                                     <a href="{{ route('admin.users.edit', $u) }}"
                                         class="p-2 rounded-lg text-gray-400 hover:text-[#8f6a10]
-              hover:bg-[#D4AF37]/10 transition-all"
+            hover:bg-[#D4AF37]/10 transition-all"
                                         title="Edit">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none"
                                             viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414
-                                             a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                         </svg>
                                     </a>
                                 </div>

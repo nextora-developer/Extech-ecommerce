@@ -19,7 +19,7 @@
                 <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
                 <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
             </svg>
-            Enable Notification Sound
+            Sound On
         </button>
     </div>
 
@@ -97,7 +97,7 @@
 
                     <button type="submit"
                         class="px-5 py-2.5 rounded-xl bg-[#D4AF37] text-white font-bold text-sm hover:bg-[#c39f2f] transition-all">
-                        Update Selected
+                        Update
                     </button>
                 </div>
 
@@ -393,7 +393,7 @@
         bindSelectAll();
         bindBulkForm();
 
-        setInterval(refreshOrders, 10000);
+        setInterval(refreshOrders, 15000);
     });
 </script>
 @endsection

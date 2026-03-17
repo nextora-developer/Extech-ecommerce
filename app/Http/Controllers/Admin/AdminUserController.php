@@ -13,7 +13,7 @@ class AdminUserController extends Controller
 {
     public function index(Request $request)
     {
-        $q = User::query();
+        $q = User::with('agent');
 
         if ($request->filled('keyword')) {
             $kw = $request->string('keyword');
@@ -23,7 +23,6 @@ class AdminUserController extends Controller
             });
         }
 
-        // status
         if ($request->filled('status')) {
             if ($request->string('status') === 'active') {
                 $q->where('is_active', true);
@@ -32,7 +31,6 @@ class AdminUserController extends Controller
             }
         }
 
-        // ✅ IC uploaded
         if ($request->filled('ic_uploaded')) {
             if ($request->ic_uploaded === 'yes') {
                 $q->whereNotNull('ic_image')->where('ic_image', '!=', '');
@@ -43,7 +41,6 @@ class AdminUserController extends Controller
             }
         }
 
-        // ✅ verified
         if ($request->filled('verified')) {
             if ($request->verified === 'verified') {
                 $q->where('is_verified', true);
@@ -62,7 +59,7 @@ class AdminUserController extends Controller
 
     public function show(User $user)
     {
-        $user->load('addresses', 'defaultAddress');
+        $user->load('addresses', 'defaultAddress', 'agent');
 
         // 最近 5 张订单（根据你自己的关联/字段名微调）
         $recentOrders = Order::where('user_id', $user->id)

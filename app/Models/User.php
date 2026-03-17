@@ -88,4 +88,19 @@ class User extends Authenticatable
     {
         return $this->hasOne(Cart::class);
     }
+
+    public function agent()
+    {
+        return $this->hasOne(Agent::class);
+    }
+
+    public function isAgent(): bool
+    {
+        return $this->agent()->exists();
+    }
+
+    public function isActiveAgent(): bool
+    {
+        return $this->agent && $this->agent->status === 'active';
+    }
 }
