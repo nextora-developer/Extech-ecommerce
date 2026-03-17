@@ -22,8 +22,9 @@
 
             <input id="update_password_current_password" name="current_password" type="password"
                 autocomplete="current-password"
+                placeholder="Enter current password"
                 class="w-full text-black rounded-xl border-gray-200 text-base px-3 py-3
-                       focus:border-[#15A5ED] focus:ring-[#15A5ED]/30" />
+                       focus:border-[#15A5ED] focus:ring-[#15A5ED]/30 placeholder-gray-400" />
 
             @error('current_password', 'updatePassword')
                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -37,8 +38,9 @@
             </label>
 
             <input id="update_password_password" name="password" type="password" autocomplete="new-password"
+                placeholder="Enter new password"
                 class="w-full text-black rounded-xl border-gray-200 text-base px-3 py-3
-                       focus:border-[#15A5ED] focus:ring-[#15A5ED]/30" />
+                       focus:border-[#15A5ED] focus:ring-[#15A5ED]/30 placeholder-gray-400" />
 
             @error('password', 'updatePassword')
                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -53,8 +55,9 @@
 
             <input id="update_password_password_confirmation" name="password_confirmation" type="password"
                 autocomplete="new-password"
+                placeholder="Re-enter new password"
                 class="w-full text-black rounded-xl border-gray-200 text-base px-3 py-3
-                       focus:border-[#15A5ED] focus:ring-[#15A5ED]/30" />
+                       focus:border-[#15A5ED] focus:ring-[#15A5ED]/30 placeholder-gray-400" />
 
             @error('password_confirmation', 'updatePassword')
                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>

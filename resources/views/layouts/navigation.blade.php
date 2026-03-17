@@ -320,7 +320,7 @@
                             <p class="text-[10px] font-mono font-black text-[#15A5ED] uppercase tracking-[0.2em]">
                                 System_Resources</p>
                         </div>
-                        <p class="text-lg font-bold text-white tracking-tight">Support Directory</p>
+                        <p class="text-lg font-bold text-white tracking-tight">More</p>
                     </div>
 
                     <button @click="openMoreSheet = false"
