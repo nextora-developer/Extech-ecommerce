@@ -58,85 +58,91 @@
                         @endphp
 
                         <div
-                            class="bg-white rounded-3xl border
+                            class="bg-white rounded-2xl md:rounded-3xl border
                 {{ $isActive ? 'border-emerald-100' : ($isSuspended ? 'border-red-100' : 'border-slate-200') }}
                 shadow-sm overflow-hidden mb-8">
 
                             {{-- Status Banner --}}
                             <div
                                 class="{{ $isActive ? 'bg-emerald-600' : ($isSuspended ? 'bg-red-600' : 'bg-slate-600') }}
-                    px-6 py-3 flex items-center justify-between text-white">
-
-                                <span class="text-xs font-black uppercase tracking-[0.2em]">
-                                    Official Verification Result
-                                </span>
-
-                                <div class="flex items-center gap-3">
-                                    <span class="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider">
-                                        <span class="w-2 h-2 bg-white rounded-full animate-pulse"></span>
-                                        System Verified
+                    px-4 sm:px-6 py-3 text-white">
+                                <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                                    <span
+                                        class="text-[10px] sm:text-xs font-black uppercase tracking-[0.18em] sm:tracking-[0.2em]">
+                                        Official Verification Result
                                     </span>
 
-                                    <a href="{{ route('agents.verify.pdf', ['q' => $q]) }}" target="_blank"
-                                        class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/10
-                            border border-white/20 text-white text-xs font-black uppercase tracking-wider
-                            hover:bg-white/15 transition">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none"
-                                            viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M12 16v-8m0 8l-3-3m3 3l3-3M4 20h16" />
-                                        </svg>
-                                        PDF
-                                    </a>
+                                    <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
+                                        <span
+                                            class="flex items-center gap-1.5 text-[10px] sm:text-xs font-bold uppercase tracking-wider">
+                                            <span class="w-2 h-2 bg-white rounded-full animate-pulse"></span>
+                                            System Verified
+                                        </span>
+
+                                        <a href="{{ route('agents.verify.pdf', ['q' => $q]) }}" target="_blank"
+                                            class="inline-flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-white/10
+                                border border-white/20 text-white text-[10px] sm:text-xs font-black uppercase tracking-wider
+                                hover:bg-white/15 transition w-full sm:w-auto">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none"
+                                                viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M12 16v-8m0 8l-3-3m3 3l3-3M4 20h16" />
+                                            </svg>
+                                            PDF
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
 
-                            <div class="p-8 md:p-10">
-                                <div class="flex flex-col md:flex-row justify-between md:items-center gap-6">
-                                    <div class="space-y-1">
-                                        <h2 class="text-3xl font-bold text-gray-900 leading-tight">
+                            <div class="p-5 sm:p-6 md:p-10">
+                                <div class="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
+                                    <div class="space-y-1 min-w-0">
+                                        <h2
+                                            class="text-2xl sm:text-3xl font-bold text-gray-900 leading-tight break-words">
                                             {{ $agent->user->name ?? '-' }}
                                         </h2>
-                                        <p class="text-emerald-600 font-bold tracking-widest text-base uppercase">
+                                        <p
+                                            class="text-emerald-600 font-bold tracking-wider sm:tracking-widest text-sm sm:text-base uppercase break-all">
                                             {{ $agent->agent_code }}
                                         </p>
                                     </div>
 
                                     {{-- Status Badge --}}
                                     <div
-                                        class="px-6 py-2 rounded-full border-2
+                                        class="inline-flex self-start md:self-auto px-4 sm:px-6 py-2 rounded-full border-2
                             {{ $isActive
                                 ? 'border-emerald-500 text-emerald-600 bg-emerald-50'
                                 : ($isSuspended
                                     ? 'border-red-500 text-red-600 bg-red-50'
                                     : 'border-slate-400 text-slate-600 bg-slate-50') }}
-                            font-black uppercase tracking-tighter text-xl">
+                            font-black uppercase tracking-tight text-sm sm:text-lg">
                                         {{ $agent->status }}
                                     </div>
                                 </div>
 
                                 {{-- Details --}}
-                                <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mt-10">
+                                <div
+                                    class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mt-8 sm:mt-10">
 
-                                    <div>
+                                    <div class="rounded-2xl border border-gray-100 bg-gray-50/60 px-4 py-4">
                                         <p class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">
                                             Official Role
                                         </p>
                                         <p class="text-base font-bold text-gray-800">
-                                            Agents
+                                            Agent
                                         </p>
                                     </div>
 
-                                    <div>
+                                    <div class="rounded-2xl border border-gray-100 bg-gray-50/60 px-4 py-4">
                                         <p class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">
                                             Contact No.
                                         </p>
-                                        <p class="text-base font-bold text-gray-800">
+                                        <p class="text-base font-bold text-gray-800 break-words">
                                             {{ $agent->user->phone ?? '-' }}
                                         </p>
                                     </div>
 
-                                    <div>
+                                    <div class="rounded-2xl border border-gray-100 bg-gray-50/60 px-4 py-4">
                                         <p class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">
                                             Last Update
                                         </p>
@@ -150,14 +156,14 @@
                                 {{-- Alerts --}}
                                 @if ($isSuspended)
                                     <div
-                                        class="mt-8 p-4 bg-red-50 rounded-xl border border-red-100 flex items-start gap-3">
-                                        <svg class="w-5 h-5 text-red-600 mt-0.5" fill="none" stroke="currentColor"
-                                            viewBox="0 0 24 24">
+                                        class="mt-6 sm:mt-8 p-4 bg-red-50 rounded-xl border border-red-100 flex items-start gap-3">
+                                        <svg class="w-5 h-5 text-red-600 mt-0.5 shrink-0" fill="none"
+                                            stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4
                                     c-.77-1.333-2.694-1.333-3.464 0L3.34 16
                                     c-.77 1.333.192 3 1.732 3z" />
                                         </svg>
-                                        <p class="text-base text-red-800 font-medium leading-relaxed">
+                                        <p class="text-sm sm:text-base text-red-800 font-medium leading-relaxed">
                                             <strong>Safety Alert:</strong>
                                             This representative's authorization has been revoked.
                                             Do not conduct business or share sensitive information.
@@ -167,14 +173,14 @@
 
                                 @if ($isInactive)
                                     <div
-                                        class="mt-8 p-4 bg-slate-50 rounded-xl border border-slate-200 flex items-start gap-3">
-                                        <svg class="w-5 h-5 text-slate-500 mt-0.5" fill="none" stroke="currentColor"
-                                            viewBox="0 0 24 24">
+                                        class="mt-6 sm:mt-8 p-4 bg-slate-50 rounded-xl border border-slate-200 flex items-start gap-3">
+                                        <svg class="w-5 h-5 text-slate-500 mt-0.5 shrink-0" fill="none"
+                                            stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M12 3
                                     C7.03 3 3 7.03 3 12s4.03 9 9 9
                                     9-4.03 9-9-4.03-9-9-9z" />
                                         </svg>
-                                        <p class="text-base text-slate-700 font-medium leading-relaxed">
+                                        <p class="text-sm sm:text-base text-slate-700 font-medium leading-relaxed">
                                             <strong>Notice:</strong>
                                             This individual is no longer an active representative of the company.
                                         </p>
@@ -184,11 +190,12 @@
                         </div>
                     @else
                         {{-- No Result --}}
-                        <div class="bg-white rounded-3xl border border-sky-100 shadow-sm p-12 text-center">
-                            <h3 class="text-xl font-bold text-gray-900">Agent Not Found</h3>
-                            <p class="text-gray-500 mt-2 text-sm max-w-xs mx-auto">
+                        <div
+                            class="bg-white rounded-2xl md:rounded-3xl border border-sky-100 shadow-sm p-8 sm:p-12 text-center">
+                            <h3 class="text-lg sm:text-xl font-bold text-gray-900">Agent Not Found</h3>
+                            <p class="text-gray-500 mt-2 text-sm max-w-xs mx-auto leading-relaxed">
                                 No agent matched
-                                <span class="text-black font-semibold">{{ $q }}</span>.
+                                <span class="text-black font-semibold break-all">{{ $q }}</span>.
                                 Please verify the information provided.
                             </p>
                         </div>

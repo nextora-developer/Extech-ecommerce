@@ -343,6 +343,7 @@
                             ['route' => 'how-to-order', 'label' => 'How to Order', 'sub' => 'Step-by-step guidance'],
                             ['route' => 'faq', 'label' => 'FAQ', 'sub' => 'System documentation'],
                             ['route' => 'home', 'label' => 'Chat', 'sub' => 'Live human assistance'],
+                            ['route' => 'agents.index', 'label' => 'Verify Agents', 'sub' => 'Check Agent'],
                         ];
                     @endphp
 

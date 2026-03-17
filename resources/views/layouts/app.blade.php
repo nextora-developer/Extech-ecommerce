@@ -85,6 +85,7 @@
                             ['label' => 'Shop All', 'route' => 'shop.index'],
                             ['label' => 'How to order', 'route' => 'how-to-order'],
                             ['label' => 'FAQ', 'route' => 'faq'],
+                            ['label' => 'Verify Agents', 'route' => 'agents.index'],
                         ];
                     @endphp
 
@@ -208,7 +209,7 @@
                             </a>
                         </li>
                         <li>
-                            <a href="#"
+                            <a href="https://www.facebook.com/share/1CZuN9UAqd/?mibextid=wwXIfr"
                                 class="text-sm text-gray-400 hover:text-white transition relative inline-block
                                   after:content-[''] after:absolute after:left-0 after:-bottom-1
                                   after:h-px after:w-0 after:bg-[#15A5ED] hover:after:w-full
