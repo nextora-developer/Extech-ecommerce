@@ -63,12 +63,13 @@
                                                 fill="{{ $isFavorited ? '#15A5ED' : 'none' }}"
                                                 stroke="{{ $isFavorited ? '#15A5ED' : '#15A5ED' }}" stroke-width="1.5"
                                                 viewBox="0 0 24 24" class="h-6 w-6">
-                                                <path d="M12 21.35l-1.45-1.32C5.4 15.36
-                                                                    2 12.28 2 8.5 2 5.42 4.42
-                                                                    3 7.5 3c1.74 0 3.41.81 4.5
-                                                                    2.09C13.09 3.81 14.76 3 16.5
-                                                                    3 19.58 3 22 5.42 22 8.5c0
-                                                                    3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                                                <path
+                                                    d="M12 21.35l-1.45-1.32C5.4 15.36
+                                                                                                            2 12.28 2 8.5 2 5.42 4.42
+                                                                                                            3 7.5 3c1.74 0 3.41.81 4.5
+                                                                                                            2.09C13.09 3.81 14.76 3 16.5
+                                                                                                            3 19.58 3 22 5.42 22 8.5c0
+                                                                                                            3.78-3.4 6.86-8.55 11.54L12 21.35z" />
                                             </svg>
                                         </button>
                                     </form>
@@ -334,6 +335,11 @@
 
                             <hr class="border-gray-100 mb-8">
 
+                            @php
+                                $isLoggedIn = auth()->check();
+                                $isVerified = $isLoggedIn && (int) auth()->user()->is_verified === 1;
+                                $canAddToCart = $isLoggedIn && $isVerified;
+                            @endphp
                             {{-- Add to Cart + Variant Form --}}
                             <form method="POST" action="{{ route('cart.add', $product) }}" class="space-y-8">
                                 @csrf
@@ -385,42 +391,88 @@
                                 @endif
 
                                 {{-- Quantity & Add to Cart --}}
-                                <div class="flex flex-col sm:flex-row sm:items-end gap-4">
-                                    <div class="w-32">
-                                        <label
-                                            class="block text-[11px] font-bold uppercase tracking-widest text-gray-400 mb-3">
-                                            Quantity
-                                        </label>
-                                        <div
-                                            class="flex items-center h-14 rounded-2xl border border-gray-200 bg-white overflow-hidden shadow-sm">
-                                            <button type="button"
-                                                class="flex-1 h-full text-gray-400 hover:text-gray-900 transition"
-                                                onclick="const input = this.parentElement.querySelector('input'); if (parseInt(input.value) > 1) input.value = parseInt(input.value) - 1;">
-                                                –
-                                            </button>
-                                            <input type="number" name="quantity" value="1" min="1"
-                                                class="w-10 text-center border-0 focus:ring-0 font-bold text-gray-900">
-                                            <button type="button"
-                                                class="flex-1 h-full text-gray-400 hover:text-gray-900 transition"
-                                                onclick="const input = this.parentElement.querySelector('input'); input.value = parseInt(input.value || 1) + 1;">
-                                                +
+                                <div class="space-y-3">
+
+                                    {{-- Row: Quantity + Button --}}
+                                    <div class="flex flex-col sm:flex-row sm:items-end gap-4">
+
+                                        {{-- Quantity --}}
+                                        <div class="w-32">
+                                            <label
+                                                class="block text-[11px] font-bold uppercase tracking-widest text-gray-400 mb-3">
+                                                Quantity
+                                            </label>
+
+                                            <div
+                                                class="flex items-center h-14 rounded-2xl border border-gray-200 bg-white overflow-hidden shadow-sm">
+                                                <button type="button"
+                                                    class="flex-1 h-full text-gray-400 hover:text-gray-900 transition"
+                                                    onclick="const input = this.parentElement.querySelector('input'); if (parseInt(input.value) > 1) input.value = parseInt(input.value) - 1;">
+                                                    –
+                                                </button>
+
+                                                <input type="number" name="quantity" value="1" min="1"
+                                                    class="w-10 text-center border-0 focus:ring-0 font-bold text-gray-900">
+
+                                                <button type="button"
+                                                    class="flex-1 h-full text-gray-400 hover:text-gray-900 transition"
+                                                    onclick="const input = this.parentElement.querySelector('input'); input.value = parseInt(input.value || 1) + 1;">
+                                                    +
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        {{-- Button --}}
+                                        <div class="flex-1">
+                                            <label class="block text-[11px] text-transparent mb-3">&nbsp;</label>
+
+                                            <button type="submit"
+                                                @if (!$canAddToCart) data-auth-blocked="1" @endif
+                                                @disabled(!$canAddToCart)
+                                                class="w-full h-14 rounded-2xl font-bold text-sm uppercase tracking-widest transition-all duration-300 flex items-center justify-center gap-2
+                {{ $canAddToCart
+                    ? 'bg-[#1a1a1a] text-white hover:bg-black shadow-[0_10px_20px_rgba(0,0,0,0.15)] group'
+                    : 'bg-gray-200 text-gray-500 cursor-not-allowed' }}">
+
+                                                <span>
+                                                    @if (!$isLoggedIn)
+                                                        Login to Add
+                                                    @elseif(!$isVerified)
+                                                        Verify Account First
+                                                    @else
+                                                        Add to Cart
+                                                    @endif
+                                                </span>
+
+                                                <svg class="w-4 h-4 {{ $canAddToCart ? 'group-hover:translate-x-1' : '' }} transition-transform"
+                                                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                                                </svg>
                                             </button>
                                         </div>
                                     </div>
 
-                                    <div class="flex-1">
-                                        <label
-                                            class="block text-[11px] font-bold uppercase tracking-widest text-transparent mb-3">&nbsp;</label>
-                                        <button type="submit"
-                                            class="w-full h-14 bg-[#1a1a1a] text-white rounded-2xl font-bold text-sm uppercase tracking-widest hover:bg-black transition-all shadow-xl shadow-black/10 flex items-center justify-center gap-3 group">
-                                            <span>Add to Cart</span>
-                                            <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform"
-                                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                                            </svg>
-                                        </button>
-                                    </div>
+                                    {{-- Notice (full width below) --}}
+                                    @if (!$isLoggedIn)
+                                        <p class="text-sm text-gray-500">
+                                            Please
+                                            <a href="{{ route('login') }}"
+                                                class="font-semibold text-[#15A5ED] hover:underline">
+                                                login
+                                            </a>
+                                            to add this item to your cart.
+                                        </p>
+                                    @elseif(!$isVerified)
+                                        <p class="text-sm text-gray-500">
+                                            Your account must be verified before you can add items to cart.
+                                            <a href="{{ route('account.profile.edit') }}"
+                                                class="font-semibold text-[#15A5ED] hover:underline">
+                                                Verify now
+                                            </a>
+                                        </p>
+                                    @endif
+
                                 </div>
                             </form>
 
@@ -660,6 +712,7 @@
             const statusEl = document.getElementById('variant-status');
             const priceEl = document.querySelector('[data-product-price]');
             const addBtn = document.querySelector('form[action*="cart.add"] button[type="submit"]');
+            const baseDisabled = addBtn ? addBtn.disabled : false;
 
             if (!picker || !variantInput) return;
 
@@ -705,7 +758,7 @@
             const selections = {};
 
             // 初始禁用下单
-            if (addBtn) {
+            if (addBtn && picker) {
                 addBtn.disabled = true;
                 addBtn.classList.add('opacity-60', 'cursor-not-allowed');
             }
@@ -794,10 +847,17 @@
                 }
 
                 if (addBtn) {
+                    const blockedByAuth = addBtn.hasAttribute('data-auth-blocked');
                     const outOfStock = variant.stock !== undefined && Number(variant.stock) <= 0;
-                    addBtn.disabled = outOfStock;
-                    addBtn.classList.toggle('opacity-60', outOfStock);
-                    addBtn.classList.toggle('cursor-not-allowed', outOfStock);
+
+                    if (blockedByAuth) {
+                        addBtn.disabled = true;
+                        addBtn.classList.add('opacity-60', 'cursor-not-allowed');
+                    } else {
+                        addBtn.disabled = outOfStock;
+                        addBtn.classList.toggle('opacity-60', outOfStock);
+                        addBtn.classList.toggle('cursor-not-allowed', outOfStock);
+                    }
                 }
             }
 

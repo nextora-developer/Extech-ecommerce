@@ -70,13 +70,24 @@ class CartController extends Controller
 
     public function add(Request $request, Product $product)
     {
+        // 先检查登录
+        if (!auth()->check()) {
+            return back()->with('error', 'Please login first.');
+        }
+
+        // 检查用户是否已 verified
+        // 这里请根据你的 users 表字段改
+        // 例如：is_verified / verified / status === 'verified'
+        if ((int) auth()->user()->is_verified !== 1) {
+            return back()->with('error', 'Your account is not verified yet. You cannot add items to cart.');
+        }
+
         // 统一入口：游客 / 会员都可以
         $cart = $this->getOrCreateCart();
 
         // ✅ 购物车类型锁定：digital vs physical 不能混
         $incomingIsDigital = (bool) $product->is_digital;
 
-        // 取购物车里任意一个 item 的 product.is_digital（有一个就代表 cart 已经“定型”）
         $firstItem = $cart->items()
             ->with('product:id,is_digital')
             ->first();
@@ -92,13 +103,13 @@ class CartController extends Controller
                 return back()->with('error', $msg);
             }
         }
+
         $qty = max(1, (int) $request->input('quantity', 1));
 
         $variantId    = null;
         $variantLabel = null;
         $unitPrice    = $product->price;
 
-        // 有 variant 的情况
         if ($product->has_variants) {
             $variantId = $request->input('variant_id');
 
@@ -109,7 +120,6 @@ class CartController extends Controller
             $variant   = $product->variants()->where('id', $variantId)->firstOrFail();
             $unitPrice = $variant->price;
 
-            // 组 variant 显示文字
             $label = explode('/', $variant->options['label'] ?? '');
             $value = explode('/', $variant->options['value'] ?? '');
 
@@ -128,7 +138,6 @@ class CartController extends Controller
             return back()->with('error', 'This product or variant does not have a price set.');
         }
 
-        // 同 product + variant 合并数量
         $query = $cart->items()->where('product_id', $product->id);
 
         if ($variantId) {
