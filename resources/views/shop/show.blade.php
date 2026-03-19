@@ -455,22 +455,56 @@
 
                                     {{-- Notice (full width below) --}}
                                     @if (!$isLoggedIn)
-                                        <p class="text-sm text-gray-500">
-                                            Please
+                                        {{-- Login Required Prompt --}}
+                                        <div
+                                            class="flex items-center justify-between gap-4 rounded-2xl border border-amber-200 bg-amber-50/50 p-4 shadow-sm backdrop-blur-sm">
+                                            <div class="flex items-center gap-3">
+                                                <div
+                                                    class="flex-shrink-0 w-10 h-10 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center">
+                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor"
+                                                        viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="2"
+                                                            d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+                                                    </svg>
+                                                </div>
+                                                <div>
+                                                    <p class="text-sm font-bold text-amber-900">Authentication Required
+                                                    </p>
+                                                    <p class="text-xs text-amber-700/80">Please login to add this
+                                                        product to your cart.</p>
+                                                </div>
+                                            </div>
                                             <a href="{{ route('login') }}"
-                                                class="font-semibold text-[#15A5ED] hover:underline">
-                                                login
+                                                class="whitespace-nowrap px-4 py-2 rounded-lg bg-amber-600 text-white text-xs font-bold hover:bg-amber-700 transition-colors shadow-sm shadow-amber-200">
+                                                Login Now
                                             </a>
-                                            to add this item to your cart.
-                                        </p>
+                                        </div>
                                     @elseif(!$isVerified)
-                                        <p class="text-sm text-gray-500">
-                                            Your account must be verified before you can add items to cart.
+                                       {{-- Verification Required Prompt --}}
+                                        <div
+                                            class="flex items-center justify-between gap-4 rounded-2xl border border-red-200 bg-red-50/50 p-4 shadow-sm backdrop-blur-sm">
+                                            <div class="flex items-center gap-3">
+                                                <div
+                                                    class="flex-shrink-0 w-10 h-10 rounded-xl bg-red-100 text-red-600 flex items-center justify-center">
+                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor"
+                                                        viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="2"
+                                                            d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                                                    </svg>
+                                                </div>
+                                                <div>
+                                                    <p class="text-sm font-bold text-red-900">Account Not Verified</p>
+                                                    <p class="text-xs text-red-700/80">Verification is required for
+                                                        purchasing.</p>
+                                                </div>
+                                            </div>
                                             <a href="{{ route('account.profile.edit') }}"
-                                                class="font-semibold text-[#15A5ED] hover:underline">
-                                                Verify now
+                                                class="whitespace-nowrap px-4 py-2 rounded-lg bg-red-600 text-white text-xs font-bold hover:bg-red-700 transition-colors shadow-sm shadow-red-200">
+                                                Verify Now
                                             </a>
-                                        </p>
+                                        </div>
                                     @endif
 
                                 </div>
