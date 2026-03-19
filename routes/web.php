@@ -20,6 +20,8 @@ use App\Http\Controllers\Admin\AdminPaymentMethodController;
 use App\Http\Controllers\Admin\AdminShippingController;
 use App\Http\Controllers\Admin\AdminOrderInvoiceController;
 use App\Http\Controllers\Admin\AgentController;
+use App\Http\Controllers\Admin\ReferralSettingController;
+
 
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AccountOrderController;
@@ -27,6 +29,7 @@ use App\Http\Controllers\AccountAddressController;
 use App\Http\Controllers\AccountProfileController;
 use App\Http\Controllers\AccountFavoriteController;
 use App\Http\Controllers\AccountOrderInvoiceController;
+use App\Http\Controllers\AccountReferralController;
 
 
 use App\Http\Controllers\HitpayController;
@@ -153,6 +156,8 @@ Route::middleware('auth')->group(function () {
         Route::delete('/favorites/{product}', [AccountFavoriteController::class, 'destroy'])
             ->middleware('auth')
             ->name('favorites.destroy');
+
+        Route::get('/referral', [AccountReferralController::class, 'index'])->name('referral.index');
     });
 });
 
@@ -201,6 +206,7 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->name('admin.')->group(fun
     Route::get('agents/{agent}', [AgentController::class, 'show'])->name('agents.show');
     Route::patch('agents/{agent}/suspend', [AgentController::class, 'suspend'])->name('agents.suspend');
     Route::patch('agents/{agent}/activate', [AgentController::class, 'activate'])->name('agents.activate');
+    Route::post('/agents/{agent}/adjust-points', [AgentController::class, 'adjustPoints'])->name('agents.adjust-points');
 
     // 地址：新增依附 user，其他用 address id
     Route::get('users/{user}/addresses/create', [AdminAddressController::class, 'create'])
@@ -223,6 +229,9 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->name('admin.')->group(fun
     Route::get('/reports/orders', [AdminReportController::class, 'orders'])->name('reports.orders');
     Route::get('/reports/customers', [AdminReportController::class, 'customers'])->name('reports.customers');
     Route::get('/reports/export', [AdminReportController::class, 'export'])->name('reports.export');
+    Route::get('/reports/point-logs', [AdminReportController::class, 'pointLogs'])->name('reports.point-logs');
+    Route::get('/reports/point-logs/export', [AdminReportController::class, 'exportPointLogs']) ->name('reports.point-logs.export');
+    Route::get('/reports/referrals', [AdminReportController::class, 'referrals'])->name('reports.referrals');
 
     // Banner
     Route::resource('banners', AdminBannerController::class);
@@ -236,6 +245,9 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->name('admin.')->group(fun
     Route::post('/shipping', [AdminShippingController::class, 'store'])->name('shipping.store');
     Route::get('/shipping/{rate}/edit', [AdminShippingController::class, 'edit'])->name('shipping.edit');
     Route::put('/shipping/{rate}', [AdminShippingController::class, 'update'])->name('shipping.update');
+
+    Route::get('/referral-settings', [ReferralSettingController::class, 'index'])->name('referral-settings.index');
+    Route::post('/referral-settings', [ReferralSettingController::class, 'update'])->name('referral-settings.update');
 });
 
 /*

@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Mail;
 use App\Mail\OrderStatusUpdatedMail;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Log;
+use App\Services\AgentCommissionService;
 
 class AdminOrderController extends Controller
 {
@@ -16,7 +17,6 @@ class AdminOrderController extends Controller
     {
         $q = Order::query();
 
-        // Filters
         if ($request->filled('status')) {
             $q->where('status', $request->string('status'));
         }
@@ -56,13 +56,10 @@ class AdminOrderController extends Controller
     {
         $statuses = ['pending', 'paid', 'processing', 'shipped', 'completed', 'cancelled', 'failed'];
 
-        // 先记住旧状态
         $oldStatus = $order->status;
 
-        // 确保 items + product 有载入
         $order->loadMissing('items.product');
 
-        // 判断这张订单有没有实体商品
         $hasPhysicalItems = $order->items->contains(function ($item) {
             return !($item->product?->is_digital);
         });
@@ -72,14 +69,12 @@ class AdminOrderController extends Controller
         ];
 
         if ($hasPhysicalItems) {
-            // 实体商品：只有 shipped / completed 需要物流资料
             $needShipping = in_array($request->input('status'), ['shipped', 'completed']);
 
             $rules['shipping_courier'] = [$needShipping ? 'required' : 'nullable', 'string', 'max:100'];
             $rules['tracking_number'] = [$needShipping ? 'required' : 'nullable', 'string', 'max:120'];
             $rules['shipped_at'] = ['nullable', 'date'];
         } else {
-            // 数码商品：processing / completed 时显示 note + processed_at
             $needDigitalFields = in_array($request->input('status'), ['processing', 'completed']);
 
             $rules['admin_note'] = [$needDigitalFields ? 'required' : 'nullable', 'string', 'max:2000'];
@@ -110,6 +105,11 @@ class AdminOrderController extends Controller
         $order->refresh();
 
         $newStatus = $order->status;
+
+        // ✅ 首次完成订单时，发 referral commission
+        if ($oldStatus !== 'completed' && $newStatus === 'completed') {
+            app(AgentCommissionService::class)->handleCompletedOrder($order);
+        }
 
         if ($oldStatus !== $newStatus && $order->customer_email) {
             Log::info('Order status update mail triggered', [
@@ -154,7 +154,6 @@ class AdminOrderController extends Controller
         $orders = Order::whereIn('id', $request->orders)->get();
 
         foreach ($orders as $order) {
-
             $oldStatus = $order->status;
 
             $order->update([
@@ -162,13 +161,10 @@ class AdminOrderController extends Controller
             ]);
 
             if ($oldStatus !== $status && $order->customer_email) {
-
                 try {
-
                     Mail::to($order->customer_email)
                         ->send(new OrderStatusUpdatedMail($order, $oldStatus, $status));
                 } catch (\Throwable $e) {
-
                     Log::error('Bulk order email failed', [
                         'order_no' => $order->order_no,
                         'error' => $e->getMessage()

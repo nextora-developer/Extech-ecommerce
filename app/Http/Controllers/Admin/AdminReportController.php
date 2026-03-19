@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\User;
+use App\Models\PointLog;
+use App\Models\AgentCommission;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
@@ -238,5 +240,161 @@ class AdminReportController extends Controller
         };
 
         return response()->streamDownload($callback, $filename, $headers);
+    }
+
+    public function pointLogs(Request $request)
+    {
+        $query = PointLog::with('agent.user')->latest();
+
+        if ($request->filled('type')) {
+            $query->where('type', $request->type);
+        }
+
+        if ($request->filled('direction')) {
+            $query->where('direction', $request->direction);
+        }
+
+        if ($request->filled('keyword')) {
+            $keyword = trim($request->keyword);
+
+            $query->where(function ($q) use ($keyword) {
+                $q->where('remark', 'like', "%{$keyword}%")
+                    ->orWhere('reference_type', 'like', "%{$keyword}%")
+                    ->orWhereHas('agent.user', function ($userQuery) use ($keyword) {
+                        $userQuery->where('name', 'like', "%{$keyword}%")
+                            ->orWhere('email', 'like', "%{$keyword}%");
+                    });
+            });
+        }
+
+        if ($request->filled('start_date')) {
+            $query->whereDate('created_at', '>=', $request->start_date);
+        }
+
+        if ($request->filled('end_date')) {
+            $query->whereDate('created_at', '<=', $request->end_date);
+        }
+
+        $pointLogs = $query->paginate(20)->withQueryString();
+
+        return view('admin.reports.point-logs', compact('pointLogs'));
+    }
+
+    public function exportPointLogs(Request $request)
+    {
+        $query = PointLog::with('agent.user')->latest();
+
+        if ($request->filled('type')) {
+            $query->where('type', $request->type);
+        }
+
+        if ($request->filled('direction')) {
+            $query->where('direction', $request->direction);
+        }
+
+        if ($request->filled('keyword')) {
+            $keyword = trim($request->keyword);
+
+            $query->where(function ($q) use ($keyword) {
+                $q->where('remark', 'like', "%{$keyword}%")
+                    ->orWhere('reference_type', 'like', "%{$keyword}%")
+                    ->orWhereHas('agent.user', function ($userQuery) use ($keyword) {
+                        $userQuery->where('name', 'like', "%{$keyword}%")
+                            ->orWhere('email', 'like', "%{$keyword}%");
+                    });
+            });
+        }
+
+        if ($request->filled('start_date')) {
+            $query->whereDate('created_at', '>=', $request->start_date);
+        }
+
+        if ($request->filled('end_date')) {
+            $query->whereDate('created_at', '<=', $request->end_date);
+        }
+
+        $logs = $query->get();
+
+        $filename = 'point_logs_' . now()->format('Ymd_His') . '.csv';
+
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => "attachment; filename=\"{$filename}\"",
+        ];
+
+        $callback = function () use ($logs) {
+            $handle = fopen('php://output', 'w');
+
+            fputcsv($handle, [
+                'Date',
+                'Agent Name',
+                'Agent Email',
+                'Type',
+                'Direction',
+                'Points',
+                'Reference Type',
+                'Reference ID',
+                'Remark',
+            ]);
+
+            foreach ($logs as $log) {
+                fputcsv($handle, [
+                    optional($log->created_at)->format('Y-m-d H:i:s'),
+                    $log->agent->user->name ?? '',
+                    $log->agent->user->email ?? '',
+                    $log->type,
+                    strtoupper($log->direction),
+                    number_format($log->points, 2, '.', ''),
+                    $log->reference_type ?? '',
+                    $log->reference_id ?? '',
+                    $log->remark ?? '',
+                ]);
+            }
+
+            fclose($handle);
+        };
+
+        return response()->streamDownload($callback, $filename, $headers);
+    }
+
+    public function referrals(Request $request)
+    {
+        $query = AgentCommission::with(['agent.user', 'user', 'order'])->latest();
+
+        if ($request->filled('keyword')) {
+            $keyword = trim($request->keyword);
+
+            $query->where(function ($q) use ($keyword) {
+                $q->whereHas('agent.user', function ($sub) use ($keyword) {
+                    $sub->where('name', 'like', "%{$keyword}%")
+                        ->orWhere('email', 'like', "%{$keyword}%");
+                })
+                    ->orWhereHas('user', function ($sub) use ($keyword) {
+                        $sub->where('name', 'like', "%{$keyword}%")
+                            ->orWhere('email', 'like', "%{$keyword}%");
+                    })
+                    ->orWhereHas('order', function ($sub) use ($keyword) {
+                        $sub->where('order_no', 'like', "%{$keyword}%");
+                    });
+            });
+        }
+
+        if ($request->filled('start_date')) {
+            $query->whereDate('created_at', '>=', $request->start_date);
+        }
+
+        if ($request->filled('end_date')) {
+            $query->whereDate('created_at', '<=', $request->end_date);
+        }
+
+        $referrals = $query->paginate(20)->withQueryString();
+
+        $summary = [
+            'total_commission_rm' => AgentCommission::sum('commission_amount_rm'),
+            'total_points_awarded' => AgentCommission::sum('points_awarded'),
+            'total_records' => AgentCommission::count(),
+        ];
+
+        return view('admin.reports.referrals', compact('referrals', 'summary'));
     }
 }

@@ -83,7 +83,10 @@
 
                 $isManagement = request()->routeIs('admin.users.*') || request()->routeIs('admin.agents.*');
 
-                $isSettings = request()->routeIs('admin.payment-methods.*') || request()->routeIs('admin.shipping.*');
+                $isSettings =
+                    request()->routeIs('admin.payment-methods.*') ||
+                    request()->routeIs('admin.shipping.*') ||
+                    request()->routeIs('admin.referral-settings.*');
             @endphp
 
             {{-- Nav --}}
@@ -302,29 +305,66 @@
                             <span class="h-2 w-2 rounded-full bg-[#D4AF37]/60"></span>
                             Shipping Fee
                         </a>
+
+                        <a href="{{ route('admin.referral-settings.index') }}"
+                            class="{{ $subBase }} {{ request()->routeIs('admin.referral-settings.*') ? $subActive : $subIdle }}">
+                            <span class="h-2 w-2 rounded-full bg-[#D4AF37]/60"></span>
+                            Referral Settings
+                        </a>
                     </div>
                 </div>
 
-                {{-- Single: Reports --}}
-                <a href="{{ route('admin.reports.index') }}"
-                    class="{{ $linkBase }} {{ request()->routeIs('admin.reports.*') ? $active : $idle }}">
-                    @if (request()->routeIs('admin.reports.*'))
-                        <span class="absolute left-[-16px] h-6 w-1 bg-[#D4AF37] rounded-r-full"></span>
-                    @endif
+                {{-- Group: Reports --}}
+<div x-data="{ open: {{ request()->routeIs('admin.reports.*') ? 'true' : 'false' }} }" class="space-y-1">
+    <button type="button"
+        class="{{ $linkBase }} {{ request()->routeIs('admin.reports.*') ? $active : $idle }} w-full justify-between"
+        @click="if(!collapsed) open = !open">
+        @if (request()->routeIs('admin.reports.*'))
+            <span class="absolute left-[-16px] h-6 w-1 bg-[#D4AF37] rounded-r-full"></span>
+        @endif
 
-                    <svg class="{{ $iconClass }}" fill="none" viewBox="0 0 24 24" stroke-width="1.8"
-                        stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                            d="M7.5 14.25v2.25m3-4.5v4.5m3-6.75v6.75m3-9v9M6 20.25h12A2.25 2.25 0 0 0 20.25 18V6A2.25 2.25 0 0 0 18 3.75H6A2.25 2.25 0 0 0 3.75 6v12A2.25 2.25 0 0 0 6 20.25Z" />
-                    </svg>
+        <div class="flex items-center gap-3">
+            <svg class="{{ $iconClass }}" fill="none" viewBox="0 0 24 24" stroke-width="1.8"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M7.5 14.25v2.25m3-4.5v4.5m3-6.75v6.75m3-9v9M6 20.25h12A2.25 2.25 0 0 0 20.25 18V6A2.25 2.25 0 0 0 18 3.75H6A2.25 2.25 0 0 0 3.75 6v12A2.25 2.25 0 0 0 6 20.25Z" />
+            </svg>
 
-                    <span x-show="!collapsed" class="text-sm tracking-tight">Reports</span>
+            <span x-show="!collapsed" class="text-sm tracking-tight">Reports</span>
+        </div>
 
-                    <div x-show="collapsed"
-                        class="fixed left-20 ml-2 px-3 py-1.5 bg-gray-900 text-white text-xs rounded shadow-xl opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50">
-                        Reports
-                    </div>
-                </a>
+        <svg x-show="!collapsed" class="h-4 w-4 text-gray-400 transition-transform"
+            :class="open ? 'rotate-180' : ''" fill="none" viewBox="0 0 24 24" stroke-width="2"
+            stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="{{ $chev }}" />
+        </svg>
+
+        <div x-show="collapsed"
+            class="fixed left-20 ml-2 px-3 py-1.5 bg-gray-900 text-white text-xs rounded shadow-xl opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50">
+            Reports
+        </div>
+    </button>
+
+    <div x-show="open && !collapsed" x-collapse class="pl-3 space-y-1">
+        <a href="{{ route('admin.reports.index') }}"
+            class="{{ $subBase }} {{ request()->routeIs('admin.reports.index') ? $subActive : $subIdle }}">
+            <span class="h-2 w-2 rounded-full bg-[#D4AF37]/60"></span>
+            Overview
+        </a>
+
+        <a href="{{ route('admin.reports.point-logs') }}"
+            class="{{ $subBase }} {{ request()->routeIs('admin.reports.point-logs') ? $subActive : $subIdle }}">
+            <span class="h-2 w-2 rounded-full bg-[#D4AF37]/60"></span>
+            Point Logs
+        </a>
+
+        <a href="{{ route('admin.reports.referrals') }}"
+            class="{{ $subBase }} {{ request()->routeIs('admin.reports.referrals') ? $subActive : $subIdle }}">
+            <span class="h-2 w-2 rounded-full bg-[#D4AF37]/60"></span>
+            Referral Reports
+        </a>
+    </div>
+</div>
             </nav>
 
             {{-- Logout Footer --}}
@@ -352,7 +392,8 @@
             <header
                 class="h-20 bg-white/80 backdrop-blur-md sticky top-0 z-20 border-b border-gray-100 px-8 flex items-center justify-between">
                 <div class="flex items-center gap-4">
-                    <button @click="toggle()" class="p-2 rounded-lg hover:bg-gray-100 text-gray-400 transition-colors">
+                    <button @click="toggle()"
+                        class="p-2 rounded-lg hover:bg-gray-100 text-gray-400 transition-colors">
                         <svg x-show="!collapsed" class="w-6 h-6" fill="none" stroke="currentColor"
                             viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"

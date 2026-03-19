@@ -736,6 +736,14 @@
                                         </span>
                                     </div>
 
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-gray-500">Points Discount</span>
+                                        <span class="font-bold text-emerald-600 text-right"
+                                            data-points-discount-summary>
+                                            - RM 0.00
+                                        </span>
+                                    </div>
+
                                     <div class="border-t border-gray-200 my-1 pt-3 flex justify-between items-center">
                                         <span class="text-base font-bold text-gray-900">Total</span>
                                         <div class="text-right">
@@ -748,6 +756,51 @@
                                         </div>
                                     </div>
                                 </div>
+
+                                @php
+                                    $availablePoints = auth()->user()?->agent?->current_points ?? 0;
+                                @endphp
+
+                                @if (auth()->check() && auth()->user()->agent && $availablePoints > 0)
+                                    <div class="mt-5 rounded-2xl border border-gray-200 bg-gray-50 p-4">
+                                        <div class="flex items-center justify-between gap-3 mb-3">
+                                            <div>
+                                                <label class="block text-base font-bold text-gray-700">
+                                                    Redeem Points
+                                                </label>
+                                                <p class="text-xs text-gray-500 mt-1">
+                                                    Available: {{ number_format($availablePoints, 2) }} points
+                                                </p>
+                                            </div>
+
+                                            <button type="button" id="useMaxPointsBtn"
+                                                class="px-3 py-1.5 rounded-xl bg-gray-900 text-white text-xs font-bold hover:bg-black transition">
+                                                Use Max
+                                            </button>
+                                        </div>
+
+                                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                            <div>
+                                                <input type="number" step="0.01" min="0"
+                                                    max="{{ $availablePoints }}" name="points_redeemed"
+                                                    id="pointsRedeemedInput" value="{{ old('points_redeemed', 0) }}"
+                                                    class="w-full text-black px-4 py-3 rounded-xl border border-gray-200 focus:border-[#15a5ed] focus:ring-2 focus:ring-[#15a5ed]/20 transition-all text-sm shadow-sm"
+                                                    placeholder="Enter points to redeem">
+                                            </div>
+
+                                            <div
+                                                class="rounded-xl border border-gray-200 bg-white px-4 py-3 flex items-center justify-between">
+                                                <span class="text-sm text-gray-500">Discount</span>
+                                                <span class="text-sm font-black text-emerald-600"
+                                                    id="pointsDiscountText">RM 0.00</span>
+                                            </div>
+                                        </div>
+
+                                        @error('points_redeemed')
+                                            <p class="text-xs text-red-500 mt-2">{{ $message }}</p>
+                                        @enderror
+                                    </div>
+                                @endif
 
                                 {{-- Remark / Order Notes --}}
                                 <div class="mt-5">
@@ -792,8 +845,7 @@
                     <input type="hidden" name="shipping_fee" data-shipping-fee-input value="0.00">
                     <input type="hidden" name="order_total" data-order-total-input
                         value="{{ number_format($subtotal, 2, '.', '') }}">
-
-
+                    <input type="hidden" name="points_discount_rm" data-points-discount-input value="0.00">
 
                 </section>
             </form>
@@ -981,53 +1033,101 @@
 
             const shippingFeeInput = document.querySelector('[data-shipping-fee-input]');
             const orderTotalInput = document.querySelector('[data-order-total-input]');
+            const pointsDiscountInput = document.querySelector('[data-points-discount-input]');
+            const pointsDiscountSummary = document.querySelector('[data-points-discount-summary]');
+
+            const pointsInput = document.getElementById('pointsRedeemedInput');
+            const pointsDiscountText = document.getElementById('pointsDiscountText');
+            const useMaxPointsBtn = document.getElementById('useMaxPointsBtn');
 
             const hasPhysical = @json($hasPhysical);
             const shippingRates = @json($shippingRates);
             const subtotal = Number({{ $subtotal }});
+            const availablePoints = Number({{ (float) (auth()->user()?->agent?->current_points ?? 0) }});
 
             if (!shippingText || !totalText) return;
 
-            // 全部 digital
-            if (!hasPhysical) {
-                shippingText.innerHTML = '<span class="text-emerald-600">Free</span>';
-                totalText.textContent = 'RM ' + subtotal.toFixed(2);
+            function getShippingFee() {
+                if (!hasPhysical) return 0;
 
-                if (payAmountEl) payAmountEl.textContent = 'RM ' + subtotal.toFixed(2);
-                if (shippingFeeInput) shippingFeeInput.value = '0.00';
-                if (orderTotalInput) orderTotalInput.value = subtotal.toFixed(2);
-                return;
-            }
+                if (!stateSelect) return 0;
 
-            if (!stateSelect) return;
-
-            function updateShipping() {
                 const selected = stateSelect.selectedOptions[0];
                 const zone = selected ? selected.dataset.zone : null;
 
-                if (!zone) {
-                    shippingText.innerHTML = '<span class="text-gray-400 font-normal">TBC</span>';
-                    totalText.textContent = 'RM ' + subtotal.toFixed(2);
+                if (!zone) return 0;
 
-                    if (payAmountEl) payAmountEl.textContent = 'RM ' + subtotal.toFixed(2);
-                    if (shippingFeeInput) shippingFeeInput.value = '0.00';
-                    if (orderTotalInput) orderTotalInput.value = subtotal.toFixed(2);
-                    return;
-                }
-
-                const fee = Number(shippingRates[zone] ?? 0);
-                const total = subtotal + fee;
-
-                shippingText.textContent = fee === 0 ? 'Free' : 'RM ' + fee.toFixed(2);
-                totalText.textContent = 'RM ' + total.toFixed(2);
-
-                if (payAmountEl) payAmountEl.textContent = 'RM ' + total.toFixed(2);
-                if (shippingFeeInput) shippingFeeInput.value = fee.toFixed(2);
-                if (orderTotalInput) orderTotalInput.value = total.toFixed(2);
+                return Number(shippingRates[zone] ?? 0);
             }
 
-            stateSelect.addEventListener('change', updateShipping);
-            updateShipping();
+            function getPointsRedeemed(beforeDiscountTotal) {
+                if (!pointsInput) return 0;
+
+                let val = Number(pointsInput.value || 0);
+
+                if (isNaN(val) || val < 0) val = 0;
+                if (val > availablePoints) val = availablePoints;
+                if (val > beforeDiscountTotal) val = beforeDiscountTotal;
+
+                pointsInput.value = val.toFixed(2);
+                return val;
+            }
+
+            function updateCheckoutTotals() {
+                const shippingFee = getShippingFee();
+                const beforeDiscountTotal = subtotal + shippingFee;
+                const pointsRedeemed = getPointsRedeemed(beforeDiscountTotal);
+                const finalTotal = Math.max(beforeDiscountTotal - pointsRedeemed, 0);
+
+                if (!hasPhysical) {
+                    shippingText.innerHTML = '<span class="text-emerald-600">Free</span>';
+                } else {
+                    const selected = stateSelect?.selectedOptions?.[0];
+                    const zone = selected ? selected.dataset.zone : null;
+
+                    if (!zone) {
+                        shippingText.innerHTML = '<span class="text-gray-400 font-normal">TBC</span>';
+                    } else {
+                        shippingText.textContent = shippingFee === 0 ? 'Free' : 'RM ' + shippingFee.toFixed(2);
+                    }
+                }
+
+                if (pointsDiscountText) {
+                    pointsDiscountText.textContent = 'RM ' + pointsRedeemed.toFixed(2);
+                }
+
+                if (pointsDiscountSummary) {
+                    pointsDiscountSummary.textContent = '- RM ' + pointsRedeemed.toFixed(2);
+                }
+
+                totalText.textContent = 'RM ' + finalTotal.toFixed(2);
+
+                if (payAmountEl) payAmountEl.textContent = 'RM ' + finalTotal.toFixed(2);
+                if (shippingFeeInput) shippingFeeInput.value = shippingFee.toFixed(2);
+                if (pointsDiscountInput) pointsDiscountInput.value = pointsRedeemed.toFixed(2);
+                if (orderTotalInput) orderTotalInput.value = finalTotal.toFixed(2);
+            }
+
+            if (stateSelect) {
+                stateSelect.addEventListener('change', updateCheckoutTotals);
+            }
+
+            if (pointsInput) {
+                pointsInput.addEventListener('input', updateCheckoutTotals);
+                pointsInput.addEventListener('change', updateCheckoutTotals);
+            }
+
+            if (useMaxPointsBtn && pointsInput) {
+                useMaxPointsBtn.addEventListener('click', function() {
+                    const shippingFee = getShippingFee();
+                    const beforeDiscountTotal = subtotal + shippingFee;
+                    const maxUsable = Math.min(availablePoints, beforeDiscountTotal);
+                    pointsInput.value = maxUsable.toFixed(2);
+                    updateCheckoutTotals();
+                });
+            }
+
+            updateCheckoutTotals();
         });
     </script>
 

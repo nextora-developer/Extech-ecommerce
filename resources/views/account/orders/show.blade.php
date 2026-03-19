@@ -346,6 +346,22 @@
                                                 {{ number_format($order->shipping_fee, 2) }}</span>
                                         </div>
 
+                                        @if (($order->points_redeemed ?? 0) > 0)
+                                            <div class="flex justify-between text-sm">
+                                                <span class="text-gray-500">Points Redeemed</span>
+                                                <span class="font-bold text-blue-600 font-mono">
+                                                    {{ number_format($order->points_redeemed, 2) }} pts
+                                                </span>
+                                            </div>
+
+                                            <div class="flex justify-between text-sm">
+                                                <span class="text-gray-500">Points Discount</span>
+                                                <span class="font-bold text-emerald-600 font-mono">
+                                                    - RM {{ number_format($order->points_discount_rm, 2) }}
+                                                </span>
+                                            </div>
+                                        @endif
+                                        
                                         <div class="pt-4 border-t border-blue-200/50">
                                             <div class="flex justify-between items-end">
                                                 <span

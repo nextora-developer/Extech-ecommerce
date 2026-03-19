@@ -6,6 +6,7 @@ use App\Models\Cart;
 use App\Models\Order;
 use App\Models\PaymentMethod;
 use App\Models\ShippingRate;
+use App\Models\PointLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use App\Mail\OrderPlacedMail;
@@ -29,7 +30,7 @@ class CheckoutController extends Controller
         $items    = $cart->items;
         $subtotal = $items->sum(fn($i) => $i->unit_price * $i->qty);
 
-        $user           = auth()->user();
+        $user = auth()->user()?->load('agent');
         $defaultAddress = $user?->defaultAddress;
         $addresses      = $user?->addresses ?? collect();
 
@@ -108,6 +109,8 @@ class CheckoutController extends Controller
             return redirect()->route('cart.index');
         }
 
+        $user = auth()->user()->load('agent');
+
         $subtotal = $items->sum(fn($i) => $i->unit_price * $i->qty);
 
         $hasPhysical = $items->contains(fn($item) => !$item->product->is_digital);
@@ -116,26 +119,25 @@ class CheckoutController extends Controller
          * 2️⃣ 动态验证规则
          */
         $rules = [
-            'name'           => ['required', 'string', 'max:255'],
-            'phone'          => ['required', 'string', 'max:50'],
-            'email'          => ['required', 'email', 'max:255'],
-            'address_line1'  => [$hasPhysical ? 'required' : 'nullable', 'string', 'max:255'],
-            'address_line2'  => ['nullable', 'string', 'max:255'],
-            'postcode'       => [$hasPhysical ? 'required' : 'nullable', 'string', 'max:20'],
-            'city'           => [$hasPhysical ? 'required' : 'nullable', 'string', 'max:100'],
-            'state'          => [$hasPhysical ? 'required' : 'nullable', 'string', 'max:100'],
-            'country'        => [$hasPhysical ? 'required' : 'nullable', 'string', 'max:100'],
-            'payment_method' => ['required', 'exists:payment_methods,code'],
-            'remark'         => ['nullable', 'string', 'max:500'],
+            'name'            => ['required', 'string', 'max:255'],
+            'phone'           => ['required', 'string', 'max:50'],
+            'email'           => ['required', 'email', 'max:255'],
+            'address_line1'   => [$hasPhysical ? 'required' : 'nullable', 'string', 'max:255'],
+            'address_line2'   => ['nullable', 'string', 'max:255'],
+            'postcode'        => [$hasPhysical ? 'required' : 'nullable', 'string', 'max:20'],
+            'city'            => [$hasPhysical ? 'required' : 'nullable', 'string', 'max:100'],
+            'state'           => [$hasPhysical ? 'required' : 'nullable', 'string', 'max:100'],
+            'country'         => [$hasPhysical ? 'required' : 'nullable', 'string', 'max:100'],
+            'payment_method'  => ['required', 'exists:payment_methods,code'],
+            'remark'          => ['nullable', 'string', 'max:500'],
             'payment_receipt' => ['nullable', 'image', 'max:4096'],
+            'points_redeemed' => ['nullable', 'numeric', 'min:0'],
         ];
 
-        // Bank Transfer 才强制上传收据
         if ($request->input('payment_method') === 'online_transfer') {
             $rules['payment_receipt'] = ['required', 'image', 'max:4096'];
         }
 
-        // digital product dynamic fields validation
         foreach ($items as $item) {
             $product = $item->product;
 
@@ -170,7 +172,7 @@ class CheckoutController extends Controller
             ->firstOrFail();
 
         /**
-         * 4️⃣ 计算金额
+         * 4️⃣ 计算运费
          */
         $shippingFee = 0;
 
@@ -181,15 +183,33 @@ class CheckoutController extends Controller
                 ? 'east_my'
                 : 'west_my';
 
-            $shippingFee = ShippingRate::where('code', $zoneCode)->value('rate') ?? 0;
+            $shippingFee = (float) (ShippingRate::where('code', $zoneCode)->value('rate') ?? 0);
         } else {
-            $shippingFee = ShippingRate::where('code', 'digital')->value('rate') ?? 0;
+            $shippingFee = (float) (ShippingRate::where('code', 'digital')->value('rate') ?? 0);
         }
 
-        $total = $subtotal + $shippingFee;
+        /**
+         * 5️⃣ 计算 redeem points
+         */
+        $availablePoints = (float) ($user->agent->current_points ?? 0);
+        $requestedPoints = (float) ($validated['points_redeemed'] ?? 0);
+
+        if ($requestedPoints < 0) {
+            $requestedPoints = 0;
+        }
+
+        $beforeDiscountTotal = round((float) $subtotal + (float) $shippingFee, 2);
+
+        // 1 point = RM1
+        $pointsRedeemed = min($requestedPoints, $availablePoints, $beforeDiscountTotal);
+        $pointsRedeemed = round($pointsRedeemed, 2);
+
+        $pointsDiscountRm = $pointsRedeemed;
+        $total = max($beforeDiscountTotal - $pointsDiscountRm, 0);
+        $total = round($total, 2);
 
         /**
-         * 5️⃣ 处理收据文件
+         * 6️⃣ 处理收据文件
          */
         $receiptPath = null;
 
@@ -199,14 +219,14 @@ class CheckoutController extends Controller
         }
 
         /**
-         * 6️⃣ 生成订单编号
+         * 7️⃣ 生成订单编号
          */
         do {
             $orderNo = 'ORD-' . date('Ymd') . '-' . strtoupper(Str::random(6));
         } while (Order::where('order_no', $orderNo)->exists());
 
         /**
-         * 7️⃣ 建立订单
+         * 8️⃣ 建立订单 + 扣 points
          */
         $order = null;
 
@@ -222,6 +242,9 @@ class CheckoutController extends Controller
             $orderNo,
             $total,
             $hasPhysical,
+            $user,
+            $pointsRedeemed,
+            $pointsDiscountRm,
             &$order
         ) {
             $order = Order::create([
@@ -237,6 +260,8 @@ class CheckoutController extends Controller
                 'state'                => $hasPhysical ? ($validated['state'] ?? null) : null,
                 'country'              => $hasPhysical ? ($validated['country'] ?? null) : null,
                 'subtotal'             => $subtotal,
+                'points_redeemed'      => $pointsRedeemed,
+                'points_discount_rm'   => $pointsDiscountRm,
                 'shipping_fee'         => $shippingFee,
                 'total'                => $total,
                 'status'               => 'pending',
@@ -266,11 +291,25 @@ class CheckoutController extends Controller
                 ]);
             }
 
+            if ($pointsRedeemed > 0 && $user->agent) {
+                $user->agent->decrement('current_points', $pointsRedeemed);
+
+                PointLog::create([
+                    'agent_id'       => $user->agent->id,
+                    'type'           => 'redeem',
+                    'direction'      => 'out',
+                    'points'         => $pointsRedeemed,
+                    'reference_type' => 'order',
+                    'reference_id'   => $order->id,
+                    'remark'         => 'Redeemed points for order #' . $order->order_no,
+                ]);
+            }
+
             $cart->items()->delete();
         });
 
         /**
-         * 8️⃣ 发邮件
+         * 9️⃣ 发邮件
          */
         $isHitpay = $paymentMethod->code === 'hitpay';
 
@@ -296,7 +335,7 @@ class CheckoutController extends Controller
         }
 
         /**
-         * 9️⃣ HitPay
+         * 🔟 HitPay
          */
         if ($isHitpay) {
             return redirect()->route('hitpay.pay', $order);

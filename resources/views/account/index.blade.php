@@ -22,35 +22,195 @@
                 {{-- Right Content --}}
                 <main class="lg:col-span-3 space-y-8">
 
-                    {{-- Header Section --}}
-                    <section class="relative overflow-hidden bg-white rounded-3xl border border-gray-100 shadow-sm p-8">
-                        {{-- Subtle Decorative Background Element --}}
-                        <div
-                            class="absolute top-0 right-0 -mt-4 -mr-4 w-32 h-32 bg-[#F9F4E5] rounded-full opacity-50 blur-3xl">
+
+                    {{-- Points Wallet Section --}}
+                    <section
+                        class="relative overflow-hidden rounded-[2rem] border border-[#15A5ED]/10 bg-[linear-gradient(135deg,#0f172a_0%,#0b3a67_45%,#15A5ED_100%)] shadow-[0_20px_60px_rgba(21,165,237,0.18)] min-h-[260px]">
+                        <div class="absolute inset-0 opacity-20"
+                            style="background-image:
+        linear-gradient(to right, rgba(255,255,255,0.12) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255,255,255,0.12) 1px, transparent 1px);
+        background-size: 30px 30px;">
                         </div>
 
-                        <div class="relative flex flex-col md:flex-row md:items-end justify-between gap-6">
-                            <div>
-                                <h1 class="text-3xl font-black text-gray-900 leading-tight">
-                                    Welcome back, <br class="sm:hidden"> {{ explode(' ', $user->name)[0] }}
-                                </h1>
-                                <p class="text-sm text-gray-500 mt-2 max-w-md">
-                                    From your dashboard you can view your recent orders, manage your shipping addresses
-                                    and edit your password and account details.
-                                </p>
-                            </div>
+                        <div
+                            class="absolute -top-10 -right-10 w-32 h-32 md:w-40 md:h-40 rounded-full bg-white/10 blur-3xl">
+                        </div>
+                        <div
+                            class="absolute -bottom-10 -left-10 w-36 h-36 md:w-48 md:h-48 rounded-full bg-cyan-300/20 blur-3xl">
+                        </div>
 
-                            {{-- Stats Grid --}}
-                            <div class="flex items-center gap-3">
-                                @foreach ([['label' => 'Orders', 'value' => $stats['orders']], ['label' => 'Wishlist', 'value' => $stats['favorites']], ['label' => 'Addresses', 'value' => $stats['addresses']]] as $stat)
+                        <div class="relative p-5 sm:p-6 md:p-8">
+                            <div class="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+
+                                {{-- Left: Main Wallet --}}
+                                <div class="w-full max-w-xl">
                                     <div
-                                        class="px-5 py-3 rounded-2xl bg-gray-50 border border-gray-100 text-center min-w-[100px]">
-                                        <div class="text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-1">
-                                            {{ $stat['label'] }}</div>
-                                        <div class="text-xl font-black text-gray-900">{{ $stat['value'] }}</div>
+                                        class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-white/80 text-[10px] sm:text-[11px] font-bold uppercase tracking-[0.18em] mb-4">
+                                        <span class="w-2 h-2 rounded-full bg-cyan-300 animate-pulse"></span>
+                                        Points Wallet
                                     </div>
-                                @endforeach
+
+                                    <h2
+                                        class="text-white text-3xl sm:text-4xl md:text-5xl font-black tracking-tight leading-none">
+                                        {{ number_format($currentPoints, 2) }}
+                                        <span
+                                            class="text-cyan-200 text-base sm:text-lg md:text-xl font-bold align-middle">PTS</span>
+                                    </h2>
+
+                                    <p class="mt-3 text-sm sm:text-[15px] text-white/75 leading-relaxed max-w-md">
+                                        This is your current available point balance. You can use your points during
+                                        checkout for order
+                                        redemption.
+                                    </p>
+
+                                    <div class="mt-6 flex flex-col sm:flex-row sm:flex-wrap gap-3">
+                                        <a href="{{ route('account.referral.index') }}"
+                                            class="inline-flex items-center justify-center px-5 py-3 rounded-2xl bg-white text-[#0B3A67] font-bold text-sm hover:bg-cyan-50 transition-all shadow-lg w-full sm:w-auto">
+                                            Open Referral Center
+                                        </a>
+
+                                        <span
+                                            class="inline-flex items-center justify-center px-5 py-3 rounded-2xl border border-white/15 bg-white/5 text-white/80 text-sm font-semibold w-full sm:w-auto">
+                                            RM1 = 1 Point
+                                        </span>
+                                    </div>
+                                </div>
+
+                                {{-- Right: Mini Stats --}}
+                                <div class="w-full lg:w-auto">
+                                    <div class="grid grid-cols-3 gap-2 sm:gap-3 lg:min-w-[360px]">
+                                        <div
+                                            class="rounded-2xl bg-white/10 border border-white/10 px-4 sm:px-5 py-4 sm:py-5 backdrop-blur-md shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]">
+                                            <p
+                                                class="text-[10px] uppercase tracking-widest font-bold text-white/45 mb-2">
+                                                Total Orders
+                                            </p>
+                                            <p class="text-xl sm:text-2xl font-black text-white leading-none">
+                                                {{ $stats['orders'] }}
+                                            </p>
+                                        </div>
+
+                                        <div
+                                            class="rounded-2xl bg-white/10 border border-white/10 px-4 sm:px-5 py-4 sm:py-5 backdrop-blur-md shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]">
+                                            <p
+                                                class="text-[10px] uppercase tracking-widest font-bold text-white/45 mb-2">
+                                                Total Wishlist
+                                            </p>
+                                            <p class="text-xl sm:text-2xl font-black text-white leading-none">
+                                                {{ $stats['favorites'] }}
+                                            </p>
+                                        </div>
+
+                                        <div
+                                            class="rounded-2xl bg-white/10 border border-white/10 px-4 sm:px-5 py-4 sm:py-5 backdrop-blur-md shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]">
+                                            <p
+                                                class="text-[10px] uppercase tracking-widest font-bold text-white/45 mb-2">
+                                                Total Addresses
+                                            </p>
+                                            <p class="text-xl sm:text-2xl font-black text-white leading-none">
+                                                {{ $stats['addresses'] }}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+
                             </div>
+                        </div>
+                    </section>
+
+                    {{-- Point Transactions --}}
+                    <section>
+                        <div class="flex items-center justify-between mb-5 px-2">
+                            <h2 class="text-lg font-bold text-gray-900 flex items-center gap-2">
+                                <span class="w-1.5 h-6 bg-[#15A5ED] rounded-full"></span>
+                                Point Transactions
+                            </h2>
+
+                            <a href="{{ route('account.referral.index') }}"
+                                class="text-sm font-bold text-[#15A5ED] hover:text-[#6DBAE1] flex items-center gap-1 group transition-colors">
+                                View Referral Center
+                                <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none"
+                                    stroke="currentColor" viewBox="0 0 24 24">
+                                    <path d="M13 7l5 5m0 0l-5 5m5-5H6" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round" />
+                                </svg>
+                            </a>
+                        </div>
+
+                        <div class="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
+                            @forelse ($recentPointLogs as $log)
+                                @php
+                                    $isIn = $log->direction === 'in';
+                                    $typeLabel = match ($log->type) {
+                                        'commission' => 'Commission Earned',
+                                        'redeem' => 'Points Redeemed',
+                                        'admin_adjustment' => 'Admin Adjustment',
+                                        default => ucfirst($log->type),
+                                    };
+                                @endphp
+
+                                <div
+                                    class="px-5 py-4 border-b border-gray-100 last:border-b-0 hover:bg-gray-50/60 transition-all">
+                                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                                        <div class="flex items-center gap-4">
+                                            <div
+                                                class="w-11 h-11 rounded-2xl flex items-center justify-center border
+                            {{ $isIn ? 'bg-emerald-50 border-emerald-100 text-emerald-600' : 'bg-rose-50 border-rose-100 text-rose-600' }}">
+                                                @if ($isIn)
+                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor"
+                                                        viewBox="0 0 24 24">
+                                                        <path d="M7 17L17 7M17 7H9M17 7V15" stroke-width="2"
+                                                            stroke-linecap="round" stroke-linejoin="round" />
+                                                    </svg>
+                                                @else
+                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor"
+                                                        viewBox="0 0 24 24">
+                                                        <path d="M17 17L7 7M7 7H15M7 7V15" stroke-width="2"
+                                                            stroke-linecap="round" stroke-linejoin="round" />
+                                                    </svg>
+                                                @endif
+                                            </div>
+
+                                            <div>
+                                                <div class="text-sm font-bold text-gray-900">
+                                                    {{ $typeLabel }}
+                                                </div>
+                                                <div class="text-xs text-gray-500 mt-1">
+                                                    {{ $log->remark ?: 'Point activity' }} •
+                                                    {{ $log->created_at->format('M d, Y h:i A') }}
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="text-right">
+                                            <div
+                                                class="text-sm font-black {{ $isIn ? 'text-emerald-600' : 'text-rose-600' }}">
+                                                {{ $isIn ? '+' : '-' }}{{ number_format($log->points, 2) }} pts
+                                            </div>
+                                            <div
+                                                class="text-[10px] font-bold uppercase tracking-widest text-gray-400 mt-1">
+                                                {{ $log->direction }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            @empty
+                                <div class="bg-white rounded-3xl border border-dashed border-gray-200 p-12 text-center">
+                                    <div
+                                        class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-50 text-gray-300 mb-4">
+                                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path
+                                                d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                                                stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                                        </svg>
+                                    </div>
+                                    <h3 class="text-gray-900 font-bold">No point transactions yet</h3>
+                                    <p class="text-sm text-gray-500 mt-1">
+                                        Your commission earnings and point redemptions will appear here.
+                                    </p>
+                                </div>
+                            @endforelse
                         </div>
                     </section>
 
@@ -151,10 +311,12 @@
                                     </div>
                                 </a>
                             @empty
-                                <div class="bg-white rounded-3xl border border-dashed border-gray-200 p-12 text-center">
+                                <div
+                                    class="bg-white rounded-3xl border border-dashed border-gray-200 p-12 text-center">
                                     <div
                                         class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-50 text-gray-300 mb-4">
-                                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <svg class="w-8 h-8" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
                                             <path d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" stroke-width="1.5"
                                                 stroke-linecap="round" stroke-linejoin="round" />
                                         </svg>

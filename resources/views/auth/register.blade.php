@@ -21,7 +21,8 @@
                     LEFT: Visual / Welcome
                     ======================= --}}
                 <div class="relative hidden lg:block">
-                    <div class="absolute inset-0 bg-[linear-gradient(135deg,#0ea5e9_0%,#2563eb_45%,#0b3a7a_100%)]"></div>
+                    <div class="absolute inset-0 bg-[linear-gradient(135deg,#0ea5e9_0%,#2563eb_45%,#0b3a7a_100%)]">
+                    </div>
 
                     <div class="absolute inset-0 opacity-30"
                         style="background-image:
@@ -90,8 +91,8 @@
                                 <div class="relative">
                                     <span
                                         class="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-10 rounded-r bg-[#15a5ed]/70"></span>
-                                    <input id="name" type="text" name="name" value="{{ old('name') }}" required autofocus
-                                        placeholder="John Doe"
+                                    <input id="name" type="text" name="name" value="{{ old('name') }}"
+                                        required autofocus placeholder="John Doe"
                                         class="w-full pl-5 pr-4 py-3 rounded-xl border border-gray-200 bg-gray-50/40
                                             focus:bg-white focus:border-[#15a5ed] focus:ring-4 focus:ring-[#15a5ed]/20
                                             transition-all duration-200 outline-none text-gray-900 placeholder:text-gray-400" />
@@ -110,13 +111,34 @@
                                 <div class="relative">
                                     <span
                                         class="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-10 rounded-r bg-[#15a5ed]/70"></span>
-                                    <input id="email" type="email" name="email" value="{{ old('email') }}" required
-                                        placeholder="name@company.com"
+                                    <input id="email" type="email" name="email" value="{{ old('email') }}"
+                                        required placeholder="name@company.com"
                                         class="w-full pl-5 pr-4 py-3 rounded-xl border border-gray-200 bg-gray-50/40
                                             focus:bg-white focus:border-[#15a5ed] focus:ring-4 focus:ring-[#15a5ed]/20
                                             transition-all duration-200 outline-none text-gray-900 placeholder:text-gray-400" />
                                 </div>
                                 @error('email')
+                                    <p class="text-xs text-red-500 mt-1.5">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            {{-- Referral Code --}}
+                            <div>
+                                <label for="referral_code"
+                                    class="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-2">
+                                    Referral Code <span class="text-gray-400 normal-case font-medium">(optional)</span>
+                                </label>
+                                <div class="relative">
+                                    <span
+                                        class="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-10 rounded-r bg-[#15a5ed]/70"></span>
+                                    <input id="referral_code" type="text" name="referral_code"
+                                        value="{{ old('referral_code', $referralCode ?? request('ref')) }}"
+                                        placeholder="Enter referral code"
+                                        class="w-full pl-5 pr-4 py-3 rounded-xl border border-gray-200 bg-gray-50/40
+                                                focus:bg-white focus:border-[#15a5ed] focus:ring-4 focus:ring-[#15a5ed]/20
+                                                transition-all duration-200 outline-none text-gray-900 placeholder:text-gray-400" />
+                                </div>
+                                @error('referral_code')
                                     <p class="text-xs text-red-500 mt-1.5">{{ $message }}</p>
                                 @enderror
                             </div>
@@ -130,8 +152,8 @@
                                 <div class="relative">
                                     <span
                                         class="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-10 rounded-r bg-[#15a5ed]/70"></span>
-                                    <input id="password" type="password" name="password" required autocomplete="new-password"
-                                        placeholder="••••••••"
+                                    <input id="password" type="password" name="password" required
+                                        autocomplete="new-password" placeholder="••••••••"
                                         class="w-full pl-5 pr-4 py-3 rounded-xl border border-gray-200 bg-gray-50/40
                                             focus:bg-white focus:border-[#15a5ed] focus:ring-4 focus:ring-[#15a5ed]/20
                                             transition-all duration-200 outline-none text-gray-900 placeholder:text-gray-400" />
@@ -150,8 +172,8 @@
                                 <div class="relative">
                                     <span
                                         class="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-10 rounded-r bg-[#15a5ed]/70"></span>
-                                    <input id="password_confirmation" type="password" name="password_confirmation" required
-                                        placeholder="••••••••"
+                                    <input id="password_confirmation" type="password" name="password_confirmation"
+                                        required placeholder="••••••••"
                                         class="w-full pl-5 pr-4 py-3 rounded-xl border border-gray-200 bg-gray-50/40
                                             focus:bg-white focus:border-[#15a5ed] focus:ring-4 focus:ring-[#15a5ed]/20
                                             transition-all duration-200 outline-none text-gray-900 placeholder:text-gray-400" />

@@ -7,6 +7,7 @@ use App\Models\Agent;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
 
 class AgentController extends Controller
 {
@@ -44,7 +45,22 @@ class AgentController extends Controller
             ? $agent->user->orders()->withCount('items')->latest()->take(5)->get()
             : collect();
 
-        return view('admin.agents.show', compact('agent', 'recentOrders'));
+        $referredUsersCount = \App\Models\User::where('referred_by_agent_id', $agent->id)->count();
+
+        $successfulReferralOrders = \App\Models\AgentCommission::where('agent_id', $agent->id)->count();
+
+        $recentPointLogs = \App\Models\PointLog::where('agent_id', $agent->id)
+            ->latest()
+            ->take(10)
+            ->get();
+
+        return view('admin.agents.show', compact(
+            'agent',
+            'recentOrders',
+            'referredUsersCount',
+            'successfulReferralOrders',
+            'recentPointLogs'
+        ));
     }
 
     public function setAsAgent(User $user)
@@ -62,12 +78,13 @@ class AgentController extends Controller
         }
 
         Agent::create([
-            'user_id'     => $user->id,
-            'agent_code'  => $this->generateAgentCode(),
-            'status'      => 'active',
-            'approved_by' => auth()->id(),
-            'approved_at' => now(),
-            'notes'       => null,
+            'user_id'       => $user->id,
+            'agent_code'    => $this->generateAgentCode(),
+            'referral_code' => $this->generateReferralCode(),
+            'status'        => 'active',
+            'approved_by'   => auth()->id(),
+            'approved_at'   => now(),
+            'notes'         => null,
         ]);
 
         return back()->with('success', 'User has been assigned as agent successfully.');
@@ -89,6 +106,15 @@ class AgentController extends Controller
         do {
             $code = 'AGT-' . strtoupper(Str::random(6));
         } while (Agent::where('agent_code', $code)->exists());
+
+        return $code;
+    }
+
+    protected function generateReferralCode(): string
+    {
+        do {
+            $code = 'REF-' . strtoupper(Str::random(6));
+        } while (Agent::where('referral_code', $code)->exists());
 
         return $code;
     }
@@ -125,5 +151,44 @@ class AgentController extends Controller
         ]);
 
         return back()->with('success', 'Agent activated successfully.');
+    }
+
+    public function adjustPoints(Request $request, Agent $agent)
+    {
+        $validated = $request->validate([
+            'direction' => ['required', 'in:in,out'],
+            'points' => ['required', 'numeric', 'min:0.01'],
+            'remark' => ['required', 'string', 'max:255'],
+        ]);
+
+        $points = round((float) $validated['points'], 2);
+        $currentPoints = (float) ($agent->current_points ?? 0);
+
+        if ($validated['direction'] === 'out' && $points > $currentPoints) {
+            return back()->withErrors([
+                'adjust_points' => 'Cannot deduct more than current points balance.',
+            ]);
+        }
+
+        DB::transaction(function () use ($agent, $validated, $points) {
+            if ($validated['direction'] === 'in') {
+                $agent->increment('current_points', $points);
+                $agent->increment('total_earned_points', $points);
+            } else {
+                $agent->decrement('current_points', $points);
+            }
+
+            \App\Models\PointLog::create([
+                'agent_id' => $agent->id,
+                'type' => 'admin_adjustment',
+                'direction' => $validated['direction'],
+                'points' => $points,
+                'reference_type' => 'agent',
+                'reference_id' => $agent->id,
+                'remark' => $validated['remark'],
+            ]);
+        });
+
+        return back()->with('success', 'Points adjusted successfully.');
     }
 }

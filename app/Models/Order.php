@@ -46,6 +46,9 @@ class Order extends Model
 
         'admin_note',
         'processed_at',
+
+        'points_redeemed',
+        'points_discount_rm',
     ];
 
     protected $casts = [

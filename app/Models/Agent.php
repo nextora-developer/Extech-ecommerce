@@ -4,6 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
+
+use App\Models\User;
 
 class Agent extends Model
 {
@@ -12,6 +15,7 @@ class Agent extends Model
     protected $fillable = [
         'user_id',
         'agent_code',
+        'referral_code',
         'status',
         'approved_by',
         'approved_at',
@@ -33,5 +37,10 @@ class Agent extends Model
     public function approver()
     {
         return $this->belongsTo(User::class, 'approved_by');
+    }
+
+    public function referredUsers()
+    {
+        return $this->hasMany(User::class, 'referred_by_agent_id');
     }
 }

@@ -277,26 +277,64 @@
                         <div class="muted" style="font-style: italic;">"{{ $order->remark }}"</div>
                     @endif
                 </td>
+
                 <td style="width: 40%;">
                     <table style="width: 100%;">
+
                         <tr class="total-row">
                             <td class="right muted">Subtotal</td>
-                            <td class="right font-bold">RM{{ number_format($order->subtotal, 2) }}</td>
+                            <td class="right font-bold">
+                                RM{{ number_format($order->subtotal, 2) }}
+                            </td>
                         </tr>
+
                         <tr class="total-row">
                             <td class="right muted">Shipping Fee</td>
-                            <td class="right font-bold">RM{{ number_format($order->shipping_fee, 2) }}</td>
+                            <td class="right font-bold">
+                                RM{{ number_format($order->shipping_fee, 2) }}
+                            </td>
                         </tr>
+
+                        {{-- ✅ Points --}}
+                        @if (($order->points_redeemed ?? 0) > 0)
+                            <tr class="total-row">
+                                <td class="right muted">Points Redeemed</td>
+                                <td class="right font-bold" style="color:#2563eb;">
+                                    {{ number_format($order->points_redeemed, 2) }} pts
+                                </td>
+                            </tr>
+
+                            <tr class="total-row">
+                                <td class="right muted">Points Discount</td>
+                                <td class="right font-bold" style="color:#16a34a;">
+                                    - RM{{ number_format($order->points_discount_rm, 2) }}
+                                </td>
+                            </tr>
+                        @endif
+
                         <tr>
                             <td colspan="2">
                                 <div class="grand-total-box">
-                                    <div class="label" style="color: #64748b; margin-bottom: 2px;">Total Payable</div>
+                                    <div class="label" style="color: #64748b; margin-bottom: 2px;">
+                                        Total Payable
+                                    </div>
+
                                     <div style="font-size: 22px; font-weight: 900; color: #0f172a;">
                                         RM {{ number_format($order->total, 2) }}
                                     </div>
+
+                                    {{-- ✅ Extra info --}}
+                                    @if (($order->points_redeemed ?? 0) > 0)
+                                        <div style="font-size:10px; color:#64748b; margin-top:4px;">
+                                            Saved RM {{ number_format($order->points_discount_rm, 2) }}
+                                            using {{ number_format($order->points_redeemed, 2) }} points
+                                        </div>
+                                    @endif
+
                                 </div>
                             </td>
                         </tr>
+
                     </table>
                 </td>
             </tr>
