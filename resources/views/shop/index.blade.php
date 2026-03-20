@@ -4,16 +4,13 @@
 
             {{-- Header --}}
             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-4">
-                <div>
-                    <h1 class="text-2xl sm:text-3xl font-semibold text-gray-900">Shop</h1>
-                    <p class="text-sm text-gray-500">Browse Shop products and find what you need.</p>
-                </div>
-
+                
                 <div class="flex items-center gap-3">
                     {{-- Mobile Filter Button --}}
-                    <button type="button" @click="mobileFilterOpen = true"
+                    <button type="button"
+                        @click="mobileFilterOpen = true; document.body.classList.add('overflow-hidden')"
                         class="sm:hidden inline-flex items-center gap-2 px-4 h-10 rounded-xl bg-slate-900 text-white text-xs font-bold uppercase tracking-widest
-                               hover:bg-[#15A5ED] hover:shadow-[0_8px_20px_rgba(21,165,237,0.25)] transition-all active:scale-95">
+           hover:bg-[#15A5ED] hover:shadow-[0_8px_20px_rgba(21,165,237,0.25)] transition-all active:scale-95">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
                             stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -21,11 +18,6 @@
                         </svg>
                         Filter
                     </button>
-
-                    {{-- 总数 --}}
-                    <div class="text-xs sm:text-sm text-gray-500">
-                        Showing <span class="font-semibold text-gray-800">{{ $products->total() }}</span> items
-                    </div>
                 </div>
             </div>
 
@@ -218,45 +210,77 @@
             </div>
 
             {{-- MOBILE: Slide-over Filter Drawer --}}
-            <div class="sm:hidden fixed inset-0 z-50" x-show="mobileFilterOpen" x-cloak>
+            {{-- MOBILE: Bottom Sheet Filter --}}
+            <div class="sm:hidden fixed inset-0 z-[9999]" x-show="mobileFilterOpen" x-cloak
+                @keydown.escape.window="mobileFilterOpen = false; document.body.classList.remove('overflow-hidden')">
+
                 {{-- Backdrop --}}
-                <div class="absolute inset-0 bg-black/40" @click="mobileFilterOpen=false"></div>
+                <div class="absolute inset-0 bg-black/40 backdrop-blur-[2px]"
+                    @click="mobileFilterOpen = false; document.body.classList.remove('overflow-hidden')"
+                    x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0"
+                    x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-200"
+                    x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0">
+                </div>
 
-                {{-- Panel --}}
-                <div class="absolute right-0 top-0 h-full w-[88%] max-w-sm bg-[#F5F5F7] shadow-2xl"
-                    x-transition:enter="transition ease-out duration-200" x-transition:enter-start="translate-x-full"
-                    x-transition:enter-end="translate-x-0" x-transition:leave="transition ease-in duration-200"
-                    x-transition:leave-start="translate-x-0" x-transition:leave-end="translate-x-full">
+                {{-- Bottom Panel --}}
+                <div class="absolute inset-x-0 bottom-0 mx-auto w-full max-w-md"
+                    x-transition:enter="transform transition ease-out duration-300"
+                    x-transition:enter-start="translate-y-full opacity-0"
+                    x-transition:enter-end="translate-y-0 opacity-100"
+                    x-transition:leave="transform transition ease-in duration-200"
+                    x-transition:leave-start="translate-y-0 opacity-100"
+                    x-transition:leave-end="translate-y-full opacity-0">
 
-                    <div class="p-4 flex items-center justify-between">
-                        <div class="text-sm font-bold uppercase tracking-widest text-slate-700">Filters</div>
-                        <button class="p-2 rounded-lg hover:bg-white/70" @click="mobileFilterOpen=false"
-                            aria-label="Close">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-500" fill="none"
-                                viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                        </button>
-                    </div>
+                    <div
+                        class="mx-3 mb-3 bg-[#F5F5F7] rounded-[2rem] border border-white/70 shadow-[0_-20px_60px_rgba(0,0,0,0.18)] overflow-hidden max-h-[82vh] flex flex-col">
 
-                    <div class="px-4 pb-6 overflow-y-auto h-[calc(100%-56px)] custom-scrollbar">
-                        @include('shop.partials.filters', [
-                            'mode' => 'mobile',
-                            'formId' => 'mobileFilterForm',
-                        ])
+                        {{-- Handle --}}
+                        <div class="flex justify-center pt-3">
+                            <div class="h-1.5 w-14 rounded-full bg-slate-300"></div>
+                        </div>
 
-                        <div class="mt-4 grid grid-cols-2 gap-3">
-                            <a href="{{ route('shop.index') }}"
-                                class="text-center rounded-2xl border border-black/[0.08] bg-white py-3 text-xs font-bold uppercase tracking-widest text-gray-600">
-                                Reset
-                            </a>
+                        {{-- Header --}}
+                        <div class="px-5 pt-4 pb-4 flex items-center justify-between">
+                            <div>
+                                <h3 class="text-[15px] font-black tracking-tight text-slate-900">Shop Filters</h3>
+                                <p class="text-[10px] uppercase tracking-[0.18em] font-bold text-[#15A5ED]/70 mt-1">
+                                    Refine your products
+                                </p>
+                            </div>
 
-                            {{-- ✅ Done = submit --}}
-                            <button type="button" @click="document.getElementById('mobileFilterForm')?.submit()"
-                                class="rounded-2xl bg-slate-900 py-3 text-xs font-bold uppercase tracking-widest text-white shadow-sm active:scale-[0.99]">
-                                Done
+                            <button type="button"
+                                class="h-10 w-10 rounded-full bg-white border border-black/[0.05] shadow-sm flex items-center justify-center text-slate-500 hover:text-slate-700"
+                                @click="mobileFilterOpen = false; document.body.classList.remove('overflow-hidden')"
+                                aria-label="Close">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
                             </button>
+                        </div>
+
+                        {{-- Body --}}
+                        <div class="px-4 pb-3 overflow-y-auto flex-1 min-h-0 custom-scrollbar">
+                            @include('shop.partials.filters', [
+                                'mode' => 'mobile',
+                                'formId' => 'mobileFilterForm',
+                            ])
+                        </div>
+
+                        {{-- Footer --}}
+                        <div class="p-4 pt-3 border-t border-black/[0.04] bg-[#F5F5F7] shrink-0">
+                            <div class="grid grid-cols-2 gap-3">
+                                <a href="{{ route('shop.index') }}"
+                                    class="text-center rounded-2xl border border-black/[0.08] bg-white py-3 text-xs font-bold uppercase tracking-widest text-slate-500 hover:bg-slate-50 transition-all">
+                                    Reset
+                                </a>
+
+                                <button type="button" @click="document.getElementById('mobileFilterForm')?.submit()"
+                                    class="rounded-2xl bg-slate-900 py-3 text-xs font-bold uppercase tracking-widest text-white
+                   hover:bg-[#15A5ED] hover:shadow-[0_10px_24px_rgba(21,165,237,0.28)] transition-all active:scale-[0.99]">
+                                    Done
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
