@@ -383,4 +383,156 @@ class AdminReportController extends Controller
 
         return view('admin.reports.referrals', compact('referrals', 'summary'));
     }
+
+    public function exportOrderAgentCommissionReport(Request $request)
+    {
+        [$range, $start, $end, $reportRangeLabel] = $this->resolveRange($request);
+
+        $mode = $request->get('mode', 'daily'); // daily / monthly
+
+        $query = Order::query()
+            ->with([
+                'user',
+                'agentCommission.agent.user',
+            ])
+            ->whereNotNull('created_at')
+            ->whereBetween('created_at', [$start, $end])
+            ->latest('created_at');
+
+        $orders = $query->get();
+
+        $filename = 'order_agent_commission_report_' . now()->format('Ymd_His') . '.csv';
+
+        $headers = [
+            'Content-Type'        => 'text/csv',
+            'Content-Disposition' => "attachment; filename=\"{$filename}\"",
+        ];
+
+        $callback = function () use ($orders, $reportRangeLabel, $mode) {
+            $handle = fopen('php://output', 'w');
+
+            fputcsv($handle, ['Order + Agent Commission Report', $reportRangeLabel, strtoupper($mode)]);
+            fputcsv($handle, []);
+
+            if ($mode === 'monthly') {
+                fputcsv($handle, [
+                    'Month',
+                    'Total Orders',
+                    'Orders With Agent Commission',
+                    'Orders Without Agent Commission',
+                    'Total Subtotal (RM)',
+                    'Total Shipping Fee (RM)',
+                    'Total Sales (RM)',
+                    'Total Commission Amount (RM)',
+                    'Total Points Awarded',
+                    'Net Amount (RM)',
+                ]);
+
+                $grouped = $orders->groupBy(function ($order) {
+                    return optional($order->created_at)->format('Y-m');
+                });
+
+                foreach ($grouped as $month => $items) {
+                    $totalOrders = $items->count();
+
+                    $ordersWithCommission = $items->filter(function ($order) {
+                        return !is_null($order->agentCommission);
+                    })->count();
+
+                    $ordersWithoutCommission = $totalOrders - $ordersWithCommission;
+
+                    $totalSubtotal = (float) $items->sum(function ($order) {
+                        return (float) $order->subtotal;
+                    });
+
+                    $totalShippingFee = (float) $items->sum(function ($order) {
+                        return (float) $order->shipping_fee;
+                    });
+
+                    $totalSales = (float) $items->sum(function ($order) {
+                        return (float) $order->total;
+                    });
+
+                    $totalCommissionAmount = (float) $items->sum(function ($order) {
+                        return (float) ($order->agentCommission->commission_amount_rm ?? 0);
+                    });
+
+                    $totalPointsAwarded = (float) $items->sum(function ($order) {
+                        return (float) ($order->agentCommission->points_awarded ?? 0);
+                    });
+
+                    $netAmount = $totalSales - $totalCommissionAmount;
+
+                    fputcsv($handle, [
+                        $month,
+                        $totalOrders,
+                        $ordersWithCommission,
+                        $ordersWithoutCommission,
+                        number_format($totalSubtotal, 2, '.', ''),
+                        number_format($totalShippingFee, 2, '.', ''),
+                        number_format($totalSales, 2, '.', ''),
+                        number_format($totalCommissionAmount, 2, '.', ''),
+                        number_format($totalPointsAwarded, 2, '.', ''),
+                        number_format($netAmount, 2, '.', ''),
+                    ]);
+                }
+            } else {
+                fputcsv($handle, [
+                    'Period',
+                    'Order Date',
+                    'Order No',
+                    'Customer Name',
+                    'Customer Email',
+                    'Customer Phone',
+                    'Order Status',
+                    'Payment Method',
+                    'Subtotal',
+                    'Shipping Fee',
+                    'Total',
+                    'Has Agent Commission',
+                    'Agent Name',
+                    'Agent Email',
+                    'Commission Amount (RM)',
+                    'Points Awarded',
+                    'Commission Status',
+                    'Net Amount (RM)',
+                    'Remark',
+                ]);
+
+                foreach ($orders as $order) {
+                    $commission = $order->agentCommission;
+                    $commissionAmount = (float) ($commission->commission_amount_rm ?? 0);
+                    $netAmount = (float) $order->total - $commissionAmount;
+
+                    $periodLabel = optional($order->created_at)->format('Y-m-d');
+
+                    fputcsv($handle, [
+                        $periodLabel,
+                        optional($order->created_at)->format('Y-m-d H:i:s'),
+                        $order->order_no,
+                        $order->customer_name,
+                        $order->customer_email,
+                        $order->customer_phone,
+                        $order->status,
+                        $order->payment_method_name,
+                        number_format((float) $order->subtotal, 2, '.', ''),
+                        number_format((float) $order->shipping_fee, 2, '.', ''),
+                        number_format((float) $order->total, 2, '.', ''),
+                        $commission ? 'YES' : 'NO',
+                        $commission->agent->user->name ?? '',
+                        $commission->agent->user->email ?? '',
+                        number_format($commissionAmount, 2, '.', ''),
+                        number_format((float) ($commission->points_awarded ?? 0), 2, '.', ''),
+                        $commission->status ?? '',
+                        number_format($netAmount, 2, '.', ''),
+                        $commission->remark ?? '',
+                    ]);
+                }
+            }
+
+            fclose($handle);
+        };
+
+        return response()->streamDownload($callback, $filename, $headers);
+    }
 }

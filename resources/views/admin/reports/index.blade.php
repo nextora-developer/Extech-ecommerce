@@ -2,65 +2,137 @@
 
 @section('content')
     {{-- Header --}}
-    <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 mb-10">
-        <div>
-            <h1 class="text-3xl font-extrabold text-gray-900 tracking-tight">Analytics Overview</h1>
-            {{-- <p class="text-sm text-gray-500 mt-1">
-                Real-time insight into your sales performance and customer growth.
-            </p> --}}
-        </div>
+    <div class="mb-10 space-y-5">
+        {{-- Top Row --}}
+        <div class="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-5">
+            {{-- Title --}}
+            <div>
+                <h1 class="text-3xl font-extrabold text-gray-900 tracking-tight">
+                    Analytics Overview
+                </h1>
+                <p class="text-sm text-gray-500 mt-1">
+                    Track sales performance, order trends, and export reports easily.
+                </p>
+            </div>
 
-        {{-- Filters --}}
-        <div class="flex flex-col md:flex-row md:items-center gap-3 w-full md:w-auto justify-end">
             {{-- Quick Range --}}
-            <div
-                class="inline-flex p-1 bg-gray-100/50 rounded-2xl border border-gray-200/60 backdrop-blur-sm self-stretch md:self-auto">
+            <div class="inline-flex p-1 bg-white border border-gray-200 rounded-2xl shadow-sm self-start xl:self-auto">
                 @foreach (['today' => 'Today', '7d' => '7 Days', '30d' => '30 Days'] as $val => $label)
-                    <a href="{{ route('admin.reports.index', ['range' => $val]) }}"
-                        class="px-4 py-2 rounded-xl text-xs font-bold transition-all duration-200 {{ ($activeRange ?? '30d') === $val ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700' }}">
+                    <a href="{{ route('admin.reports.index', array_merge(request()->except(['page']), ['range' => $val])) }}"
+                        class="px-4 py-2 rounded-xl text-xs font-bold transition-all duration-200 whitespace-nowrap
+                    {{ ($activeRange ?? '30d') === $val
+                        ? 'bg-gray-900 text-white shadow-sm'
+                        : 'text-gray-500 hover:text-gray-800 hover:bg-gray-50' }}">
                         {{ $label }}
                     </a>
                 @endforeach
             </div>
+        </div>
 
-            {{-- Date Range + Apply + Export --}}
-            <form method="GET" action="{{ route('admin.reports.index') }}" class="flex items-center gap-2 justify-end">
+        {{-- Bottom Toolbar --}}
+        <div class="grid grid-cols-1 xl:grid-cols-12 gap-4">
+            {{-- Date Filter --}}
+            <form method="GET" action="{{ route('admin.reports.index') }}"
+                class="xl:col-span-6 bg-white border border-gray-200 rounded-3xl p-4 shadow-sm">
                 <input type="hidden" name="range" value="custom">
+                <input type="hidden" name="mode" value="{{ request('mode', 'daily') }}">
 
-                {{-- Date inputs --}}
-                <div
-                    class="flex items-center bg-white border border-gray-200 rounded-2xl px-3 py-2 shadow-sm focus-within:ring-2 focus-within:ring-[#D4AF37]/20">
-                    <input type="date" name="start_date" value="{{ request('start_date') }}"
-                        class="border-none text-xs bg-transparent py-1 focus:ring-0 min-w-[110px]">
-                    <span class="text-gray-300 px-1 text-xs">/</span>
-                    <input type="date" name="end_date" value="{{ request('end_date') }}"
-                        class="border-none text-xs bg-transparent py-1 focus:ring-0 min-w-[110px]">
+                <div class="flex items-center justify-between gap-3 mb-3">
+                    <div>
+                        <p class="text-[11px] font-bold uppercase tracking-[0.2em] text-gray-400">
+                            Custom Date Filter
+                        </p>
+                        <p class="text-xs text-gray-500 mt-1">
+                            Select a date range to refresh the dashboard metrics.
+                        </p>
+                    </div>
                 </div>
 
-                {{-- Apply --}}
-                <button type="submit"
-                    class="bg-[#D4AF37] hover:bg-[#bfa032] text-white px-5 py-2 rounded-2xl text-xs font-bold shadow-lg shadow-[#D4AF37]/20 transition-all active:scale-95 whitespace-nowrap">
-                    Apply
-                </button>
+                <div class="flex flex-col md:flex-row md:items-center gap-3">
+                    <div
+                        class="flex items-center bg-gray-50 border border-gray-200 rounded-2xl px-3 py-2 shadow-sm flex-1 min-w-0">
+                        <input type="date" name="start_date" value="{{ request('start_date') }}"
+                            class="border-none text-sm bg-transparent py-1 focus:ring-0 min-w-0 w-full">
+                        <span class="text-gray-300 px-2 text-xs shrink-0">to</span>
+                        <input type="date" name="end_date" value="{{ request('end_date') }}"
+                            class="border-none text-sm bg-transparent py-1 focus:ring-0 min-w-0 w-full">
+                    </div>
 
-                {{-- Export CSV：同一个 form，只是换 action --}}
-                <button type="submit" formaction="{{ route('admin.reports.export') }}" formmethod="GET"
-                    class="inline-flex items-center gap-2 px-4 py-2 rounded-2xl
-                        text-xs font-bold whitespace-nowrap
-                        text-white
-                        bg-[#217346]
-                        border border-[#1b5c39]
-                        hover:bg-[#1b5c39]
-                        active:scale-95
-                        shadow-lg shadow-[#217346]/25
-                        transition-all">
+                    <button type="submit"
+                        class="inline-flex items-center justify-center px-5 py-3 rounded-2xl text-sm font-bold
+                    bg-[#D4AF37] hover:bg-[#bfa032] text-white shadow-lg shadow-[#D4AF37]/20
+                    transition-all active:scale-95 whitespace-nowrap">
+                        Apply Filter
+                    </button>
+                </div>
+            </form>
+
+            {{-- Sales Export --}}
+            <form method="GET" action="{{ route('admin.reports.export') }}"
+                class="xl:col-span-3 bg-white border border-gray-200 rounded-3xl p-4 shadow-sm">
+                <input type="hidden" name="range" value="{{ request('range', '30d') }}">
+                <input type="hidden" name="start_date" value="{{ request('start_date') }}">
+                <input type="hidden" name="end_date" value="{{ request('end_date') }}">
+
+                <div class="flex items-center justify-between gap-3 mb-3">
+                    <div>
+                        <p class="text-[11px] font-bold uppercase tracking-[0.2em] text-gray-400">
+                            Sales Export
+                        </p>
+                        <p class="text-xs text-gray-500 mt-1">
+                            Download sales data as CSV.
+                        </p>
+                    </div>
+                </div>
+
+                <button type="submit"
+                    class="w-full inline-flex items-center justify-center gap-2 px-4 py-3 rounded-2xl
+                text-sm font-bold text-white bg-[#217346] border border-[#1b5c39]
+                hover:bg-[#1b5c39] active:scale-95 shadow-lg shadow-[#217346]/25 transition-all">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5 5-5M12 15V3" />
                     </svg>
-                    Export CSV
+                    Sales Export
                 </button>
+            </form>
 
+            {{-- Each Order Export --}}
+            <form method="GET" action="{{ route('admin.reports.order-agent-commission.export') }}"
+                class="xl:col-span-3 bg-white border border-gray-200 rounded-3xl p-4 shadow-sm">
+                <input type="hidden" name="range" value="{{ request('range', '30d') }}">
+                <input type="hidden" name="start_date" value="{{ request('start_date') }}">
+                <input type="hidden" name="end_date" value="{{ request('end_date') }}">
+
+                <div class="flex items-center justify-between gap-3 mb-3">
+                    <div>
+                        <p class="text-[11px] font-bold uppercase tracking-[0.2em] text-gray-400">
+                            Each Order Export
+                        </p>
+                        <p class="text-xs text-gray-500 mt-1">
+                            Export individual order commission report.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="space-y-3">
+                    <select name="mode"
+                        class="w-full bg-gray-50 border border-gray-200 rounded-2xl px-3 py-3 text-sm font-bold text-gray-700 shadow-sm focus:ring-2 focus:ring-indigo-200">
+                        <option value="daily" {{ request('mode', 'daily') === 'daily' ? 'selected' : '' }}>Daily</option>
+                        <option value="monthly" {{ request('mode') === 'monthly' ? 'selected' : '' }}>Monthly</option>
+                    </select>
+
+                    <button type="submit"
+                        class="w-full inline-flex items-center justify-center gap-2 px-4 py-3 rounded-2xl
+                    text-sm font-bold text-white bg-indigo-600 border border-indigo-700
+                    hover:bg-indigo-700 active:scale-95 shadow-lg shadow-indigo-600/20 transition-all">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5 5-5M12 15V3" />
+                        </svg>
+                        Each Order Export
+                    </button>
+                </div>
             </form>
         </div>
     </div>
@@ -149,7 +221,7 @@
                 <div class="space-y-6">
                     @forelse ($statusSummary as $status => $row)
                         @php
-                            $percentage = $statusTotalSales > 0 ? ($row['total'] / $statusTotalSales) * 100 : 0; 
+                            $percentage = $statusTotalSales > 0 ? ($row['total'] / $statusTotalSales) * 100 : 0;
                         @endphp
                         <div>
                             <div class="flex justify-between text-sm mb-2">

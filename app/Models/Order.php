@@ -77,4 +77,9 @@ class Order extends Model
     {
         return $query->whereIn('status', self::REVENUE_STATUSES);
     }
+
+    public function agentCommission()
+    {
+        return $this->hasOne(\App\Models\AgentCommission::class, 'order_id');
+    }
 }

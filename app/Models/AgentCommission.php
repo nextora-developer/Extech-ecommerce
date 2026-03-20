@@ -30,16 +30,16 @@ class AgentCommission extends Model
 
     public function agent()
     {
-        return $this->belongsTo(Agent::class);
+        return $this->belongsTo(\App\Models\Agent::class, 'agent_id');
     }
 
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(\App\Models\User::class, 'user_id');
     }
 
     public function order()
     {
-        return $this->belongsTo(Order::class);
+        return $this->belongsTo(\App\Models\Order::class, 'order_id');
     }
 }

@@ -232,6 +232,7 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->name('admin.')->group(fun
     Route::get('/reports/point-logs', [AdminReportController::class, 'pointLogs'])->name('reports.point-logs');
     Route::get('/reports/point-logs/export', [AdminReportController::class, 'exportPointLogs']) ->name('reports.point-logs.export');
     Route::get('/reports/referrals', [AdminReportController::class, 'referrals'])->name('reports.referrals');
+    Route::get('/reports/order-agent-commission/export', [AdminReportController::class, 'exportOrderAgentCommissionReport']) ->name('reports.order-agent-commission.export');
 
     // Banner
     Route::resource('banners', AdminBannerController::class);
