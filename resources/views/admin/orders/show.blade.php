@@ -351,34 +351,55 @@
                         <div
                             class="w-full max-w-xs bg-white rounded-2xl border border-gray-50 p-4 shadow-sm md:shadow-none md:border-none md:p-0">
                             <div class="space-y-3">
+
+                                {{-- Subtotal --}}
                                 <div class="flex justify-between items-center text-sm">
                                     <span class="text-gray-500 font-medium">Subtotal</span>
                                     <span class="text-gray-900 font-bold tracking-tight">
-                                        <span class="text-sm text-gray-400 mr-0.5 font-normal">RM
-                                        </span>{{ number_format($order->subtotal ?? 0, 2) }}
+                                        <span class="text-sm text-gray-400 mr-0.5 font-normal">RM</span>
+                                        {{ number_format($order->subtotal ?? 0, 2) }}
                                     </span>
                                 </div>
 
+                                {{-- Shipping --}}
                                 <div class="flex justify-between items-center text-sm">
                                     <span class="text-gray-500 font-medium">Shipping</span>
                                     <span
                                         class="font-bold tracking-tight {{ ($order->shipping_fee ?? 0) > 0 ? 'text-gray-900' : 'text-green-600' }}">
                                         @if (($order->shipping_fee ?? 0) > 0)
-                                            <span class="text-sm text-gray-400 mr-0.5 font-normal">RM
-                                            </span>{{ number_format($order->shipping_fee, 2) }}
+                                            <span class="text-sm text-gray-400 mr-0.5 font-normal">RM</span>
+                                            {{ number_format($order->shipping_fee, 2) }}
                                         @else
                                             FREE
                                         @endif
                                     </span>
                                 </div>
 
+                                {{-- Points Redeemed --}}
+                                @if (($order->points_redeemed ?? 0) > 0 || ($order->points_discount_rm ?? 0) > 0)
+                                    <div class="flex justify-between items-start text-sm">
+                                        <div class="flex flex-col">
+                                            <span class="text-gray-500 font-medium">Points Redeemed</span>
+                                            @if (($order->points_redeemed ?? 0) > 0)
+                                                <span class="text-[11px] text-gray-400 mt-0.5">
+                                                    {{ number_format($order->points_redeemed) }} pts
+                                                </span>
+                                            @endif
+                                        </div>
+
+                                        <span class="text-[#15A5ED] font-bold tracking-tight">
+                                            - <span
+                                                class="text-sm text-[#15A5ED]/70 mr-0.5 font-semibold">RM</span>{{ number_format($order->points_discount_rm ?? 0, 2) }}
+                                        </span>
+                                    </div>
+                                @endif
+
+                                {{-- Divider --}}
                                 <div class="pt-4 mt-2 border-t border-gray-100 flex justify-between items-end">
                                     <div class="flex flex-col">
-                                        {{-- <span
-                                            class="text-[10px] uppercase tracking-widest text-gray-400 font-bold leading-none mb-1">Total
-                                            Amount</span> --}}
                                         <span class="text-base font-black text-gray-900 leading-none">Grand Total</span>
                                     </div>
+
                                     <div class="text-right">
                                         <span class="text-3xl font-black text-[#8f6a10] tracking-tighter">
                                             <span

@@ -4,7 +4,7 @@
 
             {{-- Header --}}
             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-4">
-                
+
                 <div class="flex items-center gap-3">
                     {{-- Mobile Filter Button --}}
                     <button type="button"
@@ -167,8 +167,11 @@
 
                         </div>
 
-                        <div class="mt-8">
+                        {{-- <div class="mt-8">
                             {{ $products->withQueryString()->links() }}
+                        </div> --}}
+                        <div class="mt-8">
+                            {{ $products->withQueryString()->links('vendor.pagination.shop-minimal') }}
                         </div>
                     @else
                         <div class="flex items-center justify-center min-h-[60vh] w-full text-center px-6">

@@ -145,7 +145,7 @@
                                 Point Transactions
                             </h2>
 
-                            <a href="{{ route('account.referral.index') }}"
+                            {{-- <a href="{{ route('account.referral.index') }}"
                                 class="text-sm font-bold text-[#15A5ED] hover:text-[#6DBAE1] flex items-center gap-1 group transition-colors">
                                 View Referral Center
                                 <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none"
@@ -153,7 +153,7 @@
                                     <path d="M13 7l5 5m0 0l-5 5m5-5H6" stroke-width="2" stroke-linecap="round"
                                         stroke-linejoin="round" />
                                 </svg>
-                            </a>
+                            </a> --}}
                         </div>
 
                         <div class="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
@@ -174,7 +174,7 @@
                                         <div class="flex items-center gap-4">
                                             <div
                                                 class="w-11 h-11 rounded-2xl flex items-center justify-center border
-                            {{ $isIn ? 'bg-emerald-50 border-emerald-100 text-emerald-600' : 'bg-rose-50 border-rose-100 text-rose-600' }}">
+                                                {{ $isIn ? 'bg-emerald-50 border-emerald-100 text-emerald-600' : 'bg-rose-50 border-rose-100 text-rose-600' }}">
                                                 @if ($isIn)
                                                     <svg class="w-5 h-5" fill="none" stroke="currentColor"
                                                         viewBox="0 0 24 24">
@@ -229,6 +229,11 @@
                                     </p>
                                 </div>
                             @endforelse
+
+                            @if ($recentPointLogs instanceof \Illuminate\Pagination\LengthAwarePaginator)
+                                <div class="mt-6">
+                                    {{ $recentPointLogs->withQueryString()->links('vendor.pagination.shop-minimal') }} </div>
+                            @endif
                         </div>
                     </section>
 
@@ -308,10 +313,13 @@
                                             @php
                                                 $statusClasses = [
                                                     'pending' => 'bg-amber-50 text-amber-700 border border-amber-200',
-                                                    'paid' => 'bg-emerald-50 text-emerald-700 border border-emerald-200',
-                                                    'processing' => 'bg-indigo-50 text-indigo-700 border border-indigo-200',
+                                                    'paid' =>
+                                                        'bg-emerald-50 text-emerald-700 border border-emerald-200',
+                                                    'processing' =>
+                                                        'bg-indigo-50 text-indigo-700 border border-indigo-200',
                                                     'shipped' => 'bg-blue-50 text-blue-700 border border-blue-200',
-                                                    'completed' =>'bg-emerald-50 text-emerald-700 border border-emerald-200',
+                                                    'completed' =>
+                                                        'bg-emerald-50 text-emerald-700 border border-emerald-200',
                                                     'cancelled' => 'bg-gray-50 text-gray-600 border border-gray-200',
                                                     'failed' => 'bg-rose-50 text-rose-700 border border-rose-200',
                                                 ];

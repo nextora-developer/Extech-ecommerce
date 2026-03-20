@@ -228,8 +228,11 @@
                             </div>
                         @endforelse
 
-                        <div class="mt-8">
+                        {{-- <div class="mt-8">
                             {{ $orders->links() }}
+                        </div> --}}
+                        <div class="mt-8">
+                            {{ $orders->withQueryString()->links('vendor.pagination.shop-minimal') }}
                         </div>
                     </div>
                 </main>

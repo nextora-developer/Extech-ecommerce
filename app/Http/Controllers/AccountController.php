@@ -30,8 +30,7 @@ class AccountController extends Controller
         $recentPointLogs = $user->agent
             ? PointLog::where('agent_id', $user->agent->id)
             ->latest()
-            ->take(8)
-            ->get()
+            ->paginate(5)
             : collect();
 
         return view('account.index', compact(
