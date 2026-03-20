@@ -1,16 +1,34 @@
 <x-app-layout>
     <div class="bg-[#F8FAFC] min-h-screen py-6 md:py-10">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="max-w-7xl5 mx-auto px-4 sm:px-6 lg:px-8">
 
             {{-- Breadcrumb: Hidden on very small screens to save space --}}
-            <nav
-                class="hidden sm:flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 mb-8">
-                <a href="{{ route('home') }}" class="hover:text-[#15A5ED] transition-colors">Home</a>
-                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path d="M9 5l7 7-7 7" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+            
+             <nav class="hidden sm:flex items-center uppercase space-x-2 text-sm text-gray-500 mb-6">
+                <a href="{{ route('home') }}" class="hover:text-[#15a5ed] transition-colors">Home</a>
+
+                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                 </svg>
-                <span class="text-gray-900">Referral Center</span>
+
+                <span class="text-gray-900 font-medium">Referral Center</span>
             </nav>
+
+            <div class="sm:hidden flex items-center justify-center relative mb-6">
+                {{-- Back Button --}}
+                <a href="{{ route('home') }}" class="absolute left-0 p-2 text-gray-500 hover:text-[#15A5ED] transition">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                    </svg>
+                </a>
+
+                {{-- Title --}}
+                <h1 class="text-lg font-bold text-gray-900">
+                    Referral Center
+                </h1>
+
+            </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
 
@@ -24,7 +42,7 @@
                 <main class="lg:col-span-3 space-y-6 md:space-y-8">
 
                     {{-- Commission Stats Cards --}}
-                    <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+                    <section class="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
                         <div
                             class="group relative bg-white rounded-3xl p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-gray-200/50 border border-gray-50">
                             <div class="flex items-center justify-between mb-4">
@@ -179,7 +197,10 @@
                                 <span class="w-2 h-8 bg-[#15A5ED] rounded-full"></span>
                                 Commission History
                             </h2>
+
                             <div class="bg-white rounded-[2rem] border border-gray-100 shadow-sm overflow-hidden">
+
+                                {{-- Desktop Header --}}
                                 <div
                                     class="hidden md:grid grid-cols-4 px-8 py-4 bg-gray-50 text-[10px] font-bold uppercase tracking-widest text-gray-400">
                                     <span>Order Info</span>
@@ -187,28 +208,87 @@
                                     <span>Rate</span>
                                     <span class="text-right">Points Earned</span>
                                 </div>
+
                                 @forelse ($commissions as $commission)
-                                    <div
-                                        class="px-6 md:px-8 py-5 border-b border-gray-50 last:border-b-0 hover:bg-gray-50/50 transition-colors">
-                                        <div class="grid grid-cols-2 md:grid-cols-4 items-center gap-4">
-                                            <div class="col-span-2 md:col-span-1">
-                                                <div class="text-sm font-bold text-gray-900">
-                                                    #{{ $commission->order->order_no ?? $commission->order_id }}</div>
-                                                <div class="text-[10px] text-gray-400 uppercase font-medium">
-                                                    {{ optional($commission->credited_at)->format('d M, Y') }}</div>
+                                    {{-- Mobile Card --}}
+                                    <div class="md:hidden px-4 py-4 border-b border-gray-50 last:border-b-0">
+                                        <div class="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm">
+                                            <div class="flex items-start justify-between gap-4">
+                                                <div>
+                                                    <div class="text-sm font-bold text-gray-900">
+                                                        #{{ $commission->order->order_no ?? $commission->order_id }}
+                                                    </div>
+                                                    <div class="text-[10px] text-gray-400 uppercase font-medium mt-1">
+                                                        {{ optional($commission->credited_at)->format('d M, Y') }}
+                                                    </div>
+                                                </div>
+
+                                                <div class="text-right">
+                                                    <div class="text-lg font-black text-[#15A5ED] leading-none">
+                                                        +{{ number_format($commission->points_awarded, 2) }}
+                                                    </div>
+                                                    <div
+                                                        class="text-[10px] uppercase tracking-wider text-gray-400 mt-1">
+                                                        Points Earned
+                                                    </div>
+                                                </div>
                                             </div>
-                                            <div class="hidden md:block text-sm font-bold text-gray-600">RM
-                                                {{ number_format($commission->order_subtotal, 2) }}</div>
-                                            <div class="hidden md:block text-sm font-bold text-gray-600">
-                                                {{ number_format($commission->commission_percent, 1) }}%</div>
-                                            <div class="text-right text-sm font-black text-[#15A5ED]">
-                                                +{{ number_format($commission->points_awarded, 2) }} <span
-                                                    class="text-[10px] md:hidden text-gray-400 ml-1">PTS</span>
+
+                                            <div class="mt-4 grid grid-cols-2 gap-3">
+                                                <div class="rounded-xl bg-gray-50 px-3 py-2">
+                                                    <div
+                                                        class="text-[10px] font-bold uppercase tracking-wider text-gray-400">
+                                                        Subtotal
+                                                    </div>
+                                                    <div class="mt-1 text-sm font-bold text-gray-800">
+                                                        RM {{ number_format($commission->order_subtotal, 2) }}
+                                                    </div>
+                                                </div>
+
+                                                <div class="rounded-xl bg-gray-50 px-3 py-2">
+                                                    <div
+                                                        class="text-[10px] font-bold uppercase tracking-wider text-gray-400">
+                                                        Rate
+                                                    </div>
+                                                    <div class="mt-1 text-sm font-bold text-gray-800">
+                                                        {{ number_format($commission->commission_percent, 1) }}%
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
+
+                                    {{-- Desktop Row --}}
+                                    <div
+                                        class="hidden md:block px-6 md:px-8 py-5 border-b border-gray-50 last:border-b-0 hover:bg-gray-50/50 transition-colors">
+                                        <div class="grid grid-cols-4 items-center gap-4">
+                                            <div>
+                                                <div class="text-sm font-bold text-gray-900">
+                                                    #{{ $commission->order->order_no ?? $commission->order_id }}
+                                                </div>
+                                                <div class="text-[10px] text-gray-400 uppercase font-medium">
+                                                    {{ optional($commission->credited_at)->format('d M, Y') }}
+                                                </div>
+                                            </div>
+
+                                            <div class="text-sm font-bold text-gray-600">
+                                                RM {{ number_format($commission->order_subtotal, 2) }}
+                                            </div>
+
+                                            <div class="text-sm font-bold text-gray-600">
+                                                {{ number_format($commission->commission_percent, 1) }}%
+                                            </div>
+
+                                            <div class="text-right text-sm font-black text-[#15A5ED]">
+                                                +{{ number_format($commission->points_awarded, 2) }}
+                                            </div>
+                                        </div>
+                                    </div>
+
                                 @empty
-                                    <div class="p-16 text-center text-gray-400">No records found.</div>
+                                    <div class="p-10 md:p-16 text-center text-gray-400">
+                                        No records found.
+                                    </div>
                                 @endforelse
                             </div>
                         </section>

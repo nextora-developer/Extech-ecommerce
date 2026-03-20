@@ -1,15 +1,33 @@
 <x-app-layout>
-    <div class="bg-[#F4F8FD] min-h-screen py-10">
+    <div class="bg-[#F4F8FD] min-h-screen py-6 md:py-10">
         <div class="max-w-7xl5 mx-auto px-4 sm:px-6 lg:px-8">
 
             {{-- Breadcrumb --}}
-            <nav class="flex items-center gap-2 text-xs font-medium uppercase tracking-widest text-gray-400 mb-8">
-                <a href="{{ route('home') }}" class="hover:text-[#8f6a10] transition-colors">Home</a>
-                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path d="M9 5l7 7-7 7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            <nav class="hidden sm:flex items-center uppercase space-x-2 text-sm text-gray-500 mb-6">
+                <a href="{{ route('home') }}" class="hover:text-[#15a5ed] transition-colors">Home</a>
+
+                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                 </svg>
-                <span class="text-gray-900">Shipping Addresses</span>
+
+                <span class="text-gray-900 font-medium">Shipping Addresses</span>
             </nav>
+
+            <div class="sm:hidden flex items-center justify-center relative mb-6">
+                {{-- Back Button --}}
+                <a href="{{ route('home') }}" class="absolute left-0 p-2 text-gray-500 hover:text-[#15A5ED] transition">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                    </svg>
+                </a>
+
+                {{-- Title --}}
+                <h1 class="text-lg font-bold text-gray-900">
+                    Shipping Addresses
+                </h1>
+
+            </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
 

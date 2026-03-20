@@ -171,6 +171,15 @@
                             </a>
                         </li>
                         <li>
+                            <a href="{{ route('account.referral.index') }}"
+                                class="text-sm text-gray-400 hover:text-white transition relative inline-block
+                                  after:content-[''] after:absolute after:left-0 after:-bottom-1
+                                  after:h-px after:w-0 after:bg-[#15A5ED] hover:after:w-full
+                                  after:transition-all after:duration-300">
+                                Referral Center
+                            </a>
+                        </li>
+                        <li>
                             <a href="{{ route('account.address.index') }}"
                                 class="text-sm text-gray-400 hover:text-white transition relative inline-block
                                   after:content-[''] after:absolute after:left-0 after:-bottom-1
@@ -252,24 +261,15 @@
 
                     <div
                         class="flex flex-wrap justify-center md:justify-start items-center gap-4 max-w-xs md:max-w-none">
-                        <img src="/images/payments/fpx.png" alt="FPX"
-                            class="h-6 transition" />
-                        <img src="/images/payments/visa.png" alt="Visa"
-                            class="h-6 transition" />
-                        <img src="/images/payments/mastercard.png" alt="Mastercard"
-                            class="h-6 transition" />
-                        <img src="/images/payments/shopeepay.png" alt="ShopeePay"
-                            class="h-6 transition" />
-                        <img src="/images/payments/spaylater.png" alt="SPayLater"
-                            class="h-6 transition" />
-                        <img src="/images/payments/grabpay.png" alt="GrabPay"
-                            class="h-6 transition" />
-                        <img src="/images/payments/grabpaylater.png" alt="GrabPayLater"
-                            class="h-6 transition" />
-                        <img src="/images/payments/tng.png" alt="TNG"
-                            class="h-6 transition" />
-                        <img src="/images/payments/alipay.png" alt="Alipay"
-                            class="h-6 transition" />
+                        <img src="/images/payments/fpx.png" alt="FPX" class="h-6 transition" />
+                        <img src="/images/payments/visa.png" alt="Visa" class="h-6 transition" />
+                        <img src="/images/payments/mastercard.png" alt="Mastercard" class="h-6 transition" />
+                        <img src="/images/payments/shopeepay.png" alt="ShopeePay" class="h-6 transition" />
+                        <img src="/images/payments/spaylater.png" alt="SPayLater" class="h-6 transition" />
+                        <img src="/images/payments/grabpay.png" alt="GrabPay" class="h-6 transition" />
+                        <img src="/images/payments/grabpaylater.png" alt="GrabPayLater" class="h-6 transition" />
+                        <img src="/images/payments/tng.png" alt="TNG" class="h-6 transition" />
+                        <img src="/images/payments/alipay.png" alt="Alipay" class="h-6 transition" />
                     </div>
                 </div>
             </div>
@@ -362,17 +362,25 @@
     </script>
 
     @if (session('success'))
-        <script>
-            Swal.fire({
-                icon: 'success',
-                title: '{{ session('success') }}',
-                toast: true,
-                position: 'bottom-right',
-                showConfirmButton: false,
-                timer: 2000,
-                timerProgressBar: true,
-            });
-        </script>
+        <div x-data="{ show: true }" x-init="setTimeout(() => show = false, 2500)" x-show="show"
+            x-transition:enter="transform ease-out duration-300" x-transition:enter-start="translate-y-10 opacity-0"
+            x-transition:enter-end="translate-y-0 opacity-100" x-transition:leave="transform ease-in duration-200"
+            x-transition:leave-start="translate-y-0 opacity-100" x-transition:leave-end="translate-y-10 opacity-0"
+            class="fixed bottom-[80px] left-1/2 -translate-x-1/2 z-[9999]">
+
+            <div
+                class="flex items-center gap-3 bg-black text-white px-5 py-3 rounded-full shadow-[0_10px_30px_rgba(0,0,0,0.4)]">
+
+                {{-- Green dot --}}
+                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+
+                {{-- Text --}}
+                <span class="text-sm font-medium">
+                    {{ session('success') }}
+                </span>
+
+            </div>
+        </div>
     @endif
 
     @if (session('error'))

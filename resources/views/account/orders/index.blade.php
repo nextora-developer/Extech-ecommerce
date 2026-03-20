@@ -1,15 +1,33 @@
 <x-app-layout>
-    <div class="bg-[#F4F8FD] min-h-screen py-10">
+    <div class="bg-[#F4F8FD] min-h-screen py-6 md:py-10">
         <div class="max-w-7xl5 mx-auto px-4 sm:px-6 lg:px-8">
 
             {{-- Breadcrumb --}}
-            <nav class="flex items-center gap-2 text-xs font-medium uppercase tracking-widest text-gray-400 mb-8">
-                <a href="{{ route('home') }}" class="hover:text-[#15A5ED] transition-colors">Home</a>
-                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path d="M9 5l7 7-7 7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            <nav class="hidden sm:flex items-center uppercase space-x-2 text-sm text-gray-500 mb-6">
+                <a href="{{ route('home') }}" class="hover:text-[#15a5ed] transition-colors">Home</a>
+
+                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                 </svg>
-                <span class="text-gray-900">Orders</span>
+
+                <span class="text-gray-900 font-medium">Orders</span>
             </nav>
+
+            <div class="sm:hidden flex items-center justify-center relative mb-6">
+                {{-- Back Button --}}
+                <a href="{{ route('home') }}" class="absolute left-0 p-2 text-gray-500 hover:text-[#15A5ED] transition">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                    </svg>
+                </a>
+
+                {{-- Title --}}
+                <h1 class="text-lg font-bold text-gray-900">
+                    Orders
+                </h1>
+
+            </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
 
@@ -155,7 +173,8 @@
                                                 'paid' => 'bg-emerald-50 text-emerald-700 border border-emerald-200',
                                                 'processing' => 'bg-indigo-50 text-indigo-700 border border-indigo-200',
                                                 'shipped' => 'bg-blue-50 text-blue-700 border border-blue-200',
-                                                'completed' =>'bg-emerald-50 text-emerald-700 border border-emerald-200',
+                                                'completed' =>
+                                                    'bg-emerald-50 text-emerald-700 border border-emerald-200',
                                                 'cancelled' => 'bg-gray-50 text-gray-600 border border-gray-200',
                                                 'failed' => 'bg-rose-50 text-rose-700 border border-rose-200',
                                             ];
@@ -178,8 +197,8 @@
                                             View Details
                                             <svg class="w-3 h-3" fill="none" stroke="currentColor"
                                                 viewBox="0 0 24 24">
-                                                <path d="M14 5l7 7-7 7M3 12h18" stroke-width="3" stroke-linecap="round"
-                                                    stroke-linejoin="round" />
+                                                <path d="M14 5l7 7-7 7M3 12h18" stroke-width="3"
+                                                    stroke-linecap="round" stroke-linejoin="round" />
                                             </svg>
                                         </div>
                                     </div>

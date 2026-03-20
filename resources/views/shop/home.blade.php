@@ -154,135 +154,292 @@
             <div class="relative z-10 max-w-7xl5 mx-auto px-4 sm:px-6 lg:px-8">
 
                 {{-- Header with Technical Line --}}
-                <div class="flex flex-col sm:flex-row sm:items-end justify-between mb-10 gap-4">
-                    <div class="relative pl-6 border-l-2 border-[#15A5ED]">
-                        <div
-                            class="absolute -left-[5px] top-0 w-2 h-2 bg-[#15A5ED] rounded-full shadow-[0_0_8px_#15A5ED]">
+                <div class="text-center mb-10">
+                    <div class="inline-flex flex-col items-center">
+                        <div class="flex items-center gap-3 mb-3">
+                            <span class="w-2 h-2 rounded-full bg-[#15A5ED] shadow-[0_0_10px_#15A5ED]"></span>
+                            <span class="h-[1px] w-10 bg-[#15A5ED]/40"></span>
+                            <span class="text-[10px] font-mono text-slate-400 uppercase tracking-[0.3em]">
+                                Verified_Systems
+                            </span>
+                            <span class="h-[1px] w-10 bg-[#15A5ED]/40"></span>
+                            <span class="w-2 h-2 rounded-full bg-[#15A5ED] shadow-[0_0_10px_#15A5ED]"></span>
                         </div>
-                        <h2 class="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
-                            Featured <span class="text-[#15A5ED] font-light">Products</span>
+
+                        <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 tracking-tight">
+                            New <span class="text-[#15A5ED] font-light">Arrival</span>
                         </h2>
-                        <p class="mt-1 text-xs font-mono text-slate-400 uppercase tracking-widest">
-                            Verified_Systems // 2026_Edition
+
+                        <p class="mt-2 text-xs font-mono text-slate-400 uppercase tracking-widest">
+                            2026 Edition // Curated Digital Solutions
                         </p>
                     </div>
-
-                    <a href="{{ route('shop.index') }}"
-                        class="group inline-flex items-center text-xs font-bold uppercase tracking-widest text-slate-500 hover:text-[#15A5ED] transition-all">
-                        Explore more
-                        <span
-                            class="ml-2 w-8 h-[1px] bg-slate-300 group-hover:w-12 group-hover:bg-[#15A5ED] transition-all"></span>
-                    </a>
                 </div>
 
                 @if ($featured->count())
-                    <div class="grid grid-cols-2 lg:grid-cols-5 gap-5">
-                        @foreach ($featured as $product)
-                            <a href="{{ route('shop.show', $product->slug) }}"
-                                class="group relative bg-white/70 backdrop-blur-md rounded-2xl border border-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_20px_40px_rgba(21,165,237,0.1)] hover:border-[#15A5ED]/30 transition-all duration-500 flex flex-col overflow-hidden">
 
-                                {{-- Product image --}}
-                                <div class="relative aspect-square bg-[#F1F5F9]/50 overflow-hidden m-2 rounded-xl">
-                                    @if ($product->image ?? false)
-                                        <img src="{{ asset('storage/' . $product->image) }}"
-                                            alt="{{ $product->name }}"
-                                            class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
-                                    @else
-                                        <div
-                                            class="w-full h-full flex items-center justify-center text-[10px] font-mono text-slate-300">
-                                            IMG_NOT_FOUND
-                                        </div>
-                                    @endif
+                    {{-- Mobile Slider --}}
+                    <div class="lg:hidden -mx-4 px-4 overflow-x-auto scrollbar-hide">
+                        <div class="flex gap-4 snap-x snap-mandatory pb-2 w-max">
+                            @foreach ($featured as $product)
+                                <a href="{{ route('shop.show', $product->slug) }}"
+                                    class="group snap-start shrink-0 w-[50vw] sm:w-[30vw] relative bg-white/70 backdrop-blur-md rounded-2xl border border-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_20px_40px_rgba(21,165,237,0.1)] hover:border-[#15A5ED]/30 transition-all duration-500 flex flex-col overflow-hidden">
 
-                                    {{-- Heart Button --}}
-                                    @auth
-                                        @php
-                                            $isFavorited = auth()
-                                                ->user()
-                                                ->favorites->contains('product_id', $product->id);
-                                        @endphp
-                                        <form
-                                            action="{{ $isFavorited ? route('account.favorites.destroy', $product) : route('account.favorites.store', $product) }}"
-                                            method="POST" class="absolute top-2 right-2 z-20">
-                                            @csrf
-                                            @if ($isFavorited)
-                                                @method('DELETE')
-                                            @endif
-                                            <button type="submit"
-                                                class="w-8 h-8 flex items-center justify-center rounded-full bg-white/80 backdrop-blur shadow-sm border border-slate-100 text-[#15A5ED] hover:bg-[#15A5ED] hover:text-white transition-all">
-                                                <svg xmlns="http://www.w3.org/2000/svg"
-                                                    fill="{{ $isFavorited ? 'currentColor' : 'none' }}"
-                                                    stroke="currentColor" viewBox="0 0 24 24" class="h-4 w-4">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                        d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                                                </svg>
-                                            </button>
-                                        </form>
-                                    @endauth
-                                </div>
+                                    {{-- Product image --}}
+                                    <div class="relative aspect-square bg-[#F1F5F9]/50 overflow-hidden m-2 rounded-xl">
+                                        @if ($product->image ?? false)
+                                            <img src="{{ asset('storage/' . $product->image) }}"
+                                                alt="{{ $product->name }}"
+                                                class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                                        @else
+                                            <div
+                                                class="w-full h-full flex items-center justify-center text-[10px] font-mono text-slate-300">
+                                                IMG_NOT_FOUND
+                                            </div>
+                                        @endif
 
-
-                                {{-- Content --}}
-                                <div class="p-4 pt-2">
-                                    <div class="flex items-center gap-2 mb-3">
-                                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                                        <span
-                                            class="text-[10px] font-mono text-slate-400 uppercase tracking-tighter">Ready_stock</span>
-                                    </div>
-
-                                    {{-- Category --}}
-                                    <div class="text-xs font-mono text-slate-400 uppercase tracking-widest">
-                                        {{ $product->category->name ?? 'UNCATEGORIZED' }}
-                                    </div>
-
-                                    <h3
-                                        class="text-base font-bold text-slate-800 line-clamp-1 group-hover:text-[#15A5ED] transition-colors">
-                                        {{ $product->name }}
-                                    </h3>
-
-                                    <div class="mt-4 flex items-center justify-between">
-                                        <div class="text-base font-mono font-bold text-slate-900">
-                                            @if ($product->has_variants && $product->variants->count())
-                                                @php
-                                                    $prices = $product->variants->pluck('price')->filter();
-                                                    $min = $prices->min();
-                                                    $max = $prices->max();
-                                                @endphp
-
-                                                @if ($min == $max)
-                                                    RM {{ number_format($min, 2) }}
-                                                @else
-                                                    <span
-                                                        class="text-[10px] font-medium text-slate-400 uppercase align-middle mr-1">
-                                                        From
-                                                    </span>
-                                                    RM {{ number_format($min, 2) }}
+                                        @auth
+                                            @php
+                                                $isFavorited = auth()
+                                                    ->user()
+                                                    ->favorites->contains('product_id', $product->id);
+                                            @endphp
+                                            <form
+                                                action="{{ $isFavorited ? route('account.favorites.destroy', $product) : route('account.favorites.store', $product) }}"
+                                                method="POST" class="absolute top-2 right-2 z-20">
+                                                @csrf
+                                                @if ($isFavorited)
+                                                    @method('DELETE')
                                                 @endif
-                                            @else
-                                                RM {{ number_format($product->price ?? 0, 2) }}
-                                            @endif
+                                                <button type="submit"
+                                                    class="w-8 h-8 flex items-center justify-center rounded-full bg-white/80 backdrop-blur shadow-sm border border-slate-100 text-[#15A5ED] hover:bg-[#15A5ED] hover:text-white transition-all">
+                                                    <svg xmlns="http://www.w3.org/2000/svg"
+                                                        fill="{{ $isFavorited ? 'currentColor' : 'none' }}"
+                                                        stroke="currentColor" viewBox="0 0 24 24" class="h-4 w-4">
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="2"
+                                                            d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                                                    </svg>
+                                                </button>
+                                            </form>
+                                        @endauth
+                                    </div>
+
+                                    {{-- Content --}}
+                                    <div class="p-4 pt-2">
+                                        <div class="flex items-center gap-2 mb-3">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                                            <span
+                                                class="text-[10px] font-mono text-slate-400 uppercase tracking-tighter">Ready_stock</span>
                                         </div>
-                                        <div
-                                            class="h-8 w-8 rounded-lg bg-slate-50 border border-slate-100 flex items-center justify-center group-hover:bg-[#15A5ED] group-hover:text-white transition-all">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
-                                                viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M12 4v16m8-8H4" />
-                                            </svg>
+
+                                        <div class="text-xs font-mono text-slate-400 uppercase tracking-widest">
+                                            {{ $product->category->name ?? 'UNCATEGORIZED' }}
+                                        </div>
+
+                                        <h3
+                                            class="text-base font-bold text-slate-800 line-clamp-1 group-hover:text-[#15A5ED] transition-colors">
+                                            {{ $product->name }}
+                                        </h3>
+
+                                        <div class="mt-4 flex items-center justify-between">
+                                            <div class="text-base font-mono font-bold text-slate-900">
+                                                @if ($product->has_variants && $product->variants->count())
+                                                    @php
+                                                        $prices = $product->variants->pluck('price')->filter();
+                                                        $min = $prices->min();
+                                                        $max = $prices->max();
+                                                    @endphp
+
+                                                    @if ($min == $max)
+                                                        RM {{ number_format($min, 2) }}
+                                                    @else
+                                                        <span
+                                                            class="text-[10px] font-medium text-slate-400 uppercase align-middle mr-1">
+                                                            From
+                                                        </span>
+                                                        RM {{ number_format($min, 2) }}
+                                                    @endif
+                                                @else
+                                                    RM {{ number_format($product->price ?? 0, 2) }}
+                                                @endif
+                                            </div>
+
+                                            <div
+                                                class="h-8 w-8 rounded-lg bg-slate-50 border border-slate-100 flex items-center justify-center group-hover:bg-[#15A5ED] group-hover:text-white transition-all">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
+                                                    viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        stroke-width="2" d="M12 4v16m8-8H4" />
+                                                </svg>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
 
-                                {{-- Hover Bottom Bar --}}
-                                <div class="h-1 w-0 bg-[#15A5ED] group-hover:w-full transition-all duration-500"></div>
-                            </a>
-                        @endforeach
+                                    <div class="h-1 w-0 bg-[#15A5ED] group-hover:w-full transition-all duration-500">
+                                    </div>
+                                </a>
+                            @endforeach
+                        </div>
+                    </div>
+
+                    {{-- Desktop Grid --}}
+                    <div x-data="{
+                        scrollLeft() {
+                                this.$refs.pcSlider.scrollBy({ left: -260, behavior: 'smooth' });
+                            },
+                            scrollRight() {
+                                this.$refs.pcSlider.scrollBy({ left: 260, behavior: 'smooth' });
+                            }
+                    }" class="hidden lg:block relative">
+
+                        {{-- Left Button --}}
+                        <button type="button" @click="scrollLeft"
+                            class="absolute left-2 top-1/2 z-20 -translate-y-1/2 w-11 h-11 rounded-full bg-white/90 backdrop-blur border border-slate-200 shadow-[0_10px_30px_rgba(0,0,0,0.08)] text-slate-700 hover:bg-[#15A5ED] hover:text-white hover:border-[#15A5ED] transition-all">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mx-auto" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                    d="M15 19l-7-7 7-7" />
+                            </svg>
+                        </button>
+
+                        {{-- Right Button --}}
+                        <button type="button" @click="scrollRight"
+                            class="absolute right-2 top-1/2 z-20 -translate-y-1/2 w-11 h-11 rounded-full bg-white/90 backdrop-blur border border-slate-200 shadow-[0_10px_30px_rgba(0,0,0,0.08)] text-slate-700 hover:bg-[#15A5ED] hover:text-white hover:border-[#15A5ED] transition-all">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mx-auto" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                    d="M9 5l7 7-7 7" />
+                            </svg>
+                        </button>
+
+                        {{-- Slider --}}
+                        <div x-ref="pcSlider" class="overflow-x-auto scrollbar-hide scroll-smooth">
+                            <div class="flex gap-5 w-max">
+                                @foreach ($featured as $product)
+                                    <a href="{{ route('shop.show', $product->slug) }}"
+                                        class="group relative shrink-0 w-[calc((100vw-12rem)/5)] max-w-[260px] min-w-[220px] bg-white/70 backdrop-blur-md rounded-2xl border border-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_20px_40px_rgba(21,165,237,0.1)] hover:border-[#15A5ED]/30 transition-all duration-500 flex flex-col overflow-hidden">
+
+                                        {{-- Product image --}}
+                                        <div
+                                            class="relative aspect-square bg-[#F1F5F9]/50 overflow-hidden m-2 rounded-xl">
+                                            @if ($product->image ?? false)
+                                                <img src="{{ asset('storage/' . $product->image) }}"
+                                                    alt="{{ $product->name }}"
+                                                    class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                                            @else
+                                                <div
+                                                    class="w-full h-full flex items-center justify-center text-[10px] font-mono text-slate-300">
+                                                    IMG_NOT_FOUND
+                                                </div>
+                                            @endif
+
+                                            @auth
+                                                @php
+                                                    $isFavorited = auth()
+                                                        ->user()
+                                                        ->favorites->contains('product_id', $product->id);
+                                                @endphp
+                                                <form
+                                                    action="{{ $isFavorited ? route('account.favorites.destroy', $product) : route('account.favorites.store', $product) }}"
+                                                    method="POST" class="absolute top-2 right-2 z-20">
+                                                    @csrf
+                                                    @if ($isFavorited)
+                                                        @method('DELETE')
+                                                    @endif
+                                                    <button type="submit"
+                                                        class="w-8 h-8 flex items-center justify-center rounded-full bg-white/80 backdrop-blur shadow-sm border border-slate-100 text-[#15A5ED] hover:bg-[#15A5ED] hover:text-white transition-all">
+                                                        <svg xmlns="http://www.w3.org/2000/svg"
+                                                            fill="{{ $isFavorited ? 'currentColor' : 'none' }}"
+                                                            stroke="currentColor" viewBox="0 0 24 24" class="h-4 w-4">
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="2"
+                                                                d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                                                        </svg>
+                                                    </button>
+                                                </form>
+                                            @endauth
+                                        </div>
+
+                                        {{-- Content --}}
+                                        <div class="p-4 pt-2">
+                                            <div class="flex items-center gap-2 mb-3">
+                                                <span
+                                                    class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                                                <span
+                                                    class="text-[10px] font-mono text-slate-400 uppercase tracking-tighter">Ready_stock</span>
+                                            </div>
+
+                                            <div class="text-xs font-mono text-slate-400 uppercase tracking-widest">
+                                                {{ $product->category->name ?? 'UNCATEGORIZED' }}
+                                            </div>
+
+                                            <h3
+                                                class="text-base font-bold text-slate-800 line-clamp-1 group-hover:text-[#15A5ED] transition-colors">
+                                                {{ $product->name }}
+                                            </h3>
+
+                                            <div class="mt-4 flex items-center justify-between">
+                                                <div class="text-base font-mono font-bold text-slate-900">
+                                                    @if ($product->has_variants && $product->variants->count())
+                                                        @php
+                                                            $prices = $product->variants->pluck('price')->filter();
+                                                            $min = $prices->min();
+                                                            $max = $prices->max();
+                                                        @endphp
+
+                                                        @if ($min == $max)
+                                                            RM {{ number_format($min, 2) }}
+                                                        @else
+                                                            <span
+                                                                class="text-[10px] font-medium text-slate-400 uppercase align-middle mr-1">
+                                                                From
+                                                            </span>
+                                                            RM {{ number_format($min, 2) }}
+                                                        @endif
+                                                    @else
+                                                        RM {{ number_format($product->price ?? 0, 2) }}
+                                                    @endif
+                                                </div>
+
+                                                <div
+                                                    class="h-8 w-8 rounded-lg bg-slate-50 border border-slate-100 flex items-center justify-center group-hover:bg-[#15A5ED] group-hover:text-white transition-all">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4"
+                                                        fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="2" d="M12 4v16m8-8H4" />
+                                                    </svg>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div
+                                            class="h-1 w-0 bg-[#15A5ED] group-hover:w-full transition-all duration-500">
+                                        </div>
+                                    </a>
+                                @endforeach
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- ✅ BUTTON 放这里 --}}
+                    <div class="mt-10 flex justify-center">
+                        <a href="{{ route('shop.index') }}"
+                            class="inline-flex items-center gap-2 rounded-full bg-[#15A5ED] px-6 py-3 text-xs font-bold uppercase tracking-[0.2em] text-white shadow-[0_12px_30px_rgba(21,165,237,0.25)] hover:shadow-[0_16px_40px_rgba(21,165,237,0.35)] hover:-translate-y-0.5 transition-all duration-300">
+                            Explore More
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                            </svg>
+                        </a>
                     </div>
                 @else
                     <div class="text-center py-20 border-2 border-dashed border-slate-200 rounded-3xl">
                         <p class="font-mono text-sm text-slate-400">DATABASE_EMPTY: Please insert records.</p>
                     </div>
                 @endif
+
             </div>
         </section>
 

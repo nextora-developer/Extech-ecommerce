@@ -3,7 +3,7 @@
         <div class="max-w-7xl5 mx-auto px-4 sm:px-6 lg:px-8">
 
             {{-- Breadcrumb --}}
-            <nav class="flex items-center space-x-2 uppercase text-sm text-gray-500 mb-6">
+            <nav class="hidden md:flex items-center space-x-2 uppercase text-sm text-gray-500 mb-6">
                 <a href="{{ route('shop.index') }}" class="hover:text-[#15A5ED] transition-colors">Shop</a>
                 <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
@@ -65,11 +65,11 @@
                                                 viewBox="0 0 24 24" class="h-6 w-6">
                                                 <path
                                                     d="M12 21.35l-1.45-1.32C5.4 15.36
-                                                                                                            2 12.28 2 8.5 2 5.42 4.42
-                                                                                                            3 7.5 3c1.74 0 3.41.81 4.5
-                                                                                                            2.09C13.09 3.81 14.76 3 16.5
-                                                                                                            3 19.58 3 22 5.42 22 8.5c0
-                                                                                                            3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                                                                                                                                2 12.28 2 8.5 2 5.42 4.42
+                                                                                                                                3 7.5 3c1.74 0 3.41.81 4.5
+                                                                                                                                2.09C13.09 3.81 14.76 3 16.5
+                                                                                                                                3 19.58 3 22 5.42 22 8.5c0
+                                                                                                                                3.78-3.4 6.86-8.55 11.54L12 21.35z" />
                                             </svg>
                                         </button>
                                     </form>
@@ -481,7 +481,7 @@
                                             </a>
                                         </div>
                                     @elseif(!$isVerified)
-                                       {{-- Verification Required Prompt --}}
+                                        {{-- Verification Required Prompt --}}
                                         <div
                                             class="flex items-center justify-between gap-4 rounded-2xl border border-red-200 bg-red-50/50 p-4 shadow-sm backdrop-blur-sm">
                                             <div class="flex items-center gap-3">
@@ -517,7 +517,7 @@
             </div>
 
             {{-- Tabs & Specs Section --}}
-            <div class="mt-16">
+            <div class="mt-16" x-data="{ descExpanded: false }">
                 <div
                     class="bg-white rounded-[2rem] border border-gray-100 shadow-[0_18px_40px_rgba(0,0,0,0.04)] p-6 sm:p-8">
 
@@ -546,9 +546,46 @@
                     </div>
 
                     {{-- Description Tab --}}
-                    <div id="tab-desc" class="prose prose-base max-w-none text-gray-600 leading-relaxed">
+                    <div id="tab-desc" x-ref="descBlock">
                         @if ($product->description)
-                            {!! $product->description !!}
+                            <div class="relative">
+                                <div :class="descExpanded ? '' : 'max-h-[320px] overflow-hidden'"
+                                    class="prose prose-base max-w-none text-gray-600 leading-relaxed transition-all duration-300">
+                                    {!! $product->description !!}
+                                </div>
+
+                                <div x-show="!descExpanded"
+                                    class="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-white via-white/90 to-transparent">
+                                </div>
+                            </div>
+
+                            <div class="mt-6 flex justify-center">
+                                <button type="button"
+                                    @click="
+                    if (descExpanded) {
+                        descExpanded = false;
+                        $nextTick(() => {
+                            window.scrollTo({
+                                top: $refs.descBlock.getBoundingClientRect().top + window.pageYOffset - 120,
+                                behavior: 'smooth'
+                            });
+                        });
+                    } else {
+                        descExpanded = true;
+                    }
+                "
+                                    class="inline-flex items-center gap-2 rounded-full border border-[#15A5ED]/20 bg-[#15A5ED]/5 px-5 py-2.5 text-[11px] font-bold uppercase tracking-[0.2em] text-[#15A5ED] hover:bg-[#15A5ED] hover:text-white transition-all duration-300">
+                                    <span x-text="descExpanded ? 'See Less' : 'See More'"></span>
+
+                                    <svg xmlns="http://www.w3.org/2000/svg"
+                                        class="h-4 w-4 transition-transform duration-300"
+                                        :class="descExpanded ? 'rotate-180' : ''" fill="none" viewBox="0 0 24 24"
+                                        stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                </button>
+                            </div>
                         @else
                             <p class="text-gray-500 text-sm">No description for this product yet.</p>
                         @endif
@@ -601,7 +638,124 @@
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-2 md:grid-cols-5 gap-5">
+                    {{-- Mobile Slider --}}
+                    <div class="md:hidden -mx-4 px-4 overflow-x-auto scrollbar-hide">
+                        <div class="flex gap-4 snap-x snap-mandatory pb-2 w-max">
+                            @foreach ($related as $item)
+                                @php
+                                    $itemFavorited = auth()->check()
+                                        ? auth()->user()->favorites->contains('product_id', $item->id)
+                                        : false;
+                                @endphp
+
+                                <a href="{{ route('shop.show', $item->slug) }}"
+                                    class="group snap-start shrink-0 w-[50vw] relative bg-white/70 backdrop-blur-md rounded-2xl border border-white
+                        shadow-[0_8px_30px_rgb(0,0,0,0.04)]
+                        hover:shadow-[0_20px_40px_rgba(21,165,237,0.1)]
+                        hover:border-[#15A5ED]/30 transition-all duration-500
+                        flex flex-col overflow-hidden">
+
+                                    {{-- Image --}}
+                                    <div class="relative aspect-square bg-[#F1F5F9]/50 overflow-hidden m-2 rounded-xl">
+                                        @if ($item->image)
+                                            <img src="{{ asset('storage/' . $item->image) }}"
+                                                alt="{{ $item->name }}" loading="lazy"
+                                                class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                                        @else
+                                            <div
+                                                class="w-full h-full flex items-center justify-center text-[10px] font-mono text-slate-300">
+                                                IMG_NOT_FOUND
+                                            </div>
+                                        @endif
+
+                                        @auth
+                                            <form
+                                                action="{{ $itemFavorited ? route('account.favorites.destroy', $item) : route('account.favorites.store', $item) }}"
+                                                method="POST" class="absolute top-2 right-2 z-20"
+                                                onclick="event.preventDefault(); event.stopPropagation(); this.submit();">
+                                                @csrf
+                                                @if ($itemFavorited)
+                                                    @method('DELETE')
+                                                @endif
+
+                                                <button type="submit"
+                                                    class="w-8 h-8 flex items-center justify-center rounded-full bg-white/80 backdrop-blur shadow-sm border border-slate-100
+                                        text-[#15A5ED] hover:bg-[#15A5ED] hover:text-white transition-all">
+                                                    <svg xmlns="http://www.w3.org/2000/svg"
+                                                        fill="{{ $itemFavorited ? 'currentColor' : 'none' }}"
+                                                        stroke="currentColor" viewBox="0 0 24 24" class="h-4 w-4">
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="2"
+                                                            d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                                                    </svg>
+                                                </button>
+                                            </form>
+                                        @endauth
+                                    </div>
+
+                                    {{-- Content --}}
+                                    <div class="p-4 pt-2 flex-1 flex flex-col">
+                                        <div class="flex items-center gap-2 mb-3">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                                            <span
+                                                class="text-[10px] font-mono text-slate-400 uppercase tracking-tighter">
+                                                Suggested
+                                            </span>
+                                        </div>
+
+                                        <div class="text-xs font-mono text-slate-400 uppercase tracking-widest">
+                                            {{ $item->category->name ?? 'UNCATEGORIZED' }}
+                                        </div>
+
+                                        <h3
+                                            class="mt-1 text-base font-bold text-slate-800 line-clamp-2 group-hover:text-[#15A5ED] transition-colors leading-snug">
+                                            {{ $item->name }}
+                                        </h3>
+
+                                        <div class="mt-4 flex items-center justify-between gap-3">
+                                            <div class="text-base font-mono font-bold text-slate-900">
+                                                @if ($item->has_variants && $item->variants->count())
+                                                    @php
+                                                        $prices = $item->variants->pluck('price')->filter();
+                                                        $min = $prices->min();
+                                                        $max = $prices->max();
+                                                    @endphp
+
+                                                    @if ($min == $max)
+                                                        RM {{ number_format($min, 2) }}
+                                                    @else
+                                                        <span
+                                                            class="text-[10px] font-medium text-slate-400 uppercase align-middle mr-1">
+                                                            From
+                                                        </span>
+                                                        RM {{ number_format($min, 2) }}
+                                                    @endif
+                                                @else
+                                                    RM {{ number_format($item->price ?? 0, 2) }}
+                                                @endif
+                                            </div>
+
+                                            <div
+                                                class="h-8 w-8 rounded-lg bg-slate-50 border border-slate-100 flex items-center justify-center
+                                    group-hover:bg-[#15A5ED] group-hover:text-white transition-all shrink-0">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4"
+                                                    fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        stroke-width="2" d="M12 4v16m8-8H4" />
+                                                </svg>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="h-1 w-0 bg-[#15A5ED] group-hover:w-full transition-all duration-500">
+                                    </div>
+                                </a>
+                            @endforeach
+                        </div>
+                    </div>
+
+                    {{-- Desktop Grid --}}
+                    <div class="hidden md:grid grid-cols-5 gap-5">
                         @foreach ($related as $item)
                             @php
                                 $itemFavorited = auth()->check()
@@ -611,10 +765,10 @@
 
                             <a href="{{ route('shop.show', $item->slug) }}"
                                 class="group relative bg-white/70 backdrop-blur-md rounded-2xl border border-white
-                           shadow-[0_8px_30px_rgb(0,0,0,0.04)]
-                           hover:shadow-[0_20px_40px_rgba(21,165,237,0.1)]
-                           hover:border-[#15A5ED]/30 transition-all duration-500
-                           flex flex-col overflow-hidden">
+                    shadow-[0_8px_30px_rgb(0,0,0,0.04)]
+                    hover:shadow-[0_20px_40px_rgba(21,165,237,0.1)]
+                    hover:border-[#15A5ED]/30 transition-all duration-500
+                    flex flex-col overflow-hidden">
 
                                 {{-- Image --}}
                                 <div class="relative aspect-square bg-[#F1F5F9]/50 overflow-hidden m-2 rounded-xl">
@@ -629,7 +783,6 @@
                                         </div>
                                     @endif
 
-                                    {{-- ❤️ Favorite (glass) --}}
                                     @auth
                                         <form
                                             action="{{ $itemFavorited ? route('account.favorites.destroy', $item) : route('account.favorites.store', $item) }}"
@@ -642,7 +795,7 @@
 
                                             <button type="submit"
                                                 class="w-8 h-8 flex items-center justify-center rounded-full bg-white/80 backdrop-blur shadow-sm border border-slate-100
-                                           text-[#15A5ED] hover:bg-[#15A5ED] hover:text-white transition-all">
+                                    text-[#15A5ED] hover:bg-[#15A5ED] hover:text-white transition-all">
                                                 <svg xmlns="http://www.w3.org/2000/svg"
                                                     fill="{{ $itemFavorited ? 'currentColor' : 'none' }}"
                                                     stroke="currentColor" viewBox="0 0 24 24" class="h-4 w-4">
@@ -656,7 +809,6 @@
 
                                 {{-- Content --}}
                                 <div class="p-4 pt-2 flex-1 flex flex-col">
-                                    {{-- Status --}}
                                     <div class="flex items-center gap-2 mb-3">
                                         <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
                                         <span class="text-[10px] font-mono text-slate-400 uppercase tracking-tighter">
@@ -664,23 +816,20 @@
                                         </span>
                                     </div>
 
-                                    {{-- Category --}}
                                     <div class="text-xs font-mono text-slate-400 uppercase tracking-widest">
                                         {{ $item->category->name ?? 'UNCATEGORIZED' }}
                                     </div>
 
-                                    {{-- Name --}}
                                     <h3
                                         class="mt-1 text-base font-bold text-slate-800 line-clamp-2 group-hover:text-[#15A5ED] transition-colors leading-snug">
                                         {{ $item->name }}
                                     </h3>
 
-                                    {{-- Price + icon --}}
                                     <div class="mt-4 flex items-center justify-between gap-3">
                                         <div class="text-base font-mono font-bold text-slate-900">
-                                            @if ($product->has_variants && $product->variants->count())
+                                            @if ($item->has_variants && $item->variants->count())
                                                 @php
-                                                    $prices = $product->variants->pluck('price')->filter();
+                                                    $prices = $item->variants->pluck('price')->filter();
                                                     $min = $prices->min();
                                                     $max = $prices->max();
                                                 @endphp
@@ -695,13 +844,13 @@
                                                     RM {{ number_format($min, 2) }}
                                                 @endif
                                             @else
-                                                RM {{ number_format($product->price ?? 0, 2) }}
+                                                RM {{ number_format($item->price ?? 0, 2) }}
                                             @endif
                                         </div>
 
                                         <div
                                             class="h-8 w-8 rounded-lg bg-slate-50 border border-slate-100 flex items-center justify-center
-                                       group-hover:bg-[#15A5ED] group-hover:text-white transition-all shrink-0">
+                                group-hover:bg-[#15A5ED] group-hover:text-white transition-all shrink-0">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
                                                 viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -711,14 +860,12 @@
                                     </div>
                                 </div>
 
-                                {{-- Hover bottom bar --}}
                                 <div class="h-1 w-0 bg-[#15A5ED] group-hover:w-full transition-all duration-500"></div>
                             </a>
                         @endforeach
                     </div>
                 </div>
             @endif
-
 
         </div>
     </div>

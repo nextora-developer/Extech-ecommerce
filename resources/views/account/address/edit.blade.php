@@ -1,20 +1,38 @@
 <x-app-layout>
-    <div class="bg-[#F4F8FD] min-h-screen py-10">
+    <div class="bg-[#F4F8FD] min-h-screen py-6 md:py-10">
         <div class="max-w-7xl5 mx-auto px-4 sm:px-6 lg:px-8">
 
             {{-- Breadcrumb --}}
-            <nav class="flex items-center gap-2 text-xs font-medium uppercase tracking-widest text-gray-400 mb-8">
-                <a href="{{ route('home') }}" class="hover:text-[#15A5ED] transition-colors">Home</a>
+            <nav class="hidden sm:flex items-center uppercase space-x-2 text-sm text-gray-500 mb-6">
+                <a href="{{ route('home') }}" class="hover:text-[#15a5ed] transition-colors">Home</a>
+                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                </svg>
+                <a href="{{ route('account.address.index') }}" class="hover:text-[#15a5ed] transition-colors">Shipping
+                    Addresses</a>
                 <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path d="M9 5l7 7-7 7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                 </svg>
-                <a href="{{ route('account.address.index') }}"
-                    class="hover:text-[#15A5ED] transition-colors">Shipping Addresses</a>
-                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path d="M9 5l7 7-7 7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                </svg>
-                <span class="text-gray-900">Edit</span>
+
+                <span class="text-gray-900 font-medium">Edit</span>
             </nav>
+
+            <div class="sm:hidden flex items-center justify-center relative mb-6">
+                {{-- Back Button --}}
+                <a href="{{ route('account.address.index') }}"
+                    class="absolute left-0 p-2 text-gray-500 hover:text-[#15A5ED] transition">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                    </svg>
+                </a>
+
+                {{-- Title --}}
+                <h1 class="text-lg font-bold text-gray-900">
+                    Edit
+                </h1>
+
+            </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
 
@@ -55,16 +73,13 @@
 
                             {{-- Row 1 --}}
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
-                                @foreach ([
-                                    ['Recipient Name','recipient_name',$address->recipient_name ?? $user->name],
-                                    ['Phone Number','phone',$address->phone],
-                                    ['Email Address','email',$address->email],
-                                ] as [$label,$name,$value])
+                                @foreach ([['Recipient Name', 'recipient_name', $address->recipient_name ?? $user->name, 'e.g. John Tan'], ['Phone Number', 'phone', $address->phone, 'e.g. 0123456789'], ['Email Address', 'email', $address->email, 'e.g. john@email.com']] as [$label, $name, $value, $placeholder])
                                     <div>
                                         <label class="block text-sm text-gray-500 mb-1">{{ $label }}</label>
-                                        <input type="text" name="{{ $name }}" value="{{ old($name,$value) }}"
+                                        <input type="text" name="{{ $name }}"
+                                            value="{{ old($name, $value) }}" placeholder="{{ $placeholder }}"
                                             class="w-full text-black rounded-xl border-gray-200 px-3 py-3
-                                                   focus:border-[#15A5ED] focus:ring-[#15A5ED]/30">
+                           focus:border-[#15A5ED] focus:ring-[#15A5ED]/30">
                                     </div>
                                 @endforeach
                             </div>
@@ -74,41 +89,62 @@
                                 <div>
                                     <label class="block text-sm text-gray-500 mb-1">Address Line 1</label>
                                     <input type="text" name="address_line1"
-                                        value="{{ old('address_line1',$address->address_line1) }}"
+                                        value="{{ old('address_line1', $address->address_line1) }}"
+                                        placeholder="e.g. No. 12, Jalan Bukit Indah"
                                         class="w-full text-black rounded-xl border-gray-200 px-3 py-3
-                                               focus:border-[#15A5ED] focus:ring-[#15A5ED]/30">
+                       focus:border-[#15A5ED] focus:ring-[#15A5ED]/30">
                                 </div>
                                 <div>
                                     <label class="block text-sm text-gray-500 mb-1">
                                         Address Line 2 <span class="text-gray-400">(optional)</span>
                                     </label>
                                     <input type="text" name="address_line2"
-                                        value="{{ old('address_line2',$address->address_line2) }}"
+                                        value="{{ old('address_line2', $address->address_line2) }}"
+                                        placeholder="e.g. Apartment / Unit / Floor"
                                         class="w-full text-black rounded-xl border-gray-200 px-3 py-3
-                                               focus:border-[#15A5ED] focus:ring-[#15A5ED]/30">
+                       focus:border-[#15A5ED] focus:ring-[#15A5ED]/30">
                                 </div>
                             </div>
 
                             {{-- Location --}}
                             <div class="grid grid-cols-1 md:grid-cols-4 gap-5">
-                                @foreach (['postcode','city','country'] as $field)
-                                    <div>
-                                        <label class="block text-sm text-gray-500 mb-1">{{ ucfirst($field) }}</label>
-                                        <input type="text" name="{{ $field }}"
-                                            value="{{ old($field,$address->$field ?? ($field==='country'?'Malaysia':'')) }}"
-                                            class="w-full text-black rounded-xl border-gray-200 px-3 py-3
-                                                   focus:border-[#15A5ED] focus:ring-[#15A5ED]/30">
-                                    </div>
-                                @endforeach
+                                {{-- Postcode --}}
+                                <div>
+                                    <label class="block text-sm text-gray-500 mb-1">Postcode</label>
+                                    <input type="text" name="postcode"
+                                        value="{{ old('postcode', $address->postcode) }}" placeholder="e.g. 43000"
+                                        class="w-full text-black rounded-xl border-gray-200 px-3 py-3
+                       focus:border-[#15A5ED] focus:ring-[#15A5ED]/30">
+                                </div>
 
+                                {{-- City --}}
+                                <div>
+                                    <label class="block text-sm text-gray-500 mb-1">City</label>
+                                    <input type="text" name="city" value="{{ old('city', $address->city) }}"
+                                        placeholder="e.g. Kajang"
+                                        class="w-full text-black rounded-xl border-gray-200 px-3 py-3
+                       focus:border-[#15A5ED] focus:ring-[#15A5ED]/30">
+                                </div>
+
+                                {{-- Country --}}
+                                <div>
+                                    <label class="block text-sm text-gray-500 mb-1">Country</label>
+                                    <input type="text" name="country"
+                                        value="{{ old('country', $address->country ?? 'Malaysia') }}"
+                                        placeholder="e.g. Malaysia"
+                                        class="w-full text-black rounded-xl border-gray-200 px-3 py-3
+                       focus:border-[#15A5ED] focus:ring-[#15A5ED]/30">
+                                </div>
+
+                                {{-- State --}}
                                 <div>
                                     <label class="block text-sm text-gray-500 mb-1">State</label>
                                     <select name="state"
                                         class="w-full text-black rounded-xl border-gray-200 px-3 py-3
-                                               focus:border-[#15A5ED] focus:ring-[#15A5ED]/30">
+                       focus:border-[#15A5ED] focus:ring-[#15A5ED]/30">
                                         <option value="">Select State</option>
                                         @foreach ($states as $s)
-                                            <option value="{{ $s['name'] }}" @selected(old('state',$address->state)===$s['name'])>
+                                            <option value="{{ $s['name'] }}" @selected(old('state', $address->state) === $s['name'])>
                                                 {{ $s['name'] }}
                                             </option>
                                         @endforeach
@@ -121,7 +157,7 @@
                                 <label class="inline-flex items-center gap-2 text-base text-gray-600">
                                     <input type="checkbox" name="is_default" value="1"
                                         class="rounded border-gray-300 text-[#15A5ED] focus:ring-[#15A5ED]/40"
-                                        {{ old('is_default',$address->is_default) ? 'checked' : '' }}>
+                                        {{ old('is_default', $address->is_default) ? 'checked' : '' }}>
                                     Set as my default address
                                 </label>
                             </div>
@@ -130,7 +166,7 @@
                             <div class="pt-5 flex items-center gap-4">
                                 <button type="submit"
                                     class="px-7 py-3 rounded-full bg-[#15A5ED] text-white font-semibold
-                                           hover:bg-[#0F8DD1] transition">
+                   hover:bg-[#0F8DD1] transition">
                                     Save Changes
                                 </button>
 
@@ -139,7 +175,6 @@
                                     Cancel
                                 </a>
                             </div>
-
                         </form>
                     </section>
                 </main>
