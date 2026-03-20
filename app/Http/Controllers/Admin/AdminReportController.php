@@ -395,6 +395,7 @@ class AdminReportController extends Controller
                 'user',
                 'agentCommission.agent.user',
             ])
+            ->revenue()
             ->whereNotNull('created_at')
             ->whereBetween('created_at', [$start, $end])
             ->latest('created_at');
