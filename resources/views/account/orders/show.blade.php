@@ -45,13 +45,13 @@
 
                             @php
                                 $colors = [
-                                    'pending' => 'bg-amber-100 text-[#8f6a10]',
-                                    'paid' => 'bg-green-100 text-green-700',
-                                    'processing' => 'bg-blue-100 text-blue-700',
-                                    'shipped' => 'bg-indigo-100 text-indigo-700',
-                                    'completed' => 'bg-emerald-100 text-emerald-700',
-                                    'cancelled' => 'bg-red-100 text-red-600',
-                                    'failed' => 'bg-rose-100 text-rose-700',
+                                    'pending' => 'bg-amber-50 text-amber-700 border border-amber-200',
+                                    'paid' => 'bg-emerald-50 text-emerald-700 border border-emerald-200',
+                                    'processing' => 'bg-indigo-50 text-indigo-700 border border-indigo-200',
+                                    'shipped' => 'bg-blue-50 text-blue-700 border border-blue-200',
+                                    'completed' => 'bg-emerald-50 text-emerald-700 border border-emerald-200',
+                                    'cancelled' => 'bg-gray-50 text-gray-600 border border-gray-200',
+                                    'failed' => 'bg-rose-50 text-rose-700 border border-rose-200',
                                 ];
                             @endphp
 
@@ -361,7 +361,7 @@
                                                 </span>
                                             </div>
                                         @endif
-                                        
+
                                         <div class="pt-4 border-t border-blue-200/50">
                                             <div class="flex justify-between items-end">
                                                 <span

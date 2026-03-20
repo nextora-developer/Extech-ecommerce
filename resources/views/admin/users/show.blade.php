@@ -430,12 +430,13 @@
                                             <span
                                                 class="text-[10px] px-2 py-0.5 rounded-full
                                     @switch($order->status)
-                                        @case('pending') bg-amber-100 text-amber-700 @break
-                                        @case('paid') bg-emerald-100 text-emerald-700 @break
-                                        @case('processing') bg-blue-100 text-blue-700 @break
-                                        @case('shipped') bg-indigo-100 text-indigo-700 @break
-                                        @case('completed') bg-emerald-100 text-emerald-700 @break
-                                        @case('cancelled') bg-red-100 text-red-600 @break
+                                        @case('pending') bg-amber-50 text-amber-700 border border-amber-200 @break
+                                        @case('paid') bg-emerald-50 text-emerald-700 border border-emerald-200 @break
+                                        @case('processing') bg-indigo-50 text-indigo-700 border border-indigo-200 @break
+                                        @case('shipped') bg-blue-50 text-blue-700 border border-blue-200 @break
+                                        @case('completed') bg-emerald-50 text-emerald-700 border border-emerald-200 @break
+                                        @case('cancelled') bg-gray-50 text-gray-600 border border-gray-200 @break
+                                        @case('failed') bg-rose-50 text-rose-700 border border-rose-200 @break
                                         @default bg-gray-100 text-gray-500
                                     @endswitch
                                 ">

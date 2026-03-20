@@ -143,7 +143,7 @@
                                     'PROCESSING' => 'bg-indigo-50 text-indigo-700 border border-indigo-200',
                                     'SHIPPED' => 'bg-blue-50 text-blue-700 border border-blue-200',
                                     'COMPLETED' => 'bg-emerald-50 text-emerald-700 border border-emerald-200',
-                                    'CANCELLED' => 'bg-red-50 text-red-600 border border-red-200',
+                                    'CANCELLED' => 'bg-gray-50 text-gray-600 border border-gray-200',
                                     'FAILED' => 'bg-rose-50 text-rose-700 border border-rose-200',
                                 ];
                                 $style = $colors[$status] ?? 'bg-gray-50 text-gray-500 border border-gray-200';
@@ -227,173 +227,173 @@
     </audio>
 
     <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        let isRequesting = false;
-        let lastFirstOrderNo = @json(optional($orders->first())->order_no);
-        let audioUnlocked = false;
+        document.addEventListener('DOMContentLoaded', function() {
+            let isRequesting = false;
+            let lastFirstOrderNo = @json(optional($orders->first())->order_no);
+            let audioUnlocked = false;
 
-        const sound = document.getElementById('orderSound');
-        const enableBtn = document.getElementById('enableSoundBtn');
+            const sound = document.getElementById('orderSound');
+            const enableBtn = document.getElementById('enableSoundBtn');
 
-        function updateSelectedCount() {
-            const checked = document.querySelectorAll('.orderCheckbox:checked').length;
-            const counter = document.getElementById('selectedCount');
-            const selectAll = document.getElementById('selectAll');
-            const allCheckboxes = document.querySelectorAll('.orderCheckbox');
+            function updateSelectedCount() {
+                const checked = document.querySelectorAll('.orderCheckbox:checked').length;
+                const counter = document.getElementById('selectedCount');
+                const selectAll = document.getElementById('selectAll');
+                const allCheckboxes = document.querySelectorAll('.orderCheckbox');
 
-            if (counter) {
-                counter.textContent = checked + ' selected';
-            }
-
-            if (selectAll) {
-                selectAll.checked = allCheckboxes.length > 0 && checked === allCheckboxes.length;
-            }
-        }
-
-        function bindSelectAll() {
-            const selectAll = document.getElementById('selectAll');
-            const checkboxes = document.querySelectorAll('.orderCheckbox');
-
-            if (selectAll) {
-                selectAll.onclick = function() {
-                    checkboxes.forEach(cb => {
-                        cb.checked = this.checked;
-                    });
-                    updateSelectedCount();
-                };
-            }
-
-            checkboxes.forEach(cb => {
-                cb.onchange = function() {
-                    updateSelectedCount();
-                };
-            });
-
-            updateSelectedCount();
-        }
-
-        function bindBulkForm() {
-            const bulkForm = document.querySelector('form[action*="bulk-update"]');
-
-            if (!bulkForm) return;
-
-            bulkForm.onsubmit = function(e) {
-                const checked = document.querySelectorAll('.orderCheckbox:checked');
-                const bulkStatus = bulkForm.querySelector('[name="bulk_status"]');
-
-                if (checked.length === 0) {
-                    e.preventDefault();
-                    alert('Please select at least one order.');
-                    return;
+                if (counter) {
+                    counter.textContent = checked + ' selected';
                 }
 
-                if (!bulkStatus || !bulkStatus.value) {
-                    e.preventDefault();
-                    alert('Please select a bulk status.');
-                    return;
+                if (selectAll) {
+                    selectAll.checked = allCheckboxes.length > 0 && checked === allCheckboxes.length;
                 }
-            };
-        }
-
-        async function unlockAudio() {
-            if (!sound || audioUnlocked) return;
-
-            try {
-                sound.volume = 0;
-                await sound.play();
-                sound.pause();
-                sound.currentTime = 0;
-                sound.volume = 1;
-                audioUnlocked = true;
-
-                if (enableBtn) {
-                    enableBtn.textContent = 'Notification Sound Enabled';
-                    enableBtn.classList.remove(
-                        'bg-[#D4AF37]/10',
-                        'text-[#72530d]',
-                        'border-[#D4AF37]/30'
-                    );
-                    enableBtn.classList.add(
-                        'bg-green-50',
-                        'text-green-700',
-                        'border-green-200'
-                    );
-                }
-
-                console.log('Audio unlocked');
-            } catch (error) {
-                console.log('Audio unlock failed:', error);
             }
-        }
 
-        enableBtn?.addEventListener('click', unlockAudio);
+            function bindSelectAll() {
+                const selectAll = document.getElementById('selectAll');
+                const checkboxes = document.querySelectorAll('.orderCheckbox');
 
-        async function refreshOrders() {
-            if (document.hidden) return;
-            if (isRequesting) return;
+                if (selectAll) {
+                    selectAll.onclick = function() {
+                        checkboxes.forEach(cb => {
+                            cb.checked = this.checked;
+                        });
+                        updateSelectedCount();
+                    };
+                }
 
-            isRequesting = true;
-            console.log('Refreshing orders...');
-
-            try {
-                const res = await fetch(window.location.href, {
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest',
-                        'Accept': 'text/html'
-                    },
-                    cache: 'no-store'
+                checkboxes.forEach(cb => {
+                    cb.onchange = function() {
+                        updateSelectedCount();
+                    };
                 });
 
-                const html = await res.text();
-
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(html, 'text/html');
-
-                const newTable = doc.querySelector('#ordersTable');
-                const currentTable = document.getElementById('ordersTable');
-
-                if (!newTable || !currentTable) {
-                    console.log('ordersTable not found');
-                    isRequesting = false;
-                    return;
-                }
-
-                const firstRowCell = newTable.querySelector('tbody tr td:nth-child(2)');
-                const newFirstOrderNo = firstRowCell ? firstRowCell.textContent.trim() : null;
-
-                console.log('Old order:', lastFirstOrderNo, 'New order:', newFirstOrderNo);
-
-                currentTable.innerHTML = newTable.innerHTML;
-
-                if (lastFirstOrderNo && newFirstOrderNo && newFirstOrderNo !== lastFirstOrderNo) {
-                    if (sound && audioUnlocked) {
-                        sound.currentTime = 0;
-                        sound.play().catch(function(error) {
-                            console.log('Play failed:', error);
-                        });
-                    } else {
-                        console.log('New order detected but notification sound is not enabled yet');
-                    }
-                }
-
-                lastFirstOrderNo = newFirstOrderNo;
-
-                bindSelectAll();
-                bindBulkForm();
-
-                console.log('Orders refreshed successfully');
-
-            } catch (error) {
-                console.error('Order refresh failed:', error);
+                updateSelectedCount();
             }
 
-            isRequesting = false;
-        }
+            function bindBulkForm() {
+                const bulkForm = document.querySelector('form[action*="bulk-update"]');
 
-        bindSelectAll();
-        bindBulkForm();
+                if (!bulkForm) return;
 
-        setInterval(refreshOrders, 15000);
-    });
-</script>
+                bulkForm.onsubmit = function(e) {
+                    const checked = document.querySelectorAll('.orderCheckbox:checked');
+                    const bulkStatus = bulkForm.querySelector('[name="bulk_status"]');
+
+                    if (checked.length === 0) {
+                        e.preventDefault();
+                        alert('Please select at least one order.');
+                        return;
+                    }
+
+                    if (!bulkStatus || !bulkStatus.value) {
+                        e.preventDefault();
+                        alert('Please select a bulk status.');
+                        return;
+                    }
+                };
+            }
+
+            async function unlockAudio() {
+                if (!sound || audioUnlocked) return;
+
+                try {
+                    sound.volume = 0;
+                    await sound.play();
+                    sound.pause();
+                    sound.currentTime = 0;
+                    sound.volume = 1;
+                    audioUnlocked = true;
+
+                    if (enableBtn) {
+                        enableBtn.textContent = 'Notification Sound Enabled';
+                        enableBtn.classList.remove(
+                            'bg-[#D4AF37]/10',
+                            'text-[#72530d]',
+                            'border-[#D4AF37]/30'
+                        );
+                        enableBtn.classList.add(
+                            'bg-green-50',
+                            'text-green-700',
+                            'border-green-200'
+                        );
+                    }
+
+                    console.log('Audio unlocked');
+                } catch (error) {
+                    console.log('Audio unlock failed:', error);
+                }
+            }
+
+            enableBtn?.addEventListener('click', unlockAudio);
+
+            async function refreshOrders() {
+                if (document.hidden) return;
+                if (isRequesting) return;
+
+                isRequesting = true;
+                console.log('Refreshing orders...');
+
+                try {
+                    const res = await fetch(window.location.href, {
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Accept': 'text/html'
+                        },
+                        cache: 'no-store'
+                    });
+
+                    const html = await res.text();
+
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+
+                    const newTable = doc.querySelector('#ordersTable');
+                    const currentTable = document.getElementById('ordersTable');
+
+                    if (!newTable || !currentTable) {
+                        console.log('ordersTable not found');
+                        isRequesting = false;
+                        return;
+                    }
+
+                    const firstRowCell = newTable.querySelector('tbody tr td:nth-child(2)');
+                    const newFirstOrderNo = firstRowCell ? firstRowCell.textContent.trim() : null;
+
+                    console.log('Old order:', lastFirstOrderNo, 'New order:', newFirstOrderNo);
+
+                    currentTable.innerHTML = newTable.innerHTML;
+
+                    if (lastFirstOrderNo && newFirstOrderNo && newFirstOrderNo !== lastFirstOrderNo) {
+                        if (sound && audioUnlocked) {
+                            sound.currentTime = 0;
+                            sound.play().catch(function(error) {
+                                console.log('Play failed:', error);
+                            });
+                        } else {
+                            console.log('New order detected but notification sound is not enabled yet');
+                        }
+                    }
+
+                    lastFirstOrderNo = newFirstOrderNo;
+
+                    bindSelectAll();
+                    bindBulkForm();
+
+                    console.log('Orders refreshed successfully');
+
+                } catch (error) {
+                    console.error('Order refresh failed:', error);
+                }
+
+                isRequesting = false;
+            }
+
+            bindSelectAll();
+            bindBulkForm();
+
+            setInterval(refreshOrders, 15000);
+        });
+    </script>
 @endsection

@@ -96,8 +96,9 @@
                                 @csrf @method('PATCH')
                                 <button type="submit"
                                     class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white border border-amber-200 text-amber-700 font-bold text-sm hover:bg-amber-600 hover:text-white hover:border-amber-600 transition-all shadow-sm group">
-                                   
-                                    <svg class="w-4 h-4 text-amber-500 group-hover:text-white transition-colors" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+
+                                    <svg class="w-4 h-4 text-amber-500 group-hover:text-white transition-colors"
+                                        xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                         stroke-width="2" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round"
                                             d="M18.364 18.364A9 9 0 0 0 5.636 5.636m12.728 12.728A9 9 0 0 1 5.636 5.636m12.728 12.728L5.636 5.636" />
@@ -187,7 +188,7 @@
                             </p>
                             <p class="text-gray-900 font-semibold">{{ $agent->created_at?->format('d M Y') ?? '—' }}</p>
                         </div>
-                        <div >
+                        <div>
                             <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Account Linked
                             </p>
                             <p class="text-gray-900 font-semibold">{{ $agent->user->email ?? 'No Email' }}</p>
@@ -379,13 +380,14 @@
                                         <span
                                             class="text-[10px] px-2 py-0.5 rounded-full
                                             @switch($order->status)
-                                                @case('pending') bg-amber-100 text-amber-700 @break
-                                                @case('paid') bg-emerald-100 text-emerald-700 @break
-                                                @case('processing') bg-blue-100 text-blue-700 @break
-                                                @case('shipped') bg-indigo-100 text-indigo-700 @break
-                                                @case('completed') bg-emerald-100 text-emerald-700 @break
-                                                @case('cancelled') bg-red-100 text-red-600 @break
-                                                @default bg-gray-100 text-gray-500
+                                                  @case('pending') bg-amber-50 text-amber-700 border border-amber-200 @break
+                                        @case('paid') bg-emerald-50 text-emerald-700 border border-emerald-200 @break
+                                        @case('processing') bg-indigo-50 text-indigo-700 border border-indigo-200 @break
+                                        @case('shipped') bg-blue-50 text-blue-700 border border-blue-200 @break
+                                        @case('completed') bg-emerald-50 text-emerald-700 border border-emerald-200 @break
+                                        @case('cancelled') bg-gray-50 text-gray-600 border border-gray-200 @break
+                                        @case('failed') bg-rose-50 text-rose-700 border border-rose-200 @break
+                                        @default bg-gray-100 text-gray-500
                                             @endswitch">
                                             {{ ucfirst($order->status) }}
                                         </span>

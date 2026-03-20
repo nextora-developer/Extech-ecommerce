@@ -2,7 +2,6 @@
 
 @section('content')
     {{-- Header --}}
-    {{-- Header --}}
     <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 mb-10">
         <div>
             <h1 class="text-3xl font-extrabold text-gray-900 tracking-tight">Analytics Overview</h1>

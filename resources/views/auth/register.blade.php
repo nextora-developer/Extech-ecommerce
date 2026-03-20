@@ -69,7 +69,7 @@
                         class="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-[#15a5ed]/30 to-transparent">
                     </div>
 
-                    <div class="max-w-sm mx-auto">
+                    <div class="max-w-2xl mx-auto">
                         <div class="text-center mb-8">
                             <h2 class="text-2xl font-extrabold text-gray-900 tracking-tight">
                                 Create your account
@@ -80,105 +80,108 @@
                         </div>
 
                         <form method="POST" action="{{ route('register') }}" class="space-y-5">
-                            @csrf
+    @csrf
 
-                            {{-- Name --}}
-                            <div>
-                                <label for="name"
-                                    class="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-2">
-                                    Full Name
-                                </label>
-                                <div class="relative">
-                                    <span
-                                        class="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-10 rounded-r bg-[#15a5ed]/70"></span>
-                                    <input id="name" type="text" name="name" value="{{ old('name') }}"
-                                        required autofocus placeholder="John Doe"
-                                        class="w-full pl-5 pr-4 py-3 rounded-xl border border-gray-200 bg-gray-50/40
-                                            focus:bg-white focus:border-[#15a5ed] focus:ring-4 focus:ring-[#15a5ed]/20
-                                            transition-all duration-200 outline-none text-gray-900 placeholder:text-gray-400" />
-                                </div>
-                                @error('name')
-                                    <p class="text-xs text-red-500 mt-1.5">{{ $message }}</p>
-                                @enderror
-                            </div>
+    {{-- Name --}}
+    <div>
+        <label for="name"
+            class="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-2">
+            Full Name
+        </label>
+        <div class="relative">
+            <span
+                class="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-10 rounded-r bg-[#15a5ed]/70"></span>
+            <input id="name" type="text" name="name" value="{{ old('name') }}"
+                required autofocus placeholder="Mohammad Najib Bin Abdul Razak"
+                class="w-full pl-5 pr-4 py-3 rounded-xl border border-gray-200 bg-gray-50/40
+                    focus:bg-white focus:border-[#15a5ed] focus:ring-4 focus:ring-[#15a5ed]/20
+                    transition-all duration-200 outline-none text-gray-900 placeholder:text-gray-400" />
+        </div>
+        @error('name')
+            <p class="text-xs text-red-500 mt-1.5">{{ $message }}</p>
+        @enderror
+    </div>
 
-                            {{-- Email --}}
-                            <div>
-                                <label for="email"
-                                    class="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-2">
-                                    Email ID
-                                </label>
-                                <div class="relative">
-                                    <span
-                                        class="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-10 rounded-r bg-[#15a5ed]/70"></span>
-                                    <input id="email" type="email" name="email" value="{{ old('email') }}"
-                                        required placeholder="name@company.com"
-                                        class="w-full pl-5 pr-4 py-3 rounded-xl border border-gray-200 bg-gray-50/40
-                                            focus:bg-white focus:border-[#15a5ed] focus:ring-4 focus:ring-[#15a5ed]/20
-                                            transition-all duration-200 outline-none text-gray-900 placeholder:text-gray-400" />
-                                </div>
-                                @error('email')
-                                    <p class="text-xs text-red-500 mt-1.5">{{ $message }}</p>
-                                @enderror
-                            </div>
+    {{-- Email --}}
+    <div>
+        <label for="email"
+            class="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-2">
+            Email
+        </label>
+        <div class="relative">
+            <span
+                class="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-10 rounded-r bg-[#15a5ed]/70"></span>
+            <input id="email" type="email" name="email" value="{{ old('email') }}"
+                required placeholder="name@gmail.com"
+                class="w-full pl-5 pr-4 py-3 rounded-xl border border-gray-200 bg-gray-50/40
+                    focus:bg-white focus:border-[#15a5ed] focus:ring-4 focus:ring-[#15a5ed]/20
+                    transition-all duration-200 outline-none text-gray-900 placeholder:text-gray-400" />
+        </div>
+        @error('email')
+            <p class="text-xs text-red-500 mt-1.5">{{ $message }}</p>
+        @enderror
+    </div>
 
-                            {{-- Referral Code --}}
-                            <div>
-                                <label for="referral_code"
-                                    class="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-2">
-                                    Referral Code <span class="text-gray-400 normal-case font-medium">(optional)</span>
-                                </label>
-                                <div class="relative">
-                                    <span
-                                        class="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-10 rounded-r bg-[#15a5ed]/70"></span>
-                                    <input id="referral_code" type="text" name="referral_code"
-                                        value="{{ old('referral_code', $referralCode ?? request('ref')) }}"
-                                        placeholder="Enter referral code"
-                                        class="w-full pl-5 pr-4 py-3 rounded-xl border border-gray-200 bg-gray-50/40
-                                                focus:bg-white focus:border-[#15a5ed] focus:ring-4 focus:ring-[#15a5ed]/20
-                                                transition-all duration-200 outline-none text-gray-900 placeholder:text-gray-400" />
-                                </div>
-                                @error('referral_code')
-                                    <p class="text-xs text-red-500 mt-1.5">{{ $message }}</p>
-                                @enderror
-                            </div>
+    {{-- Referral Code --}}
+    <div>
+        <label for="referral_code"
+            class="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-2">
+            Referral Code <span class="text-gray-400 normal-case font-medium">(optional)</span>
+        </label>
+        <div class="relative">
+            <span
+                class="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-10 rounded-r bg-[#15a5ed]/70"></span>
+            <input id="referral_code" type="text" name="referral_code"
+                value="{{ old('referral_code', $referralCode ?? request('ref')) }}"
+                placeholder="Enter referral code"
+                class="w-full pl-5 pr-4 py-3 rounded-xl border border-gray-200 bg-gray-50/40
+                    focus:bg-white focus:border-[#15a5ed] focus:ring-4 focus:ring-[#15a5ed]/20
+                    transition-all duration-200 outline-none text-gray-900 placeholder:text-gray-400" />
+        </div>
+        @error('referral_code')
+            <p class="text-xs text-red-500 mt-1.5">{{ $message }}</p>
+        @enderror
+    </div>
 
-                            {{-- Password --}}
-                            <div>
-                                <label for="password"
-                                    class="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-2">
-                                    Password
-                                </label>
-                                <div class="relative">
-                                    <span
-                                        class="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-10 rounded-r bg-[#15a5ed]/70"></span>
-                                    <input id="password" type="password" name="password" required
-                                        autocomplete="new-password" placeholder="••••••••"
-                                        class="w-full pl-5 pr-4 py-3 rounded-xl border border-gray-200 bg-gray-50/40
-                                            focus:bg-white focus:border-[#15a5ed] focus:ring-4 focus:ring-[#15a5ed]/20
-                                            transition-all duration-200 outline-none text-gray-900 placeholder:text-gray-400" />
-                                </div>
-                                @error('password')
-                                    <p class="text-xs text-red-500 mt-1.5">{{ $message }}</p>
-                                @enderror
-                            </div>
+    {{-- Password Row (2 Columns) --}}
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+        {{-- Password --}}
+        <div>
+            <label for="password"
+                class="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-2">
+                Password
+            </label>
+            <div class="relative">
+                <span
+                    class="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-10 rounded-r bg-[#15a5ed]/70"></span>
+                <input id="password" type="password" name="password" required
+                    autocomplete="new-password" placeholder="••••••••"
+                    class="w-full pl-5 pr-4 py-3 rounded-xl border border-gray-200 bg-gray-50/40
+                        focus:bg-white focus:border-[#15a5ed] focus:ring-4 focus:ring-[#15a5ed]/20
+                        transition-all duration-200 outline-none text-gray-900 placeholder:text-gray-400" />
+            </div>
+            @error('password')
+                <p class="text-xs text-red-500 mt-1.5">{{ $message }}</p>
+            @enderror
+        </div>
 
-                            {{-- Confirm Password --}}
-                            <div>
-                                <label for="password_confirmation"
-                                    class="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-2">
-                                    Confirm Password
-                                </label>
-                                <div class="relative">
-                                    <span
-                                        class="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-10 rounded-r bg-[#15a5ed]/70"></span>
-                                    <input id="password_confirmation" type="password" name="password_confirmation"
-                                        required placeholder="••••••••"
-                                        class="w-full pl-5 pr-4 py-3 rounded-xl border border-gray-200 bg-gray-50/40
-                                            focus:bg-white focus:border-[#15a5ed] focus:ring-4 focus:ring-[#15a5ed]/20
-                                            transition-all duration-200 outline-none text-gray-900 placeholder:text-gray-400" />
-                                </div>
-                            </div>
+        {{-- Confirm Password --}}
+        <div>
+            <label for="password_confirmation"
+                class="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-2">
+                Confirm Password
+            </label>
+            <div class="relative">
+                <span
+                    class="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-10 rounded-r bg-[#15a5ed]/70"></span>
+                <input id="password_confirmation" type="password" name="password_confirmation"
+                    required placeholder="••••••••"
+                    class="w-full pl-5 pr-4 py-3 rounded-xl border border-gray-200 bg-gray-50/40
+                        focus:bg-white focus:border-[#15a5ed] focus:ring-4 focus:ring-[#15a5ed]/20
+                        transition-all duration-200 outline-none text-gray-900 placeholder:text-gray-400" />
+            </div>
+        </div>
+    </div>
 
                             {{-- Submit --}}
                             <button type="submit"
