@@ -668,7 +668,7 @@
                            transition-all duration-300 hover:bg-[#15A5ED] hover:shadow-[0_10px_25px_rgba(21,165,237,0.4)]
                            hover:-translate-y-1">
                             <span class="relative z-10 flex items-center">
-                                Launch Store
+                                Shop Now
                                 <svg xmlns="http://www.w3.org/2000/svg"
                                     class="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" fill="none"
                                     viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
@@ -684,7 +684,7 @@
                            text-sm font-bold uppercase tracking-wider
                            bg-white text-slate-600 border border-slate-200
                            hover:bg-slate-50 hover:text-[#15A5ED] hover:border-[#15A5ED]/40 transition-all duration-300">
-                            Directory
+                            View Category
                         </a>
                     </div>
                 </div>
