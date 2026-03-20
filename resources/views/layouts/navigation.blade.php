@@ -1,196 +1,201 @@
-{{-- ✅ Wrapper: keep Alpine states outside nav, so fixed works normally --}}
+{{-- ✅ FUTURISTIC MINIMALIST OVERLAY --}}
+<nav x-data="{ mobileSearchOpen: false }" class="sticky top-0 z-[100] bg-black border-b border-white/10 px-4 py-3">
+    <div class="max-w-7xl mx-auto">
+        <div class="flex items-center justify-between h-16 sm:h-20">
 
-{{-- ✅ TOP NAVBAR (keep your blur here) --}}
-<nav class="border-b border-white/10 bg-black/95 backdrop-blur-md sticky top-0 z-50">
-    <div class="max-w-7xl5 mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between h-20">
+            {{-- LOGO --}}
+            <div class="flex items-center gap-8">
+                <a href="{{ route('home') }}">
+                    <img src="{{ asset('images/logo/extechstudio-white-logo.png') }}"
+                        class="h-10 sm:h-10 hover:brightness-125 transition" />
+                </a>
 
-            {{-- Left: Logo + Desktop Links --}}
-            <div class="flex items-center">
-                <div class="shrink-0 flex items-center">
-                    <a href="{{ route('home') }}" class="flex items-center gap-3">
-                        <img src="{{ asset('images/logo/extechstudio-white-logo.png') }}" alt="ExtechStudio"
-                            class="h-10 w-auto object-contain transition-transform duration-200 hover:scale-105" />
-                    </a>
-                </div>
-
-                <div class="hidden lg:flex items-center ms-10 space-x-1">
+                {{-- DESKTOP NAV --}}
+                <div class="hidden lg:flex items-center gap-1">
                     @php
-                        $baseClass = 'px-4 py-2 text-base font-semibold transition-all duration-200 rounded-xl';
-                        $activeClass = 'text-[#15A5ED] bg-[#15A5ED]/15';
-                        $inactiveClass = 'text-gray-300 hover:text-white hover:bg-white/10';
+                        $link = 'relative px-4 py-2 text-xs font-black uppercase tracking-[0.15em] transition';
                     @endphp
 
                     <a href="{{ route('home') }}"
-                        class="{{ $baseClass }} {{ request()->routeIs('home') ? $activeClass : $inactiveClass }}">
+                        class="{{ $link }} {{ request()->routeIs('home') ? 'text-white' : 'text-gray-300 hover:text-white' }}">
                         Home
+                        @if (request()->routeIs('home'))
+                            <span
+                                class="absolute bottom-0 left-1/2 -translate-x-1/2 w-1 h-1 bg-[#15A5ED] rounded-full shadow-[0_0_8px_#15A5ED]"></span>
+                        @endif
                     </a>
 
                     <a href="{{ route('shop.index') }}"
-                        class="{{ $baseClass }} {{ request()->routeIs('shop.*') ? $activeClass : $inactiveClass }}">
+                        class="{{ $link }} {{ request()->routeIs('shop.*') ? 'text-white' : 'text-gray-300 hover:text-white' }}">
                         Shop
+                        @if (request()->routeIs('shop.*'))
+                            <span
+                                class="absolute bottom-0 left-1/2 -translate-x-1/2 w-1 h-1 bg-[#15A5ED] rounded-full shadow-[0_0_8px_#15A5ED]"></span>
+                        @endif
                     </a>
 
-                    {{-- Desktop More Dropdown --}}
-                    <div x-data="{ openMore: false }" class="relative">
-                        <button @click="openMore = !openMore" @click.outside="openMore = false"
-                            class="{{ $baseClass }} {{ $inactiveClass }} flex items-center gap-1">
-                            <span>More</span>
-                            <svg class="h-4 w-4 transition-transform" :class="{ 'rotate-180': openMore }" fill="none"
-                                viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                    {{-- MORE --}}
+                    <div x-data="{ open: false }" class="relative">
+                        <button @click="open=!open" @click.outside="open=false"
+                            class="{{ $link }} flex items-center gap-1 text-gray-300 hover:text-white hover:bg-white/5 rounded-lg">
+                            More
+                            <svg class="w-3 h-3 transition-transform" :class="{ 'rotate-180': open }" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                                <path d="m19.5 8.25-7.5 7.5-7.5-7.5" />
                             </svg>
                         </button>
 
-                        <div x-cloak x-show="openMore" x-transition:enter="transition ease-out duration-100"
-                            x-transition:enter-start="opacity-0 scale-95"
-                            x-transition:leave="transition ease-in duration-75"
-                            x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95"
-                            class="absolute left-0 mt-2 w-52 rounded-2xl border border-white/10 bg-[#0b0b0b]
-                                       shadow-xl ring-1 ring-black/40 z-50 overflow-hidden">
-                            <div class="p-1.5">
-                                <a href="{{ route('how-to-order') }}"
-                                    class="block px-4 py-2.5 text-sm text-gray-300 hover:bg-white/10 hover:text-[#15A5ED] rounded-xl transition">
-                                    How to Order
-                                </a>
-                                <a href="{{ route('faq') }}"
-                                    class="block px-4 py-2.5 text-sm text-gray-300 hover:bg-white/10 hover:text-[#15A5ED] rounded-xl transition">
-                                    FAQ
-                                </a>
-                                <a href="{{ route('agents.index') }}"
-                                    class="block px-4 py-2.5 text-sm text-gray-300 hover:bg-white/10 hover:text-[#15A5ED] rounded-xl transition">
-                                    Verify Agent
-                                </a>
-                            </div>
+                        <div x-cloak x-show="open"
+                            class="absolute left-0 mt-4 w-52 bg-[#0a0a0a] border border-white/10 rounded-2xl shadow-[0_20px_40px_rgba(0,0,0,0.7)] p-2">
+
+                            <a href="{{ route('how-to-order') }}"
+                                class="block px-4 py-3 text-[10px] font-bold uppercase tracking-widest text-gray-400 hover:bg-[#15A5ED] hover:text-white rounded-lg">
+                                How to Order
+                            </a>
+
+                            <a href="{{ route('faq') }}"
+                                class="block px-4 py-3 text-[10px] font-bold uppercase tracking-widest text-gray-400 hover:bg-[#15A5ED] hover:text-white rounded-lg">
+                                FAQ
+                            </a>
+
+                            <a href="{{ route('agents.index') }}"
+                                class="block px-4 py-3 text-[10px] font-bold uppercase tracking-widest text-gray-400 hover:bg-[#15A5ED] hover:text-white rounded-lg">
+                                Verify Agent
+                            </a>
                         </div>
                     </div>
                 </div>
             </div>
 
-            {{-- Center: Search (Desktop) --}}
-            <div class="hidden md:flex flex-1 items-center justify-center px-8 lg:px-20">
-                <form method="GET" action="{{ route('shop.index') }}" class="w-full max-w-lg">
-                    <div class="relative group">
-                        <input type="text" name="q" value="{{ request('q') }}"
-                            placeholder="Search products..."
-                            class="w-full bg-white/10 border border-white/10 rounded-full px-6 py-2.5 text-sm
-                                       text-gray-200 placeholder:text-gray-400
-                                       focus:ring-2 focus:ring-[#15A5ED]/40 focus:bg-white/15 transition-all">
-                        <button type="submit"
-                            class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 group-hover:text-[#15A5ED] transition-colors">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                                stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="m21 21-4.35-4.35M11 18a7 7 0 1 1 0-14 7 7 0 0 1 0 14z" />
-                            </svg>
-                        </button>
-                    </div>
+            {{-- SEARCH --}}
+            <div class="hidden md:flex flex-1 justify-center max-w-md mx-4">
+                <form method="GET" action="{{ route('shop.index') }}" class="w-full relative group">
+                    <input type="text" name="q" value="{{ request('q') }}"
+                        class="w-full bg-white/[0.06] border border-white/10 text-sm tracking-wider py-2.5 px-5 rounded-lg
+                               text-white placeholder:text-gray-500
+                               focus:ring-1 focus:ring-[#15A5ED] focus:bg-white/[0.08] transition"
+                        placeholder="SEARCH PRODUCTS...">
+
+                    <button type="submit"
+                        class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#15A5ED]">
+                        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path d="m21 21-4.35-4.35M11 18a7 7 0 1 1 0-14 7 7 0 0 1 0 14z" />
+                        </svg>
+                    </button>
                 </form>
             </div>
 
-            {{-- Right: Actions --}}
-            <div class="flex items-center gap-2 sm:gap-4">
-                {{-- Cart --}}
-                <a href="{{ route('cart.index') }}"
-                    class="group relative p-2 text-gray-200 hover:bg-white/10 rounded-full transition">
+            {{-- ACTIONS --}}
+            <div class="flex items-center gap-2 sm:gap-3">
 
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24"
-                        stroke-width="1.8" stroke="currentColor">
+                {{-- MOBILE SEARCH ICON --}}
+                <button type="button" @click="mobileSearchOpen = true"
+                    class="md:hidden p-2 text-gray-300 hover:text-white transition">
+                    <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
                         <path stroke-linecap="round" stroke-linejoin="round"
-                            d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
+                            d="m21 21-4.35-4.35M11 18a7 7 0 1 1 0-14 7 7 0 0 1 0 14z" />
+                    </svg>
+                </button>
+
+                {{-- CART --}}
+                <a href="{{ route('cart.index') }}" class="relative p-2 text-gray-300 hover:text-white transition">
+
+                    <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                        <path
+                            d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007ZM8.625 10.5a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm7.5 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
                     </svg>
 
+                    @php $count = auth()->user()?->cart?->items?->count() ?? 0; @endphp
 
-                    <span data-cart-count
-                        class="absolute top-0 right-0 h-5 w-5 bg-[#15A5ED] text-white text-[10px] font-bold flex items-center justify-center rounded-full ring-2 ring-black">
-                        {{ auth()->user()?->cart?->items?->count() ?? 0 }}
-                    </span>
+                    @if ($count > 0)
+                        <span class="absolute -top-1 -right-1 flex h-5 w-5">
+                            <span
+                                class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#15A5ED] opacity-60"></span>
+                            <span
+                                class="relative inline-flex items-center justify-center
+                                         h-5 min-w-[20px] px-1 rounded-full
+                                         bg-[#15A5ED] text-white text-[10px] font-bold
+                                         shadow-[0_0_10px_#15A5ED]">
+                                {{ $count > 99 ? '99+' : $count }}
+                            </span>
+                        </span>
+                    @endif
                 </a>
 
-                {{-- ✅ Desktop User Dropdown (restore) --}}
+                {{-- USER / LOGIN --}}
                 @auth
-                    <div class="hidden sm:block">
-                        <div x-data="{ openUser: false }" class="relative">
-                            {{-- Trigger --}}
-                            <button type="button" @click="openUser = !openUser" @click.outside="openUser = false"
-                                @keydown.escape.window="openUser = false"
-                                class="flex items-center gap-2 p-1 pr-3 rounded-full border border-white/10 hover:bg-white/10 transition"
-                                :aria-expanded="openUser.toString()" aria-haspopup="true">
+                    <div x-data="{ open: false }" class="relative hidden sm:block">
+                        <button @click="open = !open"
+                            class="ml-2 h-10 w-10 border border-white/10 flex items-center justify-center hover:border-[#15A5ED] transition-colors">
+                            <span class="text-[10px] font-black text-white uppercase">
+                                {{ substr(Auth::user()->name, 0, 1) }}
+                            </span>
+                        </button>
 
-                                <div
-                                    class="h-8 w-8 rounded-full bg-gradient-to-br from-[#15A5ED] to-[#6DBAE1]
-                                flex items-center justify-center text-[11px] font-bold text-white uppercase">
-                                    {{ substr(Auth::user()->name, 0, 1) }}
-                                </div>
+                        <div x-cloak x-show="open" @click.outside="open = false" x-transition
+                            class="absolute right-0 mt-4 w-60 bg-[#0a0a0a] border border-white/10 rounded-2xl p-4 shadow-2xl">
+                            <div class="mb-4 pb-2 border-b border-white/10">
+                                <p class="text-[10px] text-gray-500 uppercase tracking-tighter">Authorized User</p>
+                                <p class="text-sm font-bold text-white truncate">{{ Auth::user()->name }}</p>
+                            </div>
 
-                                <span class="text-base font-semibold text-gray-200 max-w-[100px] truncate">
-                                    {{ Auth::user()->name }}
-                                </span>
+                            <div class="space-y-1">
+                                <a href="{{ route('account.index') }}"
+                                    class="block py-2 text-[10px] font-bold uppercase tracking-widest text-gray-400 hover:text-[#15A5ED]">
+                                    Dashboard
+                                </a>
+                                <a href="{{ route('account.orders.index') }}"
+                                    class="block py-2 text-[10px] font-bold uppercase tracking-widest text-gray-400 hover:text-[#15A5ED]">
+                                    Orders
+                                </a>
 
-                                <svg class="h-4 w-4 text-gray-400 transition-transform duration-200"
-                                    :class="{ 'rotate-180': openUser }" fill="none" viewBox="0 0 24 24"
-                                    stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-                                </svg>
-                            </button>
-
-                            {{-- Menu --}}
-                            <div x-cloak x-show="openUser" x-transition:enter="transition ease-out duration-100"
-                                x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
-                                x-transition:leave="transition ease-in duration-75"
-                                x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95"
-                                class="absolute right-0 mt-2 w-56 rounded-2xl border border-white/10 bg-[#0b0b0b]
-                           shadow-xl ring-1 ring-black/40 z-50 overflow-hidden">
-                                <div class="p-1.5">
-                                    <a href="{{ route('account.index') }}" @click="openUser = false"
-                                        class="block px-4 py-2.5 text-sm text-gray-300 hover:bg-white/10 hover:text-[#15A5ED] rounded-xl transition">
-                                        Dashboard
-                                    </a>
-
-                                    <a href="{{ route('account.orders.index') }}" @click="openUser = false"
-                                        class="block px-4 py-2.5 text-sm text-gray-300 hover:bg-white/10 hover:text-[#15A5ED] rounded-xl transition">
-                                        My Orders
-                                    </a>
-
-                                    <a href="{{ route('account.favorites.index') }}" @click="openUser = false"
-                                        class="block px-4 py-2.5 text-sm text-gray-300 hover:bg-white/10 hover:text-[#15A5ED] rounded-xl transition">
-                                        My Wishlist
-                                    </a>
-
-                                    <a href="{{ route('account.address.index') }}" @click="openUser = false"
-                                        class="block px-4 py-2.5 text-sm text-gray-300 hover:bg-white/10 hover:text-[#15A5ED] rounded-xl transition">
-                                        Shipping Addresses
-                                    </a>
-
-                                    <a href="{{ route('account.profile.edit') }}" @click="openUser = false"
-                                        class="block px-4 py-2.5 text-sm text-gray-300 hover:bg-white/10 hover:text-[#15A5ED] rounded-xl transition">
-                                        Profile Settings
-                                    </a>
-
-                                    <div class="my-1 border-t border-white/10"></div>
-
-                                    <form method="POST" action="{{ route('logout') }}">
-                                        @csrf
-                                        <button type="submit"
-                                            class="w-full text-left block px-4 py-2.5 text-sm rounded-xl transition
-                                       text-red-400 hover:bg-red-500/10 hover:text-red-300">
-                                            Log Out
-                                        </button>
-                                    </form>
-                                </div>
+                                <form method="POST" action="{{ route('logout') }}">
+                                    @csrf
+                                    <button type="submit"
+                                        class="w-full text-left py-2 text-[10px] font-bold uppercase tracking-widest text-red-500">
+                                        Logout
+                                    </button>
+                                </form>
                             </div>
                         </div>
                     </div>
                 @else
                     <a href="{{ route('login') }}"
-                        class="hidden sm:inline-flex px-6 py-2.5 rounded-full bg-white text-black text-sm font-bold hover:bg-gray-200 transition shadow-lg shadow-black/10">
+                        class="ml-2 hidden sm:inline-flex px-6 py-2 border border-white text-[10px] font-black uppercase tracking-[0.2em] hover:bg-white hover:text-black transition-all">
                         Login
                     </a>
                 @endauth
             </div>
+        </div>
+    </div>
 
+    {{-- MOBILE SEARCH PANEL --}}
+    <div x-cloak x-show="mobileSearchOpen" x-transition.opacity
+        class="md:hidden fixed inset-0 z-[120] bg-black/95 px-4 py-4">
+        <div class="max-w-7xl mx-auto">
+            <div class="flex items-center gap-3">
+                <form method="GET" action="{{ route('shop.index') }}" class="flex-1 relative">
+                    <input type="text" name="q" value="{{ request('q') }}" autofocus
+                        class="w-full bg-white/[0.06] border border-white/10 text-sm tracking-wider py-3 pl-4 pr-12 rounded-xl
+                               text-white placeholder:text-gray-500
+                               focus:ring-1 focus:ring-[#15A5ED] focus:bg-white/[0.08] transition"
+                        placeholder="SEARCH PRODUCTS...">
+
+                    <button type="submit"
+                        class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#15A5ED]">
+                        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path d="m21 21-4.35-4.35M11 18a7 7 0 1 1 0-14 7 7 0 0 1 0 14z" />
+                        </svg>
+                    </button>
+                </form>
+
+                <button type="button" @click="mobileSearchOpen = false"
+                    class="shrink-0 h-11 w-11 flex items-center justify-center rounded-xl border border-white/10 text-gray-300 hover:text-white hover:border-white/20 transition">
+                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
         </div>
     </div>
 </nav>

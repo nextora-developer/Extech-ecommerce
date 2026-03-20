@@ -1,0 +1,193 @@
+<nav class="border-b border-white/10 bg-black/95 backdrop-blur-md sticky top-0 z-50">
+    <div class="max-w-7xl5 mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-20">
+
+            {{-- Left: Logo + Desktop Links --}}
+            <div class="flex items-center">
+                <div class="shrink-0 flex items-center">
+                    <a href="{{ route('home') }}" class="flex items-center gap-3">
+                        <img src="{{ asset('images/logo/extechstudio-white-logo.png') }}" alt="ExtechStudio"
+                            class="h-10 w-auto object-contain transition-transform duration-200 hover:scale-105" />
+                    </a>
+                </div>
+
+                <div class="hidden lg:flex items-center ms-10 space-x-1">
+                    @php
+                        $baseClass = 'px-4 py-2 text-base font-semibold transition-all duration-200 rounded-xl';
+                        $activeClass = 'text-[#15A5ED] bg-[#15A5ED]/15';
+                        $inactiveClass = 'text-gray-300 hover:text-white hover:bg-white/10';
+                    @endphp
+
+                    <a href="{{ route('home') }}"
+                        class="{{ $baseClass }} {{ request()->routeIs('home') ? $activeClass : $inactiveClass }}">
+                        Home
+                    </a>
+
+                    <a href="{{ route('shop.index') }}"
+                        class="{{ $baseClass }} {{ request()->routeIs('shop.*') ? $activeClass : $inactiveClass }}">
+                        Shop
+                    </a>
+
+                    {{-- Desktop More Dropdown --}}
+                    <div x-data="{ openMore: false }" class="relative">
+                        <button @click="openMore = !openMore" @click.outside="openMore = false"
+                            class="{{ $baseClass }} {{ $inactiveClass }} flex items-center gap-1">
+                            <span>More</span>
+                            <svg class="h-4 w-4 transition-transform" :class="{ 'rotate-180': openMore }" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                            </svg>
+                        </button>
+
+                        <div x-cloak x-show="openMore" x-transition:enter="transition ease-out duration-100"
+                            x-transition:enter-start="opacity-0 scale-95"
+                            x-transition:leave="transition ease-in duration-75"
+                            x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95"
+                            class="absolute left-0 mt-2 w-52 rounded-2xl border border-white/10 bg-[#0b0b0b]
+                                       shadow-xl ring-1 ring-black/40 z-50 overflow-hidden">
+                            <div class="p-1.5">
+                                <a href="{{ route('how-to-order') }}"
+                                    class="block px-4 py-2.5 text-sm text-gray-300 hover:bg-white/10 hover:text-[#15A5ED] rounded-xl transition">
+                                    How to Order
+                                </a>
+                                <a href="{{ route('faq') }}"
+                                    class="block px-4 py-2.5 text-sm text-gray-300 hover:bg-white/10 hover:text-[#15A5ED] rounded-xl transition">
+                                    FAQ
+                                </a>
+                                <a href="{{ route('agents.index') }}"
+                                    class="block px-4 py-2.5 text-sm text-gray-300 hover:bg-white/10 hover:text-[#15A5ED] rounded-xl transition">
+                                    Verify Agent
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Center: Search (Desktop) --}}
+            <div class="hidden md:flex flex-1 items-center justify-center px-8 lg:px-20">
+                <form method="GET" action="{{ route('shop.index') }}" class="w-full max-w-lg">
+                    <div class="relative group">
+                        <input type="text" name="q" value="{{ request('q') }}"
+                            placeholder="Search products..."
+                            class="w-full bg-white/10 border border-white/10 rounded-full px-6 py-2.5 text-sm
+                                       text-gray-200 placeholder:text-gray-400
+                                       focus:ring-2 focus:ring-[#15A5ED]/40 focus:bg-white/15 transition-all">
+                        <button type="submit"
+                            class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 group-hover:text-[#15A5ED] transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="m21 21-4.35-4.35M11 18a7 7 0 1 1 0-14 7 7 0 0 1 0 14z" />
+                            </svg>
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            {{-- Right: Actions --}}
+            <div class="flex items-center gap-2 sm:gap-4">
+                {{-- Cart --}}
+                <a href="{{ route('cart.index') }}"
+                    class="group relative p-2 text-gray-200 hover:bg-white/10 rounded-full transition">
+
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24"
+                        stroke-width="1.8" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
+                    </svg>
+
+
+                    <span data-cart-count
+                        class="absolute top-0 right-0 h-5 w-5 bg-[#15A5ED] text-white text-[10px] font-bold flex items-center justify-center rounded-full ring-2 ring-black">
+                        {{ auth()->user()?->cart?->items?->count() ?? 0 }}
+                    </span>
+                </a>
+
+                {{-- ✅ Desktop User Dropdown (restore) --}}
+                @auth
+                    <div class="hidden sm:block">
+                        <div x-data="{ openUser: false }" class="relative">
+                            {{-- Trigger --}}
+                            <button type="button" @click="openUser = !openUser" @click.outside="openUser = false"
+                                @keydown.escape.window="openUser = false"
+                                class="flex items-center gap-2 p-1 pr-3 rounded-full border border-white/10 hover:bg-white/10 transition"
+                                :aria-expanded="openUser.toString()" aria-haspopup="true">
+
+                                <div
+                                    class="h-8 w-8 rounded-full bg-gradient-to-br from-[#15A5ED] to-[#6DBAE1]
+                                flex items-center justify-center text-[11px] font-bold text-white uppercase">
+                                    {{ substr(Auth::user()->name, 0, 1) }}
+                                </div>
+
+                                <span class="text-base font-semibold text-gray-200 max-w-[100px] truncate">
+                                    {{ Auth::user()->name }}
+                                </span>
+
+                                <svg class="h-4 w-4 text-gray-400 transition-transform duration-200"
+                                    :class="{ 'rotate-180': openUser }" fill="none" viewBox="0 0 24 24"
+                                    stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                                </svg>
+                            </button>
+
+                            {{-- Menu --}}
+                            <div x-cloak x-show="openUser" x-transition:enter="transition ease-out duration-100"
+                                x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
+                                x-transition:leave="transition ease-in duration-75"
+                                x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95"
+                                class="absolute right-0 mt-2 w-56 rounded-2xl border border-white/10 bg-[#0b0b0b]
+                           shadow-xl ring-1 ring-black/40 z-50 overflow-hidden">
+                                <div class="p-1.5">
+                                    <a href="{{ route('account.index') }}" @click="openUser = false"
+                                        class="block px-4 py-2.5 text-sm text-gray-300 hover:bg-white/10 hover:text-[#15A5ED] rounded-xl transition">
+                                        Dashboard
+                                    </a>
+
+                                    <a href="{{ route('account.orders.index') }}" @click="openUser = false"
+                                        class="block px-4 py-2.5 text-sm text-gray-300 hover:bg-white/10 hover:text-[#15A5ED] rounded-xl transition">
+                                        My Orders
+                                    </a>
+
+                                    <a href="{{ route('account.favorites.index') }}" @click="openUser = false"
+                                        class="block px-4 py-2.5 text-sm text-gray-300 hover:bg-white/10 hover:text-[#15A5ED] rounded-xl transition">
+                                        My Wishlist
+                                    </a>
+
+                                    <a href="{{ route('account.address.index') }}" @click="openUser = false"
+                                        class="block px-4 py-2.5 text-sm text-gray-300 hover:bg-white/10 hover:text-[#15A5ED] rounded-xl transition">
+                                        Shipping Addresses
+                                    </a>
+
+                                    <a href="{{ route('account.profile.edit') }}" @click="openUser = false"
+                                        class="block px-4 py-2.5 text-sm text-gray-300 hover:bg-white/10 hover:text-[#15A5ED] rounded-xl transition">
+                                        Profile Settings
+                                    </a>
+
+                                    <div class="my-1 border-t border-white/10"></div>
+
+                                    <form method="POST" action="{{ route('logout') }}">
+                                        @csrf
+                                        <button type="submit"
+                                            class="w-full text-left block px-4 py-2.5 text-sm rounded-xl transition
+                                       text-red-400 hover:bg-red-500/10 hover:text-red-300">
+                                            Log Out
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @else
+                    <a href="{{ route('login') }}"
+                        class="hidden sm:inline-flex px-6 py-2.5 rounded-full bg-white text-black text-sm font-bold hover:bg-gray-200 transition shadow-lg shadow-black/10">
+                        Login
+                    </a>
+                @endauth
+            </div>
+
+        </div>
+    </div>
+</nav>
