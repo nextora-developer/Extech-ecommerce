@@ -513,119 +513,157 @@
         </section>
 
         {{-- Trust & Value Section --}}
-        <section class="relative bg-white overflow-hidden">
-            <div class="max-w-7xl5 mx-auto px-4 sm:px-6 lg:px-8 py-14 lg:py-16 relative">
+        <section class="relative bg-white py-16 lg:py-16 overflow-hidden">
+            {{-- soft grid --}}
+            <div class="absolute inset-0 opacity-[0.035] pointer-events-none"
+                style="background-image: radial-gradient(#15A5ED 1px, transparent 1px); background-size: 28px 28px;">
+            </div>
 
-                {{-- Decorative Corner Brackets --}}
-                <div class="absolute top-10 left-8 w-4 h-4 border-t border-l border-slate-200"></div>
-                <div class="absolute bottom-10 right-8 w-4 h-4 border-b border-r border-slate-200"></div>
+            <div class="max-w-7xl5 mx-auto px-6 relative">
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8">
+                {{-- section shell --}}
+                <div
+                    class="relative rounded-[2.5rem] border border-slate-300 bg-white shadow-[0_20px_60px_rgba(15,23,42,0.06)] overflow-hidden">
 
-                    {{-- Instant Delivery --}}
-                    <div class="flex items-start gap-5 group">
-                        <div class="relative flex-shrink-0">
-                            <div
-                                class="w-14 h-14 flex items-center justify-center rounded-xl bg-slate-50 border border-slate-100 text-slate-400 group-hover:text-[#15A5ED] group-hover:border-[#15A5ED]/30 group-hover:bg-white group-hover:shadow-[0_0_20px_rgba(21,165,237,0.15)] transition-all duration-500">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7" fill="none"
-                                    viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.2">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-                                </svg>
-                            </div>
+                    {{-- top technical bar --}}
+                    <div
+                        class="h-14 border-b border-slate-300 bg-gradient-to-r from-slate-50 via-white to-slate-50 flex items-center justify-between px-6 lg:px-8">
+                        <div class="flex items-center gap-3">
+                            <span class="w-2.5 h-2.5 rounded-full bg-[#15A5ED]"></span>
+                            <span class="text-[10px] font-mono font-bold uppercase tracking-[0.28em] text-slate-500">
+                                Trust Layer
+                            </span>
                         </div>
-                        <div class="flex flex-col">
-                            <div class="flex items-center gap-2 mb-1">
-                                <span class="w-1 h-1 rounded-full bg-[#15A5ED] group-hover:animate-ping"></span>
-                                <h4 class="text-sm font-mono font-bold text-slate-900 uppercase tracking-[0.15em]">
-                                    Instant.Delivery</h4>
-                            </div>
-                            <p class="text-base text-slate-500 leading-snug">
-                                Most digital products are delivered <span class="text-slate-900 font-bold">quickly and
-                                    automatically</span> after payment.
-                            </p>
+
+                        <div class="hidden sm:flex items-center gap-2">
+                            <span class="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
+                            <span class="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
+                            <span class="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
                         </div>
                     </div>
 
-                    {{-- Secure Payment --}}
-                    <div class="flex items-start gap-5 group">
-                        <div class="relative flex-shrink-0">
-                            <div
-                                class="w-14 h-14 flex items-center justify-center rounded-xl bg-slate-50 border border-slate-100 text-slate-400 group-hover:text-[#15A5ED] group-hover:border-[#15A5ED]/30 group-hover:bg-white group-hover:shadow-[0_0_20px_rgba(21,165,237,0.15)] transition-all duration-500">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7" fill="none"
-                                    viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.2">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.744c0 5.052 3.823 9.213 8.712 9.637.222.019.447.029.672.029.224 0 .449-.01.671-.029 4.89-.423 8.713-4.585 8.713-9.637 0-1.305-.209-2.56-.598-3.744A11.959 11.959 0 0112 2.714z" />
-                                </svg>
-                            </div>
-                        </div>
-                        <div class="flex flex-col">
-                            <div class="flex items-center gap-2 mb-1">
-                                <span class="w-1 h-1 rounded-full bg-[#15A5ED]"></span>
-                                <h4 class="text-sm font-mono font-bold text-slate-900 uppercase tracking-[0.15em]">
-                                    Secure.Payment</h4>
-                            </div>
-                            <p class="text-base text-slate-500 leading-snug">
-                                Checkout with <span class="text-slate-900 font-bold">safe and trusted payment
-                                    channels</span> protected by secure encryption.
-                            </p>
-                        </div>
-                    </div>
+                    @php
+                        $features = [
+                            [
+                                'label' => 'Instant',
+                                'sub' => 'Auto Delivery',
+                                'icon' => 'M13 10V3L4 14h7v7l9-11h-7z',
+                            ],
+                            [
+                                'label' => 'Secure',
+                                'sub' => 'Encrypted',
+                                'icon' =>
+                                    'M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.744c0 5.052 3.823 9.213 8.712 9.637.222.019.447.029.672.029.224 0 .449-.01.671-.029 4.89-.423 8.713-4.585 8.713-9.637 0-1.305-.209-2.56-.598-3.744A11.959 11.959 0 0112 2.714z',
+                            ],
+                            [
+                                'label' => 'Trusted',
+                                'sub' => 'Verified',
+                                'icon' =>
+                                    'M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z',
+                            ],
+                            [
+                                'label' => 'Support.MY',
+                                'sub' => 'Local Team',
+                                'icon' =>
+                                    'M15 10.5a3 3 0 11-6 0 3 3 0 016 0z M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z',
+                            ],
+                        ];
+                    @endphp
 
-                    {{-- Trusted Service --}}
-                    <div class="flex items-start gap-5 group">
-                        <div class="relative flex-shrink-0">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+                        @foreach ($features as $index => $f)
                             <div
-                                class="w-14 h-14 flex items-center justify-center rounded-xl bg-slate-50 border border-slate-100 text-slate-400 group-hover:text-[#15A5ED] group-hover:border-[#15A5ED]/30 group-hover:bg-white group-hover:shadow-[0_0_20_rgba(21,165,237,0.15)] transition-all duration-500">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7" fill="none"
-                                    viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.2">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-1.5 0h12a1.5 1.5 0 011.5 1.5v6a1.5 1.5 0 01-1.5 1.5h-12A1.5 1.5 0 014.5 18v-6A1.5 1.5 0 016 10.5z" />
-                                </svg>
-                            </div>
-                        </div>
-                        <div class="flex flex-col">
-                            <div class="flex items-center gap-2 mb-1">
-                                <span class="w-1 h-1 rounded-full bg-[#15A5ED]"></span>
-                                <h4 class="text-sm font-mono font-bold text-slate-900 uppercase tracking-[0.15em]">
-                                    Trusted.Service</h4>
-                            </div>
-                            <p class="text-base text-slate-500 leading-snug">
-                                Shop digital essentials with a <span class="text-slate-900 font-bold">smooth, reliable,
-                                    and
-                                    verified</span> ordering experience.
-                            </p>
-                        </div>
-                    </div>
+                                class="group relative px-6 py-8 lg:px-8 lg:py-10 transition-all duration-500 hover:bg-slate-50/70 {{ $index < count($features) - 1 ? 'border-b sm:border-b-0 lg:border-r border-slate-300' : '' }} {{ $index === 0 ? 'sm:border-r lg:border-r' : '' }} {{ $index === 1 ? 'lg:border-r' : '' }} {{ $index === 2 ? 'sm:border-r lg:border-r' : '' }}">
 
-                    {{-- Local Support --}}
-                    <div class="flex items-start gap-5 group">
-                        <div class="relative flex-shrink-0">
-                            <div
-                                class="w-14 h-14 flex items-center justify-center rounded-xl bg-slate-50 border border-slate-100 text-slate-400 group-hover:text-[#15A5ED] group-hover:border-[#15A5ED]/30 group-hover:bg-white group-hover:shadow-[0_0_20px_rgba(21,165,237,0.15)] transition-all duration-500">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7" fill="none"
-                                    viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.2">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="M18 10.5c0 3.75-3 6.75-6 6.75s-6-3-6-6.75S9 3.75 12 3.75s6 3 6 6.75z" />
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 17.25v3m-3-1.5h6" />
-                                </svg>
-                            </div>
-                        </div>
-                        <div class="flex flex-col">
-                            <div class="flex items-center gap-2 mb-1">
-                                <span class="w-1 h-1 rounded-full bg-[#15A5ED]"></span>
-                                <h4 class="text-sm font-mono font-bold text-slate-900 uppercase tracking-[0.15em]">
-                                    Support.MY</h4>
-                            </div>
-                            <p class="text-base text-slate-500 leading-snug">
-                                Proudly <span class="text-slate-900 font-bold">Malaysia-based</span> with
-                                local-friendly
-                                service and support.
-                            </p>
-                        </div>
-                    </div>
+                                {{-- hover glow line --}}
+                                <div
+                                    class="absolute left-0 top-0 h-full w-[2px] bg-transparent group-hover:bg-[#15A5ED] transition-all duration-500">
+                                </div>
 
+                                <div class="flex items-start gap-4">
+                                    <div class="relative shrink-0">
+                                        <div
+                                            class="absolute inset-0 rounded-2xl bg-[#15A5ED] blur-xl opacity-0 group-hover:opacity-15 transition-all duration-500">
+                                        </div>
+                                        <div
+                                            class="relative w-12 h-12 lg:w-14 lg:h-14 rounded-2xl border border-slate-300 bg-slate-50 flex items-center justify-center text-slate-600 group-hover:border-[#15A5ED]/40 group-hover:text-[#15A5ED] group-hover:bg-white transition-all duration-500">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 lg:w-6 lg:h-6"
+                                                fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                                                stroke-width="1.6">
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                    d="{{ $f['icon'] }}" />
+                                            </svg>
+                                        </div>
+                                    </div>
+
+                                    <div class="min-w-0">
+                                        <p
+                                            class="text-[10px] lg:text-[11px] font-mono font-bold uppercase tracking-[0.24em] text-slate-400 mb-2">
+                                            0{{ $index + 1 }}
+                                        </p>
+
+                                        <h4
+                                            class="text-sm lg:text-base font-black uppercase tracking-[0.16em] text-slate-900 group-hover:text-[#15A5ED] transition-colors duration-300">
+                                            {{ $f['label'] }}
+                                        </h4>
+
+                                        <p class="mt-2 text-sm text-slate-500 font-medium">
+                                            {{ $f['sub'] }}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
                 </div>
+            </div>
+        </section>
+        <section class="relative">
+            <div class="mx-auto max-w-7xl5 px-4 sm:px-6 lg:px-8 pb-6 py-4">
+
+                {{-- marquee --}}
+                <div class="relative">
+
+                    {{-- fade edges --}}
+                    <div
+                        class="pointer-events-none absolute left-0 top-0 bottom-0 w-14 bg-gradient-to-r from-white via-white/80 to-transparent z-10">
+                    </div>
+
+                    <div
+                        class="pointer-events-none absolute right-0 top-0 bottom-0 w-14 bg-gradient-to-l from-white via-white/80 to-transparent z-10">
+                    </div>
+
+                    <div class="overflow-hidden" data-pay-marquee>
+                        <div class="flex items-center gap-10 sm:gap-14 will-change-transform" data-pay-track>
+
+                            @php
+                                $payments = [
+                                    ['alt' => 'FPX', 'src' => asset('images/payments/fpx.png')],
+                                    ['alt' => 'Visa', 'src' => asset('images/payments/visa.png')],
+                                    ['alt' => 'Mastercard', 'src' => asset('images/payments/mastercard.png')],
+                                    ['alt' => 'TNG eWallet', 'src' => asset('images/payments/tng.png')],
+                                    ['alt' => 'GrabPay', 'src' => asset('images/payments/grabpay.png')],
+                                    ['alt' => 'GrabPayLater', 'src' => asset('images/payments/grabpaylater.png')],
+                                    ['alt' => 'ShopeePay', 'src' => asset('images/payments/shopeepay.png')],
+                                    ['alt' => 'SPayLater', 'src' => asset('images/payments/spaylater.png')],
+                                    ['alt' => 'AliPay', 'src' => asset('images/payments/alipay.png')],
+                                ];
+                            @endphp
+
+                            @foreach ($payments as $p)
+                                <div class="shrink-0">
+                                    <img src="{{ $p['src'] }}" alt="{{ $p['alt'] }}"
+                                        class="h-14 sm:h-16 lg:h-20 w-auto object-contain
+                                       rounded-xl sm:rounded-2xl
+                                       hover:opacity-90 transition"
+                                        draggable="false">
+                                </div>
+                            @endforeach
+
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </section>
 
@@ -846,4 +884,61 @@
             });
         });
     </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const wrap = document.querySelector('[data-pay-marquee]');
+            const track = document.querySelector('[data-pay-track]');
+            if (!wrap || !track) return;
+
+            // 复制一份内容，实现无缝循环
+            track.innerHTML = track.innerHTML + track.innerHTML;
+
+            let x = 0;
+            let speed = 0.55; // ✅ 速度：0.35 慢 / 0.55 默认 / 0.8 快
+            let paused = false;
+
+            // track 一半宽度（因为复制了两份）
+            function getHalfWidth() {
+                return track.scrollWidth / 2;
+            }
+
+            function tick() {
+                if (!paused) {
+                    x += speed;
+                    const half = getHalfWidth();
+
+                    // 滑到一半就重置（无缝）
+                    if (x >= half) x = 0;
+
+                    track.style.transform = `translateX(${-x}px)`;
+                }
+                requestAnimationFrame(tick);
+            }
+            tick();
+
+            // hover 暂停（桌面）
+            wrap.addEventListener('mouseenter', () => paused = true);
+            wrap.addEventListener('mouseleave', () => paused = false);
+
+            // touch 暂停（手机）
+            wrap.addEventListener('touchstart', () => paused = true, {
+                passive: true
+            });
+            wrap.addEventListener('touchend', () => paused = false, {
+                passive: true
+            });
+
+            // 可选：根据用户滚动方向微调速度（更“顺”）
+            wrap.addEventListener('wheel', (e) => {
+                // 鼠标滚轮时短暂加速/减速（不阻止默认）
+                const delta = Math.max(-12, Math.min(12, e.deltaY));
+                speed = Math.max(0.25, Math.min(1.2, 0.55 + delta * 0.01));
+                clearTimeout(wrap._paySpeedTimer);
+                wrap._paySpeedTimer = setTimeout(() => speed = 0.55, 500);
+            }, {
+                passive: true
+            });
+        });
+    </script>
+
 </x-app-layout>
