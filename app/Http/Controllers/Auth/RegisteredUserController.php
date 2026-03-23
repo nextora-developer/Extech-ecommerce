@@ -64,6 +64,6 @@ class RegisteredUserController extends Controller
         event(new Registered($user));
 
         return redirect()->route('login')
-            ->with('status', '注册成功，请先登录你的账号。');
+            ->with('status', 'Registration successful. Please log in to your account.');
     }
 }
