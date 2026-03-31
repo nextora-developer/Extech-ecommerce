@@ -23,30 +23,9 @@ self.addEventListener("activate", (event) => {
 });
 
 self.addEventListener("fetch", (event) => {
-    const request = event.request;
-
-    if (request.method !== "GET") return;
-
-    const url = new URL(request.url);
-
-    if (url.pathname === "/") {
-        event.respondWith(
-            fetch(request)
-                .then((networkResponse) => {
-                    const responseClone = networkResponse.clone();
-                    caches.open(CACHE_NAME).then((cache) => {
-                        cache.put(request, responseClone);
-                    });
-                    return networkResponse;
-                })
-                .catch(() => caches.match(request)),
-        );
-        return;
-    }
+    if (event.request.method !== "GET") return;
 
     event.respondWith(
-        caches.match(request).then((cachedResponse) => {
-            return cachedResponse || fetch(request);
-        }),
+        fetch(event.request).catch(() => caches.match(event.request)),
     );
 });
