@@ -1,5 +1,5 @@
-const CACHE_NAME = "extech-v1";
-const urlsToCache = ["/", "/manifest.webmanifest"];
+const CACHE_NAME = "extech-v2";
+const urlsToCache = ["/manifest.webmanifest"];
 
 self.addEventListener("install", (event) => {
     event.waitUntil(
@@ -19,12 +19,34 @@ self.addEventListener("activate", (event) => {
                 ),
             ),
     );
+    self.clients.claim();
 });
 
 self.addEventListener("fetch", (event) => {
+    const request = event.request;
+
+    if (request.method !== "GET") return;
+
+    const url = new URL(request.url);
+
+    if (url.pathname === "/") {
+        event.respondWith(
+            fetch(request)
+                .then((networkResponse) => {
+                    const responseClone = networkResponse.clone();
+                    caches.open(CACHE_NAME).then((cache) => {
+                        cache.put(request, responseClone);
+                    });
+                    return networkResponse;
+                })
+                .catch(() => caches.match(request)),
+        );
+        return;
+    }
+
     event.respondWith(
-        caches
-            .match(event.request)
-            .then((response) => response || fetch(event.request)),
+        caches.match(request).then((cachedResponse) => {
+            return cachedResponse || fetch(request);
+        }),
     );
 });
