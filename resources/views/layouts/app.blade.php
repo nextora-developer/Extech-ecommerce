@@ -18,6 +18,14 @@
 
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+    <link rel="manifest" href="{{ asset('manifest.webmanifest') }}">
+    <meta name="theme-color" content="#111111">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Extech Studio">
+    <link rel="apple-touch-icon" href="{{ asset('icons/icon-192.png') }}">
 </head>
 
 <body class="font-sans antialiased bg-black text-gray-200">
@@ -308,6 +316,94 @@
         </svg>
     </a>
 
+    <div id="pwa-install-banner"
+        style="
+    display:none;
+    position:fixed;
+    left:16px;
+    right:16px;
+    bottom:16px;
+    z-index:9999;
+    background:#111;
+    color:#fff;
+    border-radius:16px;
+    padding:16px;
+    box-shadow:0 8px 24px rgba(0,0,0,.2);
+">
+        <div style="display:flex;justify-content:space-between;align-items:start;gap:12px;">
+            <div>
+                <div style="font-size:16px;font-weight:700;">Install Extech Studio</div>
+                <div style="font-size:14px;opacity:.9;margin-top:4px;">
+                    Add this app to your home screen for faster access.
+                </div>
+            </div>
+            <button id="pwa-close-btn"
+                style="
+            background:transparent;
+            border:none;
+            color:#fff;
+            font-size:20px;
+            cursor:pointer;
+        ">&times;</button>
+        </div>
+
+        <div style="display:flex;gap:8px;margin-top:14px;">
+            <button id="pwa-install-btn"
+                style="
+            background:#fff;
+            color:#111;
+            border:none;
+            border-radius:10px;
+            padding:10px 14px;
+            font-weight:600;
+            cursor:pointer;
+        ">
+                Install
+            </button>
+
+            <button id="pwa-later-btn"
+                style="
+            background:transparent;
+            color:#fff;
+            border:1px solid rgba(255,255,255,.3);
+            border-radius:10px;
+            padding:10px 14px;
+            cursor:pointer;
+        ">
+                Later
+            </button>
+        </div>
+    </div>
+
+    <div id="ios-install-tip"
+        style="
+    display:none;
+    position:fixed;
+    left:16px;
+    right:16px;
+    bottom:16px;
+    z-index:9999;
+    background:#111;
+    color:#fff;
+    border-radius:16px;
+    padding:16px;
+">
+        <div style="font-weight:700;">Install Extech Studio</div>
+        <div style="font-size:14px;margin-top:6px;">
+            On iPhone: tap <strong>Share</strong> then <strong>Add to Home Screen</strong>.
+        </div>
+        <button id="ios-tip-close"
+            style="
+        margin-top:12px;
+        background:#fff;
+        color:#111;
+        border:none;
+        border-radius:10px;
+        padding:10px 14px;
+        cursor:pointer;
+    ">OK</button>
+    </div>
+
     <script>
         function refreshCartCount() {
             console.log('Refreshing cart count…');
@@ -405,6 +501,114 @@
     @endif
 
     @stack('scripts')
+
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('{{ asset('sw.js') }}')
+                    .then(reg => console.log('SW registered', reg))
+                    .catch(err => console.log('SW failed', err));
+            });
+        }
+    </script>
+
+    <script>
+        let deferredPrompt = null;
+
+        const installBanner = document.getElementById('pwa-install-banner');
+        const installBtn = document.getElementById('pwa-install-btn');
+        const closeBtn = document.getElementById('pwa-close-btn');
+        const laterBtn = document.getElementById('pwa-later-btn');
+
+        function isStandalone() {
+            return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+        }
+
+        function hideBanner() {
+            installBanner.style.display = 'none';
+        }
+
+        function showBanner() {
+            if (!isStandalone()) {
+                installBanner.style.display = 'block';
+            }
+        }
+
+        function dismissForDays(days = 3) {
+            const until = Date.now() + days * 24 * 60 * 60 * 1000;
+            localStorage.setItem('pwa_install_dismiss_until', String(until));
+        }
+
+        function canShowAgain() {
+            const until = localStorage.getItem('pwa_install_dismiss_until');
+            if (!until) return true;
+            return Date.now() > Number(until);
+        }
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+
+            if (canShowAgain() && !isStandalone()) {
+                showBanner();
+            }
+        });
+
+        installBtn?.addEventListener('click', async () => {
+            if (!deferredPrompt) return;
+
+            deferredPrompt.prompt();
+
+            const choiceResult = await deferredPrompt.userChoice;
+            console.log('Install choice:', choiceResult.outcome);
+
+            deferredPrompt = null;
+            hideBanner();
+        });
+
+        closeBtn?.addEventListener('click', () => {
+            dismissForDays(7);
+            hideBanner();
+        });
+
+        laterBtn?.addEventListener('click', () => {
+            dismissForDays(3);
+            hideBanner();
+        });
+
+        window.addEventListener('appinstalled', () => {
+            console.log('PWA installed');
+            hideBanner();
+            deferredPrompt = null;
+        });
+    </script>
+
+    <script>
+        function isIos() {
+            return /iphone|ipad|ipod/i.test(window.navigator.userAgent);
+        }
+
+        function isInStandaloneMode() {
+            return ('standalone' in window.navigator) && window.navigator.standalone;
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const iosTip = document.getElementById('ios-install-tip');
+            const iosTipClose = document.getElementById('ios-tip-close');
+
+            if (isIos() && !isInStandaloneMode()) {
+                const hidden = localStorage.getItem('ios_install_tip_closed');
+                if (!hidden) {
+                    iosTip.style.display = 'block';
+                }
+            }
+
+            iosTipClose?.addEventListener('click', () => {
+                iosTip.style.display = 'none';
+                localStorage.setItem('ios_install_tip_closed', '1');
+            });
+        });
+    </script>
 </body>
 
 </html>
